@@ -9,7 +9,7 @@ path.
 Volume  |Diag   |Description
 --------|-------|------------
 1       |9LD01  |Loader 
-        |9LD02  |  
+1       |9LD02  |  
 1       |9M01B  |Cpu main diag  
 1       |9M02A  |Cpu main diag  
 1       |9M03A  |Indexing test  
@@ -20,15 +20,15 @@ Volume  |Diag   |Description
 2       |9M10A  |Instruction count test.  
 2       |9M21A  |Main frame test.  
 2       |9S01HA |Combined storage test  
-        |9S01L  |  
+2       |9S01L  |  
 2       |9S02H  |Core compliment test.  
-        |9S02L  |  
+2       |9S02L  |  
 2       |9S03H  |Half select beat  
-        |9S03L  |  
+2       |9S03L  |  
 2       |9S04H  |Half select beat  
-        |9S04L  |  
+2       |9S04L  |  
 2       |9S05H  |Core compliment test.  
-        |9S05L  |  
+2       |9S05L  |  
 2       |9S10A  |Test for walking core in 738 core on 709  
 3       |9COMB  |Compatiblity test  
 3       |9T01A  |Tape test  
@@ -49,8 +49,8 @@ Volume  |Diag   |Description
 4       |9P01C  |Printer test 9p01.1 9p01.2  
 4       |9P02A  |Printer interrow timing test  
 5       |9IOMA  |I/O control program.  
-        |9IOMB  |I/O control program.  
-        |9IOMC  |I/O control program.  
+None    |9IOMB  |I/O control program.  
+None    |9IOMC  |I/O control program.  
 5       |9DEPRA |Program monitor  
 5       |9V01A  |CRT display diag  
 5       |9SY1A  |Reliabilty test  
@@ -59,7 +59,7 @@ Volume  |Diag   |Description
 5       |9A01A  |Test for real time controls  
 5       |9SWA   |Test for six additional sense switchs  
 5       |9CNPA  |Consecutive number punch test  
-*       |9CNPB  |Consecutive number punch test  
+None    |9CNPB  |Consecutive number punch test  
 5       |9DRSA  |Drop ready and test ready status  
 5       |9IOTA  |Data sync trap  
 6       |9C02A  |Card reader timing  
