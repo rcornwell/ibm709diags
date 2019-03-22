@@ -1,0 +1,166 @@
+                                                            9B53B
+                                                            3/1/61
+                                                            PAGE 1
+ 
+
+
+                WORST CASE B TIME TEST
+
+
+
+A.  PURPOSE OF TEST
+
+    1.  Test maximum delay in B TIME and the 7090 channel priority
+        circuit.
+
+B.  METHOD OF TEST
+
+    1.  A test of TAU operations is made on each channel selected.
+
+    2.  A B TIME with concurrent ORS instruction execution test is made
+        to check specifically and -AND circuit 3F on systems page 2.09.00.1
+
+    3.  100 octal records consisting of 100 octal words are written, back-
+        spaced, read and checked for errors on TAPE UNIT 2 CHANNEL A
+        and TAPE UNIT 1 on each of the other channels selected.
+
+    4.  If sense switch 5 is down, the program continuously stores the
+        channel contents while reading information from tape.
+
+C.  MACHINE UNITS AND STORAGE AREA
+
+    1.  Units
+
+        a.  Card reader of tape unit 1 on channel A for loading
+
+        b.  Main frame
+ 
+        c.  Core frame
+
+        d.  Tape unit 2 on channel A and tape unit 1 on each of the other
+            channels to be tested.
+
+    2.  Storage Locations
+
+        a.  00030-06606       9B53B
+
+        b.  75300-76340       9IOCA
+
+        c.  76400-77710       9DEPRX
+
+
+
+                                                            9B53B
+                                                            3/1/61
+                                                            PAGE 2
+
+
+D.  PROGRAM CONTROL
+
+    1.  Deck
+
+        a.  000          9LD01A Low end loader
+
+        b.  001-084      9B53B
+
+        c.  085-109      9IOCA
+
+        d.  110-141      9DEPRX
+ 
+        e.  142          Transfer card - TRA 00030
+
+        f.  143-144      2 blank cards
+
+    2.  Sense Switch Control
+
+        a.  Use of sense switches 1 through 4 are as outlined in DEPRX.
+
+        b.  Sense Switch 5 Up - Initially make 1 pass through entire
+                                program except for continuous STORE
+                                CHANNEL section and check sense switch 6.
+
+        c.  Sense Switch 5 Dn - Repeat continuous STORE CHANNEL
+                                routines.
+
+        d.  Sense Switch 6 Up - Load next program.
+
+        e.  Sense Switch 6 Dn - Repeat test (see section H-3)
+
+E.  NORMAL STOPS
+
+    1.  75320 - Enter keys for tape units on channels A-D
+
+    2.  75334 - Enter keys for tape units on channels E-H
+
+F.  ERROR STOPS
+
+    1.  01436 - No tape units selected; press start to return to IOC.
+
+    2.  02163 - Consult listing at this location for comments to aid
+                in diagnosing error.
+
+                                                            9B53B
+                                                            3/1/61
+                                                            PAGE 3
+
+
+
+    3.  75326 - Control word entered at location 75320 contained no tag
+                bits for channels.
+
+    4.  76471 - Error while executing routines of 9B53.
+
+G.  PRINTOUTS
+
+    1.  Program identification is printed on the initial pass with sense 
+        switch 3 up.
+
+    2.  Pass complete is printed for each pass through program with
+        sense switches 3 up and 6 down.
+
+    3.  For errors while executing routines of 9B53, DEPRX printouts
+        will result with sense switch 3 up.
+
+H.  COMMENTS
+
+    1.  For worst case test use 729 MOD IV tape frames.
+
+    2.  If the contents of any channel becomes larger than it should, the
+        channel will be reset and a halt will occur. The comments in the
+        listing following location 02162 may be an aid in determining the
+        trouble.
+
+    3.  With sense switch 5 up and 6 down, the return is to the beginning
+        of the program. To repeat the TAU operations and B TIME-ORS
+        tests, manually store a NOP instruction in location 00542 or the
+        above tests will be omitted after the initial pass.
+
+    4.  For TAU operations and B TIME-ORS tests, only TAPE UNIT 2
+        on CHANNEL A is used but any number of units can be called for
+        on other channels selected.
+
+    5.  For WORST CASE routines, TAPE UNIT 2 on CHANNEL A and
+        TAPE UNIT 1 on all other channels selected are the only drives
+        used.
+
+    6.  The sign key is used to designate the type of loading for the simulated
+        load button sequence under sense switch 6 control.
+
+    7.  To write this card deck program on a diagnostic program tape, only
+        the loader must be replaced.
+
+
+                                                            9B53B
+                                                            3/1/61
+                                                            PAGE 4
+
+
+    8.  Consult write-ups of DEPRX and 9IOCA for details on error
+        halt or printouts and I/O unit selection.
+
+    9.  The release of this program obsoletes 9B53A.
+
+\l
+File Attachments:   Source \Asource\a    Cards \Acard\a      Deck \Adeck\a
+
+

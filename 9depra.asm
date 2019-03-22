@@ -1,0 +1,732 @@
+                                                             9DEPR
+                                                            7-01-58
+       REM
+       REM
+       REM 9DEPR
+       REM
+       REM
+* SENSE SWITCHES INTERROGATION AND DIAGNOSTIC
+*              PRINT SUBROUTINE FOR 709
+       REM
+       ORG 3392
+       REM
+       STZ KONST+3  INDICATE I/O TYPE PRINT
+       TRA ERROR
+       STZ KONST+3  SET STORAGE TO ZEROS
+       REM          MODIFY INSTRUCTIONS FOR
+       REM          RETURN ADDR TO MAIN PROG
+       TRA MOD
+ERROR  STZ KONST    DO NOT REPEAT SECTION
+       STZ KONST+1  IF SENSE SW 4 IS DOWN
+       REM
+       REM
+       REM
+       PSE 114      IF SENSE SW 2 IS UP THEN-
+       TRA SSW3     CHECK SSW 3
+       TIX OK,4,1
+       REM
+       REM
+       REM
+OK     SXD LOC+1,4  2'S COMPL OF PROGRAM
+       REM          LOCATION LAST PREFORMED
+       REM
+       REM
+       REM
+       PSE 113      IF SENSE SW 1 IS UP THEN
+       TRA RELY     CHECK SS 4
+       TRA 1,4      IF DOWN REPEAR SECTION
+       REM          OF PROG
+       REM
+SSW3   PSE 115      IF SENSE SW 3 IS UP
+       TRA PRINT    PRINT ON ERROR
+       REM          IF SS 3 IS DOWN STOP ON
+       HTR OK-1     ERROR
+       REM          HTR 2'S COMPLEMENT OF
+       REM          INDEX REGISTER C
+       REM          CONTIANS THE ERROR ADDRESS
+       REM          OF THE SECTION OF THE
+       REM          PROG IN ERROR
+       REM
+RELY   PSE 116      IF SENSE SWITCH 5 IS UP
+       TRA 3,4      GO TO NEXT SECTION OF
+       REM          THE PROG
+       REM          IF DOWN REPEAR SECTION
+       REM          OF THE PROGRAM N TIMES
+       REM          OR THE NUMEBR OF TIMES
+       REM          THAT IS SPECIFIED IN LOC
+       REM          KONST+2
+       REM
+       REM
+       CLA KONST+1  COUNTER
+       SUB KONST    L+1 REDUCE COUNT BY 1
+       STO KONST+1
+       TNZ OK+3
+       CLA KONST+2  L+50 COUNT CONSTANT
+       STO KONST+1
+       CLA STOR+7   L+1
+       STO KONST
+       TRA 3,4
+       REM
+       REM
+MOD    STZ KONST+4  SET STORAGE TO ZEROS
+       STZ KONST+1
+       STZ KONST
+       REM
+       REM
+       REM
+ERR    PSE 114      IF SS 2 IS UP CHECK
+       TRA SSW3A    SENSE SWITHC 3
+       REM
+OK2    PSE 113      SSW1 UP-GO TO NEXT ROUTINE
+       TRA 2,4      EXIT
+       TRA 1,4      REPEAT TEST
+       REM
+SSW3A  PSE 115      IS SENSE SWITCH 3 IS UP
+       TRA PRINT    PRINT ERROR
+       REM          2'S COMPLEMENT OF XRC
+       HTR OK2      CONTIANS THE ERROR ADDR
+       REM          OF SECTION OF PROG LAST
+       REM          EXECUTED
+       REM
+       REM
+KONST  OCT 1
+       OCT 50
+       OCT 50       COUNT CONSTANT
+       OCT 1
+       OCT 1
+       TRA OK-1     EXIT FROM PRINT PROG
+       TRA OK2      EXIT FROM PRINT WHEN
+       REM          ENTRY IS TO ERROR-1
+       OCT 1
+       REM
+WDNO   OCT
+RECNO  OCT
+       REM
+       REM          PUT DSC REDUNDANCY
+       REM          CHECKS IN PRINT RECORD
+RDNCK  STO STOR     ACC CONTENTS
+       ARS 35
+       SLW STOR+3   OVFL BITS P + Q
+       STQ STOR+1   MQ CONTENTS
+       REM
+       CAL MASK+9   RESET RECORD IMAGE
+       ANS REC4R+9  INDICATIONS
+       CAL BIT2+3
+       SLW REC4R+8  FOR REDUNDANCY TAPE CK
+       SLW KONST+7  PUT A BIT IN WORD
+       TCOA *       CHECK CHAN IN OPERATION
+       TCOB *       CHECK CHAN IN OPERATION
+       TCOC *       CHECK CHAN IN OPERATION
+       TCOD *       CHECK CHAN IN OPERATION
+       TCOE *       CHECK CHAN IN OPERATION
+       TCOF *       CHECK CHAN IN OPERATION
+CHK4A  CAL BIT+10
+       ARS 1
+       TRCA CHK4B-1 REDUNDANT TAPE CK DSCA
+       ORS REC4R+9  NO
+       TRA CHK4B
+       ORS REC4R+8  YES
+       REM
+CHK4B  CAL BIT2+1
+       ARS 1
+       TRCB CHK4C-1 RND TAPE CK DSC-B
+       ORS REC4R+9  NO
+       TRA CHK4C
+       ORS REC4R+8  YES
+       REM
+CHK4C  CAL BIT+1
+       ARS 3
+       TRCC CHK4D-1 RND TAPE CK DSC-C
+       ORS REC4R+9  NO
+       TRA CHK4D
+       ORS REC4R+8  YES
+       REM
+CHK4D  CAL BIT+8
+       ARS 1
+       TRCD CHK4E-1 RND TAPE CK DSC-D
+       ORS REC4R+9  NO
+       TRA CHK4E
+       ORS REC4R+8  YES
+       REM
+CHK4E  CAL BIT+9
+       ARS 1
+       TRCE CHK4F-1 RND TAPE CK DSC-E
+       ORS REC4R+9  NO
+       TRA CHK4F
+       ORS REC4R+8  YES
+       REM
+CHK4F  CAL STOR+7
+       TRCF CHK4F+4 RND TAPE CK DSC-F
+       ORS REC4R+9  NO
+       TRA CHK4F+5
+       ORS REC4R+8  YES
+       REM
+       REM          WAS THERE A REDUNDANCY
+       CLA REC4R+8  TAPE CHECK ON ANY CHAN
+       SUB BIT2+3   IF NOT-RETURN TO MAIN
+       TZE CONT     PROGRAM-OK
+       REM
+       STZ KONST+7
+CONT   CLA STOR+3   RESET REGISTERS
+       LDQ STOR
+       LLS 35
+       LDQ STOR+1
+       REM
+       ZET KONST+7
+       TRA 2,4      CONTINUE PROG
+       REM          TAPE CHECK REDUNDANCY
+       TRA ERROR-2  INTERROGATE SENSE
+       REM          SWITCHES
+       REM
+       REM
+       REM          PRINT ROUTINE
+PRINT  STO STOR     ACC CONTENTS
+       ARS 35
+       SLW STOR+3   OV FL BITS
+       PXA 2,2
+       STA STOR+2   XRB
+       SXD STOR+2,1 PLACE XRA INTO DECR
+       SXD STOR+3,4 PLACE XRC INTO DECR
+       STQ STOR+1   MQ CONTENTS
+       REM
+       REM
+CHK1   CLA STOR+5   L 100000
+       DCT          DIV CK TEST
+       ORS STOR+3   YES
+       ARS 3
+       TNO CHK4-1   ACC OV FL-YES
+       ORS STOR+3   NO
+       REM
+       CLM          SENSE SWITCHES
+CHK4   LXA STOR+8,1 L +4
+       ALS 3
+       MSE 101,1
+       TRA *+3
+       ADD STOR+7   L +1
+       PSE 101,1    RESET LITES
+       TIX CHK4+1,1,1
+CHK3   LXA STOR+6,1 L +6
+       ALS 3
+       PSE 119,1
+       TRA CHK3+5
+       ADD STOR+7   L +1
+       TIX CHK3+1,1,1
+       REM
+       REM
+       SLW STOR+4   RETAIN PSE + MSE
+       REM          INDICATIONS
+       REM          WAS ENTRY FROM SUB-
+CHK3A  CLA KONST+4  ROUTINE AT ERROR-1
+       TZE CHK3A+7  YES
+       CLA PRINT+3  NO
+       STA CHK5+1   RESET ADDR
+       CLA KONST+5
+       STO EXIT
+       TRA CHK5
+       REM
+       CLA STOR+7   L+1
+       STO KONST+4
+       STA CHK5+1
+       CLA KONST+6
+       STO EXIT
+       REM
+       REM
+       REM          OBTAIN TEST LOC
+       REM          AND ERROR ADDR
+CHK5   LXD STOR+3,4 XRC
+       PXD 2,4
+       COM
+       ADD BIT2+2   +1 TO DECREMENT
+       STD LOC      ERROR ADDR INTO DECR
+       ARS 18
+       SUB CHK5+1   L +2
+       STA CHK6
+CHK6   CAL 0        PLACE
+       STA LOC      TEST LOC INTO ADDR
+       STP LOC
+       REM
+       REM          OBTAIN OPN OF INST
+       SUB STOR+7   L +1
+       STA *+1
+       LDQ 0        BCD OPERATION
+       REM
+CHK7   LXA STOR+6,1 L +6
+       CLM
+       LGL 2
+       PAX 0,4      ZONE BIT
+       LGL 4
+       CAS BIT+2    CHECK FOR BLANK L +60
+       TRA *+2
+       TRA CHK7A    YES
+       CAS BIT+9    CHECK FOR HYPHEN
+       TRA *+2
+       TRA TRAP     YES- INDICATES A TRAP
+       REM          ROUTINE
+       ANA BIT+11   MASK FOR NUMERIC
+       PAX 0,2
+       TXH CHK7A,2,10 IGNORE SPECIAL CHARS
+       CLA BIT+1    COL INDICATOR
+       ARS 6,1
+       ORS REC1L+9,2
+       TXL *+2,4
+       ORS REC1L+12,4
+CHK7A  TIX CHK7+1,1,1
+       REM
+CHK8   LDQ 0
+       LXA BIT+3,1   L +14
+       REM
+       TSX CH22,2
+       CAL BIT+10    COL IND
+       ARS 12,1
+       ORS REC1R+9,4
+       TIX *-4,1,1
+       REM
+CH1    CAL LOC       PUT TEST LOC INTO IMAGE
+       LRS 15
+       LXA LOC+5,1   L +5
+       TSX CH21,2
+       REM
+       CAL BIT       BIT COLUMN 10
+       ARS 5,1
+       ORS REC1L+9,4
+       TIX CH1+3,1,1
+       REM
+       REM
+       REM           PUT ERROR ADDR INTO IMAGE
+CH5    LXD LOC,4
+       PXD 0,4
+       LRS 33
+       LXA LOC+5,1   L +5
+       TSX CH21,2
+       CAL LOC+6     -0
+       ARS 6,1
+       ORS REC1R+9,4
+       TIX CH5+4,1,1
+       REM
+       REM           PUT PSE SW INTO
+CH7    CAL STOR+4    IMAGE
+       LRS 18
+       LXA STOR+6,1  L +6
+       TSX CH21,2
+       CAL BIT+9
+       ARS 6,1
+       ORS REC1R+9,4
+       TIX CH7+3,1,1
+       REM
+CH10   LXA BIT+3,4   PUT 1ST REC IN PR IMAGE
+       LXA LOC+4,1   L +30
+       CAL REC1L+12,4 LEFT HALF IMAGE
+       SLW PR+24,1
+       CAL REC1R+12,4
+       SLW PR+25,1
+       REM
+       TIX CH10+7,4,1
+       TIX CH10+2,1,2
+       REM
+CH11   LXA BIT+3,4   MASK IMAGE
+       CAL MASK      MASK
+       ANS REC1L+12,4
+       CAL MASK+1
+       ANS REC1R+12,4
+       CAL MASK+2    MASK LEFT HALF
+       ANS REC2L+12,4 2ND RECORD
+       CAL MASK+3    MASK RIGHT HALF
+       ANS REC2R+12,4
+       CAL MASK+4    MASK 3RD RECORD
+       ANS REC3L+12,4 LEFT HALF
+       CAL MASK+5
+       ANS REC3R+12,4
+       CAL MASK+8    MASK IND KEYS
+       ANS REC4L+12,4 PRINT REC
+       REM
+       CAL MASK+6
+       ANS P92+1,4   I/O IMAGE
+       CAL MASK+7    REC=, WORD =, ETC
+       ANS P95+1,4
+       TIX CH11+1,4,1
+       REM
+       REM
+       REM
+CH14   WRS 753       PRINTER
+       SPRA 3        DOUBLE REM
+       REM           PRINT FIRST LINE
+       REM           TEST LOC, ERROR ADDR
+       TSX WPRA+1,1
+       CLA LOC
+       TMI CH35-6
+       REM
+CH18   CLA STOR+4    PUT MSE LITES INTO IMAGE
+       LRS 30
+       LXA STOR+8,1  L +4
+       TSX CH21,2
+       CAL BIT+12    BIT COL 6
+       ARS 4,1
+       ORS REC2L+9,4
+       CAL BIT+6     BIT COL 5
+       ARS 4,1
+       ORS P92-2,4
+       TIX CH18+3,1,1
+       REM
+       CLA KONST+3   IS THIS A MAIN FRAME
+       TZE CH41      PRINT OUT -NO
+       REM           FORM CARD IMAGE FOR 2ND REC
+CH15   CLA STOR+2
+       LRS 33
+       LXA STOR+8,1  L +4
+       TSX CH21,2
+       REM
+       CAL BIT+5     BIT COLUMN
+       ARS 4,1
+       ORS REC2L+9,4
+       TIX CH15+3,1,1
+       TSX CH21,2
+       CAL LOC+6     L-0
+       ORS REC2R+9,4
+CH16   TSX CH21,2
+       LXA LOC+5,1   L +5
+       TSX CH21,2
+       CAL BIT2      BIT COL 8
+       ARS 5,1
+       ORS REC2R+9,4  BIT IN IMAGE
+       TIX CH16+2,1,1
+       REM
+CH17   CLA STOR+3    PUT XRC INTO IMAGE
+       LRS 33
+       LXA LOC+5,1   L +5
+       TSX CH21,2
+       REM
+       CAL BIT2+1    BIT IN COL 19
+       ARS 5,1
+       ORS REC2R+9,4 BIT IN IMAGE
+       TIX CH17+3,1,1
+       REM
+CH27   LDQ STOR+1    CONTENTS OF MQ
+       LXA BIT+3,1   L +14
+       TSX CH22,2
+       CAL BIT+10    BIT COL 15
+       ARS 12,1
+       ORS REC2L+9,4
+       TIX CH27+2,1,1
+       REM
+       CAL LOC+3     WAS ROUTINE USING TRAP
+       SUB BIT+9
+       TNZ *+4       NO
+       CAL STOR+7    L +1
+       ORS REC2R+8
+       TRA *+3
+       CAL STOR+7    L +1
+       ORS REC2R+9
+       STZ LOC+3
+       REM
+CH23   LXA BIT+3,4
+       LXA LOC+4,1   L +30
+       CAL REC2L+12,4 LEFT HALF
+       SLW PR+24,1
+       CAL REC2R+12,4 RIGHT HALF IMAGE
+       SLW PR+25,1
+       TIX CH23+7,4,1
+       TIX CH23+2,1,2
+       REM
+       TSX WPRA,1    PRINT 2ND LINE
+       REM
+       REM
+CH20   CAL STOR+3    PUT TRGS INTO
+       LRS 18        IMAGE
+       TSX CH21,2
+       CAL STOR+7    BIT IN 35
+       ORS REC3L+9,4  INDICATE DIV CK
+       REM
+       TSX CH21,2
+       REM
+       CAL BIT+4     BIT COL 12
+       ARS 1
+       ORS REC3R+9,4 ACC OVFL
+       REM
+       REM
+CH24   CLM           PUT Q + P BITS
+       LLS 11        INTO IMAGE
+       PAX 0,4
+       CAL BIT+4     BIT IN COL 4
+       ALS 2
+       ORS REC3L+9,4 Q BIT
+       CLM           GET P BIT
+       LLS 1
+       PAX 0,4
+       CAL BIT+4
+       ARS 2         BIT IN COL 13
+       ORS REC3L+9,4
+CH25   LDQ STOR
+       CAL BIT+6     PUT + SIGN OF
+       TQP CH25+5    ACC IN IMAGE
+       ORS REC3L+10  MINUS SIGN OF ACC IN IMAGE
+       TRA CH26
+       ORS REC3L+11  INTO IMAGE
+CH26   LXA BIT+3,1   L +14
+       TSX CH22,2
+       CAL BIT+10    BIT COL 15
+       ARS 12,1
+       ORS REC3L+9,4
+       TIX CH26+1,1,1
+       REM
+CH30   LXA BIT+3,4   PUT 3RD REC INTO
+       LXA LOC+4,1   PRINT IMAGE
+       CAL REC3L+12,4 LEFT HALF
+       SLW PR+24,1
+       CAL REC3R+12,4 RIGHT HALF
+       SLW PR+25,1
+       TIX CH30+7,4,1
+       TIX CH30+2,1,2
+       REM
+       TSX WPRA,1    PRINT 3RD LINE
+       REM
+       REM           PUT INDICATORS IN REC
+CH32   STI PR        STORE INDICATORS
+       LDQ PR        INDICATOR FROM STORAGE
+       LXA BIT+3,1   L +14
+       TSX CH22,2
+       CAL BIT+6
+       ARS 13,1
+       ORS REC4L+9,4 INDICATORS INTO
+       TIX CH32+3,1,1 PRINT RECORD
+       REM
+       REM           PUT CONTENT OF KEYS IN
+CH33   ENK           PRINT RECORD
+       LXA BIT+3,1   L +14
+       TSX CH22,2
+       CAL BIT+1
+       ARS 16,1
+       ORS REC4L+9,4 KEYS CONTENTS INTO
+       TIX CH33+2,1,1 PRINT REC
+       REM
+CH34   LXA BIT+3,4   L+14 PUT 4TH REC
+       REM           INTO PRINT IMAGE
+       LXA LOC+4,1   L +30
+       CAL REC4L+12,4
+       SLW PR+24,1
+       CAL REC4R+12,4 TAPE CHECK INDICATORS
+       SLW PR+25,1
+       ZET KONST+7
+       STZ PR+25,1
+       TIX *+1,4,1
+       TIX CH34+2,1,2
+       REM
+       REM
+       TSX WPRA,1    PRINT CONTENTS OF INDS
+       REM
+       CLA STOR+7    L+1
+       STO KONST+3
+       REM           RESET ACC + MQ CONTENTS
+       STO KONST+7
+       CLA STOR+3    OVFL BITS
+       LDQ STOR      ACC CONTENTS
+       LLS 35
+       LDQ STOR+1
+       REM
+CH35   LXA STOR+2,2  XRB
+       LXD STOR+2,1  XRA
+       LXD STOR+3,4  XRC
+       TOV EXIT
+EXIT   TRA OK-1
+       REM
+       REM
+CH41   CLA KONST+7   IS THIS A REDUNDANCY
+       REM           TAPE CK PRINT-OUT
+       TZE CH32      YES
+       REM
+       REM           CLEAR RECORD IMAGE
+       LXA LOC+4,1   LOC +30
+       STZ PR+24,1
+       TIX *-1,1,1
+       REM
+       CAL STOR+1    WORD GENERATED
+CH43   SLW PR+17
+       REM
+       COM
+       SLW PR+19     PRINT IMAGE
+       LXA BIT+3,1   L +14
+       LXA LOC+4,2   LOC +30
+       CAL P92+1,1
+       SLW PR+24,2
+       TIX CH43+8,1,1
+       TIX CH43+5,2,2
+       REM
+       TSX WPR,1     PRINT WORD GENERATED
+       REM
+CH45   CLA STOR+2
+       ARS 18
+       SUB WDNO      WORD NUMBER
+       LRS 15
+       LXA LOC+5,1    L+5
+CH46   TSX CH21,2
+       CAL BIT+7     BIT COL 17
+       ARS 5,1
+       ORS P93,4     WORD NUMBER INTO
+       TIX CH46,1,1  IMAGE
+       REM
+CH47   LXA STOR+2,2  XRB
+       CLM
+       PXA 0,2
+       SUB RECNO     RECORD NUMBER
+       LRS 15
+       LXA LOC+5,1   L+5
+CH48   TSX CH21,2
+       CAL BIT+6     BIT COL 5
+       ARS 5,1
+       ORS P93,4
+       TIX CH48,1,1
+       REM
+CH49   LXA LOC+4,1   L +30
+       STZ PR+24,1
+       TIX *-1,1,1
+       REM
+       CAL STOR      WORD READ
+CH50   SLW PR+17
+       COM
+       SLW PR+19
+       REM
+CH51   LXA BIT+3,1   L +14
+       LXA LOC+4,2   L +30
+       CAL P95+1,1
+       SLW PR+24,2
+       TIX CH51+5,1,1
+       TIX CH51+2,2,2
+       REM
+       TSX WPR,1     PRINT WORD WRITTEN
+       REM
+       TRA CH32      PRINT INDICATORS AND KEYS
+       REM
+CH21   CLM
+       LLS 3
+       PAX 0,4
+       TRA 1,2
+       REM
+CH22   CLM
+       LGL 3
+       PAX 0,4
+       TRA 1,2
+       REM
+WPRA   WPRA
+       RCHA CTWD
+       TCOA *
+       TRA 1,1      EXIT
+WPR    WPRA
+       SPRA 4
+       TRA WPRA+1
+       REM
+TRAP   STO LOC+3
+       TRA CHK7A
+       REM
+       REM
+REC1L  OCT 320,10001000,1000000
+       OCT 4002000042,200000400400
+       OCT 0,452010001005
+       OCT 100000000000,0,540010001000
+       OCT 14003400366,202000000401
+REC1R  OCT 0,4000001000,0,100000200
+       OCT 0,0,4240001000,400,0
+       OCT 5000001600,000300000000
+       OCT 40000000
+REC2L  OCT 200000000100,440001000
+       OCT 200,0,40000000000
+       OCT 100000000
+       OCT -500400001000,0,40
+       OCT 100400001200
+       OCT -400140000100
+       OCT 240000000040
+REC2R  OCT 20004000404
+       OCT 200040010000
+       OCT 40010000110,0,0,0
+       OCT 200042011020
+       OCT 10000000000,200
+       OCT 240050011020
+       OCT 20004000504,10002000210
+REC3L  OCT 100,14420001000
+       OCT 200000000,0,40,200
+       OCT 310420001010,4,-0
+       OCT 10420001040,4200000004
+       OCT -700000000310
+       REM
+REC3R  OCT 0,-400040000000,0
+       OCT 5000000000,2000000000,0
+       OCT -460440000000,0
+       PON
+       OCT -402040000000
+       OCT 4400000000,161000000000
+REC4L  OCT -0,1040000,0,0
+       OCT 200000100000,100000000000
+       OCT 1000000,40000220000,0
+       OCT 40001060000,200000200000
+       OCT -500000100000
+REC4R  OCT 0,400002104210
+       OCT 40000000000,4
+       OCT 20000000100,500002000
+       OCT -604002144210,2201000000
+       OCT 100020000000,-600302104210
+       OCT 043000000000,124521042104
+STOR   OCT 0         ACC CONTENTS
+       OCT 0         MQ CONTENTS
+       OCT 0         XRA AND XRB
+       OCT 0         XRC, OVRL TRGS, TAPE CK
+       OCT 0         PSE + MSE VALUES
+       OCT 100000
+       OCT +6
+       OCT +1
+       OCT +4
+LOC    OCT 0         TEST LOC + ERROR ADDR
+       OCT 0         DECREMENT CONTAINS 2,5
+* COMPLEMENT OF LAST ROUTINE PREFORMED
+       OCT 0         +0
+       OCT 0         TRAP ROUTINE INDICATOR
+       OCT +30
+       OCT 5
+       OCT -0
+       OCT 7
+BIT    OCT 400000000 BIT COL 10
+       OCT 100000    BIT COL 21
+       OCT 60
+       OCT 14
+       OCT 200000000 BIT COL 11
+       OCT 10        BIT COL 33
+       OCT 020000000000 BIT COL 5
+       OCT 2000000   BIT COL 17
+       OCT 1000      BIT COL 27
+       OCT 40        BIT COL 31
+       OCT 10000000  BIT COL 15
+       OCT 17
+       OCT 010000000000
+BIT2   OCT 002000000000 BIT COL 8
+       OCT 400000    BIT COL 19
+       OCT 1000000
+       OCT 100020000000
+MASK   OCT 777017601777 TEST LOC ETC
+       OCT 407760001700
+       OCT -760760001760 MQ ETC
+       OCT 374077017776
+       REM              MAKE FOR REC3
+       OCT -756720001776 ACC AND TRIGGER
+       OCT -777670000000
+       OCT -741777777777 I/O ETC
+       OCT -740774077777
+       OCT -760001760000 MASK FOR 4TH REC
+       OCT -777773567356 MASK
+       REM
+       OCT 000003204020
+       OCT 1000100000,20000400
+       OCT 00100430000
+       OCT 100004000342,-400040002001
+       OCT 1200100004,200000000000
+       OCT 10
+       OCT 201000120004
+       OCT -400163614120
+P92    OCT 100204002653
+       REM
+       OCT -400020000220,400040000
+       OCT 0,140001400
+       OCT 200000000010,10000102
+       OCT 100400040000,0,4
+P93    OCT 500041000
+       OCT -400060000620
+P95    OCT 300010000116
+CTWD   HTR PR,0,24    CONTROL WORD FOR PRINTING
+PR     OCT            PRINT IMAGE
+       END

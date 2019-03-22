@@ -1,0 +1,135 @@
+                                                          9P02A Write-Up
+                                                          6/5/59
+                            9P02A                         Page 1.001
+        
+               716 PRINTER INTERROW TIMING TEST
+
+
+A. PURPOSE OF TEST
+
+   1. This test is designed to measure the interrow timings on the 716 Print.
+      These timings are derived from the Master Circuit Breakers and will
+      give an indication of the stability of these breakers.
+
+   2. \UA REGULAR RUNNING OF THIS TEST IS REQUIRED.\u Interpretation
+      of the printouts will show up potential troubles before errors actually
+      occur on the printer.  The timing chart shown gives ideal timings and
+      should be used only as a guide for interpretation of the printouts.
+
+B. METHOD OF TEST
+
+   1. The address register of the DSU steps each time a word is sent to the
+      printer.  By means of a storage channel instruction in DSU can be
+      interrogated to keep track of the address register.  A pre-calculated
+      delay gets the program within range of the expected left time, then a
+      series of store channel instructions are used to detect when the address
+      register steps.  A count of the store channels is kept for calculations.
+
+      The printer and the program are synchronized by the occurrence of 9
+      left and tend to run together except when the DSU is using storage to
+      extract a word.  During this time the printer gets ahead of the program.
+      but this is accounted for in the program by decreasing the increment each
+      pass and adding the delay during calculations.
+
+C. AREA OF MACHINE REQUIRED
+
+
+   1. Units - MF, any size CF, CR, DS, PR
+
+   2. Storage - 00000-00523
+      and LOC. 777777 or 17777
+
+D. PROGRAM CONTROL 
+
+   1. Card Deck  000        9LD01 Diagnostic Loader
+                 001-005    Timing Test
+                 006-014    SPLAT
+                 015        TRA CARD, TRA 00030
+                 016, 017   Blanks
+
+                                                               9P02A Write-Up
+                                                               6/5/59
+   2. Printer Control Board                                    Page 1.002
+      Regular Diagnostic Board
+
+   3. Sense Switches
+        
+      a)   SSW 1 to 5    Not used
+           SSW 6 UP      Halts at end of test
+           SSW 6 DOWN    Repeat test
+
+E. NORMAL STOPS
+
+      00146  Stops at end of test if sense switch 6 is UP.
+             Press start to repeat test.
+
+F. ERROR STOPS
+ 
+      00066  Indicates accumulator is higher than storage 
+             channel and compare loop. Possible DSU trouble.  Restart
+             program; if stop reoccurs run appropriate diagnostics.
+
+G. PRINTOUTS
+
+       Normal printouts will be as in the sample.  The first eleven lines
+       contain no information other than they are the printouts from which
+       the timings occurred.
+
+       The next eleven lines contain the timigns in microseonds from 9 left
+       to the other left timings. (See sample printout).  The timing between
+       9 left and 8 left is 16,572 microseconds or, if the decimal is moved
+       left three places, it would be 16.572 milliseconds.
+
+H. COMMENTS
+
+   1.  The only subroutine used in this test is "SPLAT" which is called in
+       to convert timings to decimal and printout timing information.
+      
+   2.  Diagnostic Engineering would appreciate reports on the results of
+       this test.  Any suggestions for improvement or any peculiar conditions
+       which this test shows up are of interest to Diagnostic Engineering.
+      
+   3.  While running this test on printers being final tested, it was noted
+       that the timings increased beyond theoretical timings as the speed of
+       the printer decreased and as the printer speed increased the timings
+       dropped below theoretical timings. If timing differ widely from
+       theoretical, it is suggested that the sped of the machine be checked.
+
+\l
+File Attachments:   Source \Asource\a    Cards \Acard\a      Deck \Adeck\a
+
+                                                            9P02A Write-Up
+                                                            6/5/59
+                                                            Page 1.003
+
+
+
+
+
+
+                           \BSAMPLE PRINTOUT\b
+
+
+
+88 X7('28 '788 8  H+++H++H+BHIHGHG.PD  ('''' Z5 99 +   9999999999('(((
+88 X7('28 '788 8  H+++H++H+BHIHGHG.PD  ('''' Z5 99 +   9999999999('(((
+88 X7('28 '788 8  H+++H++H+BHIHGHG.PD  ('''' Z5 99 +   9999999999('(((
+88 X7('28 '788 8  H+++H++H+BHIHGHG.PD  ('''' Z5 99 +   9999999999('(((
+88 X7('28 '788 8  H+++H++H+BHIHGHG.PD  ('''' Z5 99 +   9999999999('(((
+88 X7('28 '788 8  H+++H++H+BHIHGHG.PD  ('''' Z5 99 +   9999999999('(((
+88 X7('28 '788 8  H+++H++H+BHIHGHG.PD  ('''' Z5 99 +   9999999999('(((
+88 X7('28 '788 8  H+++H++H+BHIHGHG.PD  ('''' Z5 99 +   9999999999('(((
+88 X7('28 '788 8  H+++H++H+BHIHGHG.PD  ('''' Z5 99 +   9999999999('(((
+88 X7('28 '788 8  H+++H++H+BHIHGHG.PD  ('''' Z5 99 +   9999999999('(((
+88 X7('28 '788 8  H+++H++H+BHIHGHG.PD  ('''' Z5 99 +   9999999999('(((
+ 16572 MICROSECONDS 9 LEFT TO  8 LEFT.
+ 33648 MICROSECONDS 9 LEFT TO  7 LEFT.
+ 50700 MICROSECONDS 9 LEFT TO  6 LEFT.
+ 67644 MICROSECONDS 9 LEFT TO  5 LEFT.
+ 83724 MICROSECONDS 9 LEFT TO  4 LEFT.
+100032 MICROSECONDS 9 LEFT TO  3 LEFT.
+116316 MICROSECONDS 9 LEFT TO  2 LEFT.
+133416 MICROSECONDS 9 LEFT TO  1 LEFT.
+150744 MICROSECONDS 9 LEFT TO  0 LEFT.
+167796 MICROSECONDS 9 LEFT TO 11 LEFT.
+184152 MICROSECONDS 9 LEFT TO 12 LEFT.

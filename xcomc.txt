@@ -1,0 +1,434 @@
+                                                     IBM - POUGHKEEPSIE
+                                                     DEPT B55   BLDG 990
+                                                     March 29, 1963
+
+       7 0 9 0 / 7 0 9 4   D I A N O S T I C   E N G I N E E R I N G
+             D I A G N O S T I C   P R O G R A M   R E L E A S E
+
+
+
+DIAGNOSTIC PROGRAM - XCOMC
+
+
+    TITLE - 704/7090 or 704/7094 Compatibility Program
+
+
+
+
+
+
+C O M M E N T S
+
+    See page 3 of the write-up for purpose of update release.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+DISTRIBUTION -  All 7090 and 7094 installations
+
+
+ENCLOSURES  -   68 Program pages
+               235 Binary card numbered 000 - 234
+
+
+
+
+
+REQUESTS FOR DATA SYSTEMS DIVISION SERIES DIAGNOSTIC WRITE-UPS,
+LISTINGS, AND/OR CARDS (INCLUDING OPTIONAL AND SPECIAL FEATURES)
+SHOULD BE DIRECTED TO---
+            PRODUCT RELIABILITY AND SERVICEABLITY ENGINEERING
+            DEPARTMENT B55 , BUILDING 990
+            POUGHKEEPSIE, NEW YORK
+   -------INCLUDE CUSTOMER'S NAME AND INSTALLATION NUMBER--------
+
+
+
+
+
+
+                                                           XCOMC
+                                                           3/15/63
+                                                           Page 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                               XCOMC
+          
+                       704/7090 or 704/7094
+          
+                       COMPATIBILITY PROGRAM
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+XCOMC
+3/15/63
+Page 2
+
+
+                      TABLE OF CONTENTS
+
+PURPOSE OF CHANGE                                        Page 3
+                                                     
+MACHINE EC LEVEL(S)                                      Page 3
+                                                     
+A.   UNIT TESTED                                         Page 4
+                                                     
+     1.   Purpose of Diagnostic                          Page 4
+                                                     
+     2.   Method of Test                                 Page 4
+                                                     
+B. MACHINE UNITS AND STORAGE AREA                        Page 4
+                                                     
+C. PROGRAM CONTROL                                       Page 5
+                                                     
+     1.   Card Deck                                      Page 5
+                                                     
+     2.  Sense Switch Control                            Page 5
+                                                     
+     3.  Sense Light Control                             Page 5
+                                                     
+     4.  Console Key Control                             Page 6
+                                                     
+D. NORMAL STOPS                                          Page 6
+                                                     
+E. ERROR STOPS                                           Page 7
+                                                     
+F. PRINTOUTS                                             Page 7
+                                                     
+G. COMMENTS                                              Page 7
+                                                     
+PROGRAM LISTING                                          Page 9
+
+
+
+
+
+                                                            XCOMC
+                                                            3/16/63
+                                                            Page 3
+
+PURPOSE OF CHANGE
+
+     1.   To allow this program to be run on the 7094
+
+     2.   This program now contains a routine to printout unexpected traps
+          showing the location +1 of where the trap occurred.
+
+     3.   There are 3 new optional routines which check BTTX and ETTX
+          (709 instructions).  See Section C - 4.
+
+     4.   To update printouts to conform with present level of program i.e. XCOMB
+          to be XCOMC
+
+     5.   Sense Switch 5 can now be used to provide a clean program halt. The
+          program will now run properly if it is desired not to change mades.
+
+MACHINE EC LEVEL
+
+     7090-  EC 248939
+
+            For the BTTx and Ettx test routines, the optional change called
+            out in the 7090.  Service Aid #81 has to be installed to insure  
+            proper operation of those test routines.
+
+     7094-  EC 252597
+
+
+
+
+XCOMC
+3/16/63
+Page 4
+
+                                  XCOMC
+
+            704/7090/7094 COMPATIBILITY DIAGNOSTIC
+
+A. UNIT TESTED - CPU 1 and 2 and CORE STORAGE
+
+    1.  Purpose of Diagnostic
+
+        a. Check ability to nullify 32K storage from 16K.
+
+        b. Check ability to nullify 32K storage from 8K.
+
+        c. Check 7090/7094 in specified modes will trap when encountering
+           704 or 7090/7094 SELECT, SENSE, CPY, CAD or LDA in-
+           structions.
+
+        d. Check ability of 7090/7094 to perform floating point operations
+           as per 704.
+
+        e. Check Reset and Load buttons restore the machine to 7090/
+           7094 operating Mode.
+
+        f. For reliability, execute 9M05B with compatibility triggers on.
+
+   2. Method of Test
+
+       a.  The program is capable of checking correct operation with 32K
+           storage nullified from either 8K or 16K.
+
+B. MACHINE UNITS AND STORAGE AREA
+
+    1.   Units Required
+
+         CPU, 32K Core Frame, Channel A, 716 Printer (chan A), 711 Card
+         Reader (for loading program), and two tapes on Channel A (1 and 2).
+
+    2.    Storage Requirements
+
+         A 32K memory is required for the oepration of this program.
+
+
+                                                         XCOMC
+                                                         3/15/63
+                                                         Page 5
+
+   B.  2.  00030  -  06347       9M05B with modified monitor.
+           06500  -  06553       Modified version of 9M05B.
+           10000  -  13170       Basic compatibility test routines.
+           20007  -  20017       To check storage nullified from 8K.
+
+           40000  -  40006       Compatibility trap exit routine.
+           40007  -  40017       To check storage nullified from 16K.
+	 
+           40020  -  40125       To check illegal traps from 9M05B.
+
+   C. PROGRAM CONTROL
+
+     1.  Card Deck
+
+        XCOMC   000               9LD02 - High End Loader.
+                001 - 147         9M05B
+                148 - 150         Additions to 9M05B Monitor.
+                151 - 152         Modified version 9DEPR
+                153 - 231         XCOM basic routines
+                232               Tranfer Card - TRA 12243
+                233 - 234         Two blank cards
+
+      2.  Sense Switch Control
+
+          Sense Switches 1 to 4 remain standard as outlined in DEPRX.
+
+          Sense Switch 5
+
+            UP - Continue executing program in specified storage mode.
+                 Go to check SSW 6.
+
+            DN - Halt at location 12250.  Set switches for desired nullify
+                 storage mode.  (See section F1 and F5)
+
+          Sense Switch 6
+  
+            UP - End XCOM and simulate Load Cards or Tape.
+
+            DN - Repeat XCOM
+
+       3. Senes Light Control
+
+           a. Refer to write-up of 9M05B to become familiar with the use of
+              the sense lights in executing 9M05.
+
+
+XCOMC
+3/15/63
+Page 6
+
+          b. IN basic XCOM test routines -
+             Sense light 4 ON - Indicates a 1 word record is being written on
+                                TAPE FRAME 2 on Channel A.
+
+      4. Sign Key (S)
+
+            UP - Load next diagnostic program from tape.
+
+            DN - Load next diagnostic program from cards.
+
+            Note: This Load sequence is set just after pushing start on the 
+                  first halt at 12250.
+
+          Key 34
+
+             UP - Bypassing testing BTTx and ETTx instructions (709 in-
+                  structions).
+
+             DN - Test BTTx and ETTx instructions for trapping
+
+             Note: see Page 20
+
+          Key 35
+
+              UP - Set program to check
+                   16K nullify storage.
+
+              DN - Set program to check
+                   8K nullify storage.
+
+D. NORMAL STOPS
+
+     1. 11462   RESET BUTTON TEST - Push reset and start buttons to con-
+                tinue.
+
+     2. 11613   LOAD BUTTON TEST - Push load tape button to continue.
+
+     3. 12250   Set key 35 and console switch for desired nullified storage
+                and set key 34 to run or bypass BTTx and ETTx routines.
+                Push start to continue. (On initial pass set sign key also).
+
+
+
+                                                         XCOMC
+                                                         3/15/63
+                                                         Page 7
+
+
+E.   ERROR STOPS (All errors in program are indicated by halts)
+
+     1. Basic routines -     consult comment associated with HTR or HPR.
+
+     2. 9M05B          -     With a stop at location 06520 or 06546 true
+                             location where error occurred is displayed in
+                             XRC.  Refer to location in listing shown in XRC
+                             to indicate type of error with pertinent procedure
+                             instructions.
+
+F.  PRINTOUTS
+
+     1. Program identification and size of nullified storage testing is printed
+        out immediately after a nullify storage selection is made if sense switch
+        3 is up.
+
+     2. The printer will print two lines if the RESET BUTTON routines are
+        executed successfully.
+
+     3. Illegal traps from 9M05 showing the location plus one from where the
+        trap occurred are printed out.
+
+     4. With sense switches 3 and 5 up and sense switch 6 down, the program
+        is repeating with the same selected nullify storage and the printer
+        will indicate every 100 passes made.
+
+     5. Whenever sense switch 5 is depressed, (an indication that the alternate
+        nullify storage size is to be tested), the total number of passes completed
+        with the size of nullify storage tested is printed out if sense switch 3 is up.
+ 
+     6. With sense switch 3 and 6 up, the total number of passes completed by
+        the program is printed out prior to loading the next program.
+
+
+G. COMMENTS
+
+     1. On a machine with only a 16K nullified storage, sense switch 5 can be
+        used to provide a clean halt.
+
+     2. Although the XCOM basic routine program is contained within locations 
+        10000 - 13260 the program maintains an exit routine for a SELECT,
+        SENSE, CPY, CAD or LDA trap in lcoations 40001-40006.  Locations
+        40007 - 40017 are used when storage is nullified from 16K and locations
+        20007 - 20017 are used when storage is nullified from 8K.
+
+     3. Locations 40020 - 40225 contain a routine inserted to determine locations
+        trapped from in 9M05
+
+
+XCOMC
+3/15/63
+Page 8
+
+G.   4. If the sign key is up and sense switch 3 is down the reset and load button
+        test are bypassed
+
+     5. A one word record is written on tape to avoid run-a-way.
+
+     6. 9M05 uses a modified version of 9DEPR which can be found on
+        Page 66 of the listing.
+
+     7. Sense switch 5 has been made ineffective when executing 9M05 and there-
+        fore the FDH stop at Location 00621 is bypassed.
+
+     8. All unoccupied storage locations are filled with STR when executing XCOM
+        and TSX 06174 when executing 9M05
+
+     9. 9M05 monitor location 06253 has been alterd to transfer to location
+        06273.  Location 06273 - 06347 provide routines to check the correct
+        status of the campatibility triggers after execution of a 9M05 test, the
+        2 page instruction sequence can be found just before the modified version
+        of DEPR of the listing.
+
+    10. A manual transfer to any routine in either section of XCOM should be
+        to the initial instruction of the routine. To avoid a false monitor error
+        stop, leave the keys down, since both monitors check the keys for a 
+        manual transfer.
+
+    11. When encoutering an error stop, refer to the appropriate listing for
+        comments and instructions to determine the type of error.
+ 
+    12. BTTx with trigger ON, if selected to be tested, is only tested on
+        first pass.  This prevents wearing out the tape in one spot due to re-
+        winds.  If Key 34 was not down on the first pass, this routine will
+        never be performed.
+
+\l
+File Attachments:   Source \Asource\a    Cards \Acard\a      Deck \Adeck\a
+

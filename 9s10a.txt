@@ -1,0 +1,49 @@
+                           9S10A
+
+                   TEST FOR WALKING SWITCH
+                   CORES IN 738 CORE ON 709
+
+A. PURPOSE
+
+   This test is to be used on a 709 system with 738 core storage, It attempts to
+   aggravate 5998's which continue to have small plate currents when the grid
+   input is down. This small plate current may "walk" a half select switch core.
+
+B. AREA OF MACHINE REQUIRED
+   1. Units Card Reader
+          Main Frame with 738
+
+   2. Storage Locations
+          Program 00000 to 00027
+	  Test area 00030 to 77777
+
+C. PROGRAM CONTROL
+   1. Deck - one card 9S10A00
+	       Self loading
+   2. No Sense Switches
+   3. No Sense Lite
+
+D. ERROR STOPS
+   00007 - Core position about to be tested is not clear. Switch Core "walked"!
+   Address is in accumulator
+
+   00016 - Core position just tested can not now be cleared. Possible bad switch
+   core. Address is in accumulator.
+
+E. PRINT-OUTS
+   None
+
+F. COMMENTS
+   The STORE and subsequent EXECUTE of the CAQ with the decrement indicated
+   causes 76 consecutive "E" cycles to the same address. This will half select other
+   switch cores 76 times and unstable 5998's may then "walk" a switch core.
+   It is possible to marginal test the -220V MSD-DPD bias at -216V#l to aggravate
+   the 5998's. This control is located below the MSD Reference Voltage Adjust in
+   CSF-1. The MSD-DPD bias may be lowered to -222V as the spec states it to be
+   -220V+/-2V. This procedure increases the reliability of the 5998 tube bias.
+
+
+
+\l
+File Attachments:   Source \Asource\a    Cards \Acard\a      
+

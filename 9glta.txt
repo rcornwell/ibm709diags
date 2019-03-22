@@ -1,0 +1,987 @@
+                                                  9glta
+                                                  11-8-59
+	rem
+*now performing 9glt-a program for testing
+*gapless tape operation on the 709
+	oct 24
+begin	wpra
+	rcha prnt1	print identification
+	cla post1,	    tra begin+4
+	sto 0
+	rewa 1	rewind tape
+	axt 640,1	      rdfld ct
+	stz rdfld+640,1	     clear rdfld
+	tix *-1,1,1
+	rem
+	rem
+*test one consists of five files.
+*each file contains dec640 oct1200 words.
+	rem
+	axt 5,2	    l-5 file count
+wrpt1	wtba 1	non writing test 1
+	rcha cwd1	640dec 1200oct wrd file
+	tcoa *
+	tsx rdnck,4	io check
+	nop begin+4	io check
+	wefa 1
+	tix wrtp1,2,1	    wr five files
+	rem
+*test one written
+	rem
+	rem
+*will now read and compare test one
+	rem
+	rewa 1	
+	cla wcnt1	l-641 word count+1
+	sto wdno	  for depr routine
+	cla rect1	l-6 rec count+1
+	sto recno	    for depr routine
+	axt 5,2	l 5
+	tra *+2
+	rem
+	bcd 1rtba1	read and chk test1
+	rem
+start	rtba 1
+	rcha rdw1	read file
+	tcoa *
+	tefa *-3
+	tsx rdnck,4	test io chk
+	nop start
+	axt 640,1	load wrd ct
+	cla nine	l-9 grp1 repeat
+	sto tem2
+	axt 32,4	l-32, grp wrd ct
+	cla rdfld+640,1	word read
+	ldq grp1+32,4	word gen
+rdt	cas grp1+32,4	compare
+	tra *+2	 error go to depr
+	tra *+5	 ok proceed
+	sxa xrc,4	 save xrc
+	rem page
+	nop start-8
+	lxa xrc,4	replace xrc
+	tix *+1,1,1	word count
+	tix *-10,4,1	grp word ct
+	cla tem2	l-9 grp repeat
+	sub one
+	sto tem2
+	tze *+2
+	tra rdt-3	 rep grp1 9 times
+	axt 32,4
+	cla rdfld+640,1	word read
+	ldq grp2+32,4	word gen
+	cas grp2+32,4	compare
+	tra *+2	 error
+	tra *+5	 ok proceed
+	sxa xrc,4	 error
+	tsx error-2,4	 go to depr
+	nop 0
+	lxa xrc,4	 restore xrc
+	tix *+1,1,1	 word ct
+	tix *-10,4,1	 grp wrd ct
+	tix start,2,1	 rec count
+	rem
+*test one now written and checked
+*proceed to write test two
+	rem
+	axt 680,1
+	stz rdfld+680,1	 clr rdfld for
+	tix *-1,1,1	 test two
+	rem
+*now write test two on tape
+*consists of one file of ten rec
+	rem
+	axt 10,2	 l-10 rec count
+	wefa 1
+wrt2	wrba 1
+	rcha cwd2	write one rec
+	tcoa *
+	tefa wrt2
+	tsx rdnck,4
+	nop wrt2
+	tix wrt2,2,1	   repeat rec 10 times
+	bsfa 1	bsp one file
+	rem
+*test two written
+*now read anc check test two
+	rem
+	cla wcnt2	  l-681 wc+1
+	sto wdno	  for depr
+	cla rect2	l-11 rec+1
+	sto recno	   for depr
+	tra *+2
+	bcd 1rtba1	   oper being tested
+rdck2	rtba 1	read one rec
+	rcha rdw2	680 dec - 1250 oct wrds
+	rem page
+	tcoa *
+	tefa *-3	test end file
+	tsx rdnck,4	   io check
+	nop rdck2
+	axt 680,1	    l-680 wrd count
+	axt 10,2	    l-10 rec count
+	cla two 	    l-2 repeat ct
+	sto tem3
+	axt 34,4	    l-34 grp wrd ct
+	cla rdfld+680,1	   word read
+	ldq grp3+34,4	   word gen
+rdt2	cas grp3+34,4	   compare
+	tra *+2	    error
+	tra *+5	   ok proceed
+	sxa xrc,4	  save xrc
+	tsx error-2,4	   go to depr
+	nop rdck
+	lxa xrc,4	   restore xrc
+	tix *+1,1,1	 word count
+	tix *-10,4,1	grp wrd count
+	cla tem3	l-2 group
+	sub one	  repeat count
+	sto tem3
+	tze *+2
+	tra rdt2-3
+	tix rdt2-5,2,1	   rec count
+	rem
+	wefa 1	wr end of file
+*test two now written and checked
+	rem
+*now write test three
+*consists of one file of ten records
+*one foot of blank tape between each rec
+	rem
+	axt 680,1
+	stz rdfld+680,1	clear rdfld
+	tix *-1,1,1
+	rem
+	axt 10,2	   l-10 rec count
+wrt3	wtba 1	write tape
+	rcha cwd3	one rec
+	tcoa *
+	tefa *-3
+	axt 3,1
+	wtba 1	space tape
+	tcoa *
+	tix *-2,1,1
+	tix wrt3,2,1	   wr ten rec
+	bsfa 1	backspace file
+	rem
+*test three now written
+*now read and check test three
+	rem
+	cla wcnt3	l 1251
+	sto wdno	for depr
+	cla rect3	l-11 rec ct+1
+	rem page
+	sto recno	for depr
+	tra *+2
+	bcd 1rtba1	oper being tested
+rdck3	rtba 1	read tape
+	rcha rdw3	ten rec
+	tcoa *	1250 words
+	tefa *-3	test end file
+	tsx rdnck,4	io chk
+	nop rdck3
+	rem
+	axt 680,1	  l l      1250 wrds
+	axt 10,2	    l-10 rec count
+	cla two
+	sto tem5
+	axt 34,4	grp word count
+	cla rdfld+680,1
+	ldq grp3+34,4	word generated
+rdt3	cas grp3+34,4	compare
+	tra *+2	error go to depr
+	tra *+5	ok proceed
+	sxa xrc,4	  save xrc
+	tsx error-2,4	   go to depr
+	nop rdck3 	   return from depr
+	lxa xrc,4	   restore xrc
+	tix *+1,1,1	   word count
+	tix *-10,4,1	   grp wrd count
+	cla tem5	    l-2 repeat ct
+	sub one
+	sto tem5
+	tze *+2
+	tra rdt3-3	   repeat grp
+	tix rdt3-5,2,1	   rec count
+	rem
+	wefa 1	wr end file
+*test three now written and checked
+*now write test four
+*each rec contains 66dec 1020ct wrds
+	rem
+	wtba 1	write rec 1
+	rcha cwd4
+	wtba 1	write rec 2
+	rcha cwd5
+	tcoa *
+	rem
+*tape test four written
+*now read and check test four
+* constis of one file of two records
+	rem
+	bsfa 1	bksp file
+	cla wcnt4	   l-331 wrd count+1
+	sto wdno
+	cla rect4	l-6 rec count+1
+	sto recno
+	tra *+2
+	bcd 1rtba1	    oper being tested
+rdck4	rtba 1	read 5 rec
+	rem page
+	rcha rdw4	   204 oct words
+	tcoa *
+	tefa *-3
+	tsx rdnck,4	io chk
+	nop rdck4
+	axt 132,1	l 132 d
+	axt 2,2	   l2 rec ct
+	cla two	l-2
+	sto tem4
+	axt 32,4	  l-32 grp wd ct
+	cla rdfld+132,1	   word read
+	ldq grp1+32,4	word gen
+rdt4	cas grp1+32,4	   compare
+	tra *+2	    error
+	tra *+5	   ok proceed
+	sxa xrc,4
+	tsx error-2,4
+	nop rdck4
+	lxa xrc,4
+	tix *+1,1,1	word count
+	tix *-10,4,1	grp wd ct
+spec	cla rdfld+132,1	   word read
+	ldq grp5	word gen
+	cas grp5	   compare
+	tra *+2	  error
+	tra *+3	  ok proceed
+	tsx error-2,4	error
+	nop rdck4
+	tix *+1,1,1	wrd count
+	cla tem4	l-2
+	sub one
+	sto tem4
+	tze *+2
+	tra rdt4-3,
+	cla spec+1
+	add one
+	sta spec+1
+	sta spec+2
+	tix rdt4-5,2,1	rec count
+	cla addr
+	sta spec+1
+	sta spec+2
+	wefa 1	wr end file
+	rewa 1
+*test four now written and checked
+	rem
+	rem
+	wrpa
+	rcha prnt2
+	tcoa *
+	htr *+2
+	rem
+	rem
+*we are now ready to test read gapless
+*tape feature. set gapless switch and
+*hit start key to proceed.
+	rem page
+	bcd 1rtba1
+ test1a rewa1
+*now in gapless mode. proceed to first gapless test.
+	cla post2
+	sto 0
+	rem
+*the purpose of test one is to read rec-rds with no
+*8mgaps between them
+	rem
+	cla one
+	sto file
+	rem
+rep	axt 640,1
+	stz rdfld+640,1	clear rdfld
+	tix *-1,1,1
+	cla redy1	l oct1201 dec641
+	sto wdno
+	cla redy2	l-3 rec ct+1
+	sto recno
+	rtba 1	read tape
+	rcha twd1	 read dec 640 oct 1200
+	tcoa *
+	tefa *-3	test end file
+	tsx rdnck,4	io check
+chng1	tra tes1a
+	axt 640,1	l-1200
+	axt 2,2	l-2
+	cla nine	l-11
+	sto ts1
+	axt 32,4
+	ldq grp1+32,4	correct word
+	cla rdfld+640,1	wrd read
+cpra1	cas grp1+32,4	compare grp1
+	tra *+2	error
+	tra *+5	ok proceed
+	sxa xrc,4
+	tsx error-2,4	error go to depr
+chng2	tra tes1a	return
+	lxa xrc,4
+	tix *+1,1,1	wrd count
+	tix cpra1-2,4,1	grp wrd count
+	cla ts1	rep count
+	sub one
+	sto ts1
+	tze *+2
+	tra cpra1-3	rep group
+	axt 32,4	l-40
+	cla rdfld+640,1	correct word
+	ldq grp2+32,4	word read
+cpra2	cas grp2+32,4	compare grp2
+	tra *+2	error
+	tra *+5	ok proceed
+	sxa xrc,4
+	rem page
+	tsx error-2,4	error
+chng3	tra tes1a	return fm depr
+	lxa xrc,4
+	tix *+1,1,1	word count
+	tix cpra2-2,4,1	grp 2 wrd ct
+	tix cpra1-5,2,1	rep count
+	rem	have chked rec 1 and 2
+* this checks one file. loop to check five files.
+* file count is now in location file	
+	cla file
+	add one
+	sto file
+	cas six
+	tra rep
+	tra *+3
+	tra rep
+*test two checks backspacing over records with gapes between them.
+*it consists of 20 gapless mode records
+	rem
+*the first routine will read and check all 20 records
+	bcd 1rtba1
+test1b	axt 680,1
+	stz rdfld+680,1	clear rdfld
+	tix *-1,1,1
+	rtba 1
+	rcha twd3	read 10 rec
+	tcoa *
+	tefa *-3
+	cla redy5
+	sto wdno
+	cla redy6	rec ct+1
+	sto recno
+	axt 680,1	l-1250 wc
+	axt 20,2	l-24 rec ct
+	axt 34,4
+	cla rdfld+680,1	word read
+	ldq grp3+34,4	word generated
+cprb1	cas grp3+34,4	compr grp3
+	tra *+2	error
+	tra *+5	ok
+	sxa xrc,4	sto xr4
+	tsx error-2,4	error
+	tra tes1b	return
+	lxa xrc,4	restore xr4
+	tix *+1,1,1	wrd ct
+	tix cprb1-2,4,1	grp wd ct
+	tix cprb1-3,2,1	rec ct
+	rem	20 rec read and chked
+	rem
+	rem now backspace two recs
+	rem and read two records
+	tra *+2
+	bcd 1bsra1
+gob1	bsra 1
+	tcoa *
+	bsra 1 	bksp 2 records
+	rem page
+	tcoa *
+	axt 68,1
+	stz rdfld+68,1
+	tix *-1,1,1
+	rtba 1
+	rcha bwrd1
+	tcoa *
+	tsx rdnck,4	io check
+	cla brec1
+	sto recno
+	cla bct1	l 105
+	sto wdno
+	axt 68,1	wrd count l 104
+	axt 2,2	rec count l 2
+	axt 34,4
+	cla rdfld+68,1	word read
+	ldq grp3+34,4	word generated
+	cas grp3+34,4	compare
+	tra *+2
+	tra *+5	ok proceed
+	sxa xrc,4
+	tsx error-2,4	error
+	tra gob1
+	lxa xrc,4
+	tix *+1,1,1
+	tix *-10,4,1
+	tix *-12,2,1
+*backspaced two recs and checked ok
+	rem	test two completed
+* proceed to test three
+*test three checks backspacing over records which
+*have large gaps between them.
+	rem
+	tra *+2
+	bcd 1rtba1
+test3	axt 680,1
+	stz rdfld+680,1	clear rdfld
+	tix *-1,1,1
+	cla decm2
+	sto wdno	l 1251
+	cla decm3	l 21
+	sto recno
+	rtba 1	read tape
+	rcha twd6	   1250 words
+	tcoa *
+	tefa *-3	test end of file
+	tsx rdnck,4	test io chk
+xch1	tra test3
+	axt 680,1	   l 1250   wrd ct
+	axt 20,2
+	axt 34,4	
+	cla rdfld+680,1	  word read
+	ldq grp3+34,4	  word generated
+cprc1	cas grp3+34,4	compare
+	tra *+2	error
+	tra *+5	ok proceed
+	rem page
+	sxa xrc,4
+	tsx error-2,4	error
+xch2	tra test3
+	lxa xrc,4
+	tix *+1,1,1	wrd ct
+	tix cprc1-2,4,1	grp wc
+	tix cprc1-3,2,1	rec count
+	rem	20 rec now checked
+	rem
+	rem
+	rem	backspace two records
+	rem	and read two records
+	tra *+2
+	bcd 1bsra1
+gob2	bsra 1
+	tcoa *
+	bsra 1
+	tcoa *
+	axt 68,1
+	stz rdfld+68,1
+	tix *-1,1,1
+	rtba 1
+	rcha bwrd1
+	tcoa *
+	tsx rdnck,4	io check
+	cla brec1
+	sto recno
+	cla bct1	 l 105
+	sto wdno
+	axt 68,1	wrd count l 104
+	axt 2,2	rec count l 2
+	axt 34,4
+	cla rdfld+68,1	word read
+	ldq grp3+34,4	word generated
+	cas grp3+34,4	compare
+	tra *+2
+	tra *+5	ok proceed
+	sxa xrc,4
+	tsx error-2,4	error
+	tra gob2
+	lxa xrc,4
+	tix *+1,1,1
+	tix *-10,4,1
+	tix *-12,2,1
+*backspaced two recs and checked ok
+	rem	test three
+	rem	completed
+	rem
+* the purpose of test four is to recognize b bits in
+* different positions of a word.
+* test consits of four records
+*each record contains dec 33 oct 41 words
+	rem
+	rem
+	tra *+2
+	rem page
+	bcd 1rtba1
+test1d	axt 132,1
+	stz rdfld+132,1
+	tix *-1,1,1
+	rtba 1	  read tape
+	rcha twd8	four records
+	tcoa *
+	tefa *-3	test end file
+	tsx rdnck,4
+	cla bwrd2
+	sto wdno
+	cla brec2
+	sto recno
+	axt 132,1
+	axt 32,4
+	cla rdfld+132,1
+	ldq grp1+32,4
+cprd1	cas grp1+32,4
+	tra *+2	error
+	tra *+5	ok proceed
+	sxa xrc,4
+	tsx error-2,4	error
+	tra tes1d
+	lxa xrc,4
+	tix *+1,1,1	wrd ct
+	tix cprd1-2,4,1
+	axt 100,4
+dne6	cla rdfld+132,1
+	ldq grp6+100,4
+	cas grp6+100,4
+	tra *+2	error
+	tra *+5	ok proceed
+	sxa xrc,4
+	tsx error-2,4
+	tra dne6
+	lxa xrc,4
+	tix *+1,1,1
+	tix dne6,4,1
+*test four now complete
+	wpra
+	rcha ctfin
+done	swt 5
+	tra *+2	up test sw 6
+	tra tes1a-2	dn rep gap test
+	swt 6
+	tra ctrl	up read next pro
+	cla post1	dn restore program
+	sto 0	to restart
+	htr 0	set feature switch
+	rem	to normal and
+	rem	press start key
+ctrl	rcda	read
+	rcha *+3	next
+	lcha 0	program
+	tra 1
+	ioct 0,0,3
+	rem page
+grp1	oct 000000000000
+       OCT 010101010101
+       OCT 020202020202
+       OCT 030303030303
+       OCT 040404040404
+       OCT 050505050505
+       OCT 060606060606
+       OCT 070707070707
+       OCT 101010101010
+       OCT 111111111111
+       OCT 121212121212
+       OCT 131313131313
+       OCT 141414141414
+       OCT 151515151515
+       OCT 161616161616
+       OCT 171717171717
+       OCT 202020202020
+       OCT 212121212121
+       OCT 222222222222
+       OCT 232323232323
+       OCT 242424242424
+       OCT 252525252525
+       OCT 262626262626
+       OCT 272727272727
+       OCT 303030303030
+       OCT 313131313131
+       OCT 323232323232
+       OCT 333333333333
+       OCT 343434343434
+       OCT 353535353535
+       OCT 363636363636
+       OCT 373737373737          
+grp2	oct 000000000000
+       OCT 010101010101
+       OCT 020202020202
+       OCT 030303030303
+       OCT 040404040404
+       OCT 050505050505
+       OCT 060606060606
+       OCT 070707070707
+       OCT 101010101010
+       OCT 111111111111
+       OCT 121212121212
+       OCT 131313131313
+       OCT 141414141414
+       OCT 151515151515
+       OCT 161616161616
+       OCT 171717171717
+       OCT 202020202020
+       OCT 212121212121
+       OCT 222222222222
+       OCT 232323232323
+       OCT 242424242424
+       OCT 252525252525
+       OCT 262626262626
+       OCT 272727272727
+	rem page
+       OCT 303030303030
+       OCT 313131313131
+       OCT 323232323232
+       OCT 333333333333
+       OCT 343434343434
+       OCT 353535353535
+       OCT 363636363636
+       OCT 373737373737
+grp3	oct 000000000000
+       OCT 010101010101
+       OCT 020202020202
+       OCT 030303030303
+       OCT 040404040404
+       OCT 050505050505
+       OCT 060606060606
+       OCT 070707070707
+       OCT 101010101010
+       OCT 111111111111
+       OCT 121212121212
+       OCT 131313131313
+       OCT 141414141414
+       OCT 151515151515
+       OCT 161616161616
+       OCT 171717171717
+       OCT 202020202020
+       OCT 212121212121
+       OCT 222222222222
+       OCT 232323232323
+       OCT 242424242424
+       OCT 252525252525
+       OCT 262626262626
+       OCT 272727272727
+       OCT 303030303030
+       OCT 313131313131
+       OCT 323232323232
+       OCT 333333333333
+       OCT 343434343434
+       OCT 353535353535
+       OCT 363636363636
+       OCT 373737373737
+	oct 000000000000
+	oct 010101010141
+grp5	oct 000040000000
+	oct 400000000000
+grp6	oct 000040000000
+	oct 000000000000
+	oct 000000010101
+	oct 010101020202
+	oct 020202030303
+	oct 030303040404
+	oct 040404050505
+	oct 050505060606
+	oct 060606070707
+	oct 070707101010
+	oct 101010111111
+	oct 111111121212
+	rem page
+	oct 121212131313
+	oct 131313141414
+	oct 141414151515
+	oct 151515161616
+	oct 161616171717
+	oct 171717202020
+	oct 202020212121
+	oct 212121222222
+	oct 222222232323
+	oct 232323242424
+	oct 242424252525
+	oct 252525262626
+	oct 262626272727
+	oct 272727303030
+	oct 303030313131
+	oct 313131323232
+	oct 323232333333
+	oct 333333343434
+	oct 343434353535
+	oct 353535363636
+	oct 363636373737
+	oct 373737000040
+	oct 000000000000
+	oct 000000010101
+	oct 010101020202
+	oct 020202030303
+	oct 030303040404
+	oct 040404050505
+	oct 050505060606
+	oct 060606070707
+	oct 070707101010
+	oct 101010111111
+	oct 111111121212
+	oct 121212131313
+	oct 131313141414
+	oct 141414151515
+	oct 151515161616
+	oct 161616171717
+	oct 171717202020
+	oct 202020212121
+	oct 212121222222
+	oct 222222232323
+	oct 232323242424
+	oct 242424252525
+	oct 252525262626
+	oct 262626272727
+	oct 272727303030
+	oct 303030313131
+	oct 313131323232
+	oct 323232333333
+	oct 333333343434
+	oct 343434353535
+	oct 353535363636
+	oct 363636373737
+	oct 373737400000
+	oct 000000000000
+	rem page
+	oct 000000000001
+       OCT 010101010102
+       OCT 020202020203
+       OCT 030303030304
+       OCT 040404040405
+       OCT 050505050506
+       OCT 060606060607
+       OCT 070707070710
+       OCT 101010101011
+       OCT 111111111112
+       OCT 121212121213
+       OCT 131313131314
+       OCT 141414141415
+       OCT 151515151516
+       OCT 161616161617
+       OCT 171717171720
+       OCT 202020202021
+       OCT 212121212122
+       OCT 222222222223
+       OCT 232323232324
+       OCT 242424242425
+       OCT 252525252526
+       OCT 262626262627
+       OCT 272727272730
+       OCT 303030303031
+       OCT 313131313132
+       OCT 323232323233
+       OCT 333333333334
+       OCT 343434343435
+       OCT 353535353536
+       OCT 363636363637
+       OCT 373737373740
+cwd1	iocp grp1,0,32
+	iocp grp1,0,32
+	iocp grp1,0,32
+	iocp grp1,0,32
+	iocp grp1,0,32
+	iocp grp1,0,32
+	iocp grp1,0,32
+	iocp grp1,0,32
+	iocp grp1,0,32
+	iocp grp1,0,32
+	iocp grp1,0,32
+	iocp grp1,0,32
+	iocp grp1,0,32
+	iocp grp1,0,32
+	iocp grp1,0,32
+	iocp grp1,0,32
+	iocp grp1,0,32
+	iocd grp1,0,32
+rdw1	iocd rdfld,0,640
+cwd2	iocp grp3,0,34
+	iocd grp3,0,34
+rdw2	iocd rdfld,0,680
+	rem page
+cwd3	iocp grp3,0,34
+	iocd grp3,0,34
+rdw3	iocd rdfld,0,680
+prnt1	iocd prid,0,24
+prnt2	iocd swtch,0,48
+twd1	iocd rdfld,0,640
+twd3	iocd rdfld,0,680
+twd4	iocd rdfld,0,204
+twd5	iocd rdfld,0,612
+twd6	iocd rdfld,0,680
+twd7	iocd rdfld,0,34
+twd8	iocd rdfld,0,132
+cwd4	iocp grp1,0,32
+	iocp grp5,0,1
+	iocp grp1,0,32
+	iocd grp5,0,1
+cwd5	iocp grp1,0,32
+	iocp grp5+1,0,1
+	iocp grp1,0,32
+	iocd grp5+1,0,1
+rdw4	iocd rdfld,0,132
+ctfin	iocd fnpt,0,24
+*image
+*now performing 9glt-a test for reading gapless tape on 709
+prid	oct 004504000121    9 row left
+ 	oct 000000040000   9r
+	oct 000000000000
+	oct 000000000000
+	oct 020022000000
+	oct 250020200000
+	oct 303000000600
+	oct 000000200000
+	oct 410040010010
+	oct 402011000000
+	oct 000200000002
+	oct 000000000000
+	oct 000001422000
+	oct 004100000000
+	oct 000000004000
+	oct 001400000000
+	oct 000000100004
+	oct 020040000000
+	oct 100000426000
+	oct 001500100000
+	oct 625641000320
+	oct 414023000000
+	oct 012122110417
+	oct 262050000000
+*image
+*gapless tape has been written
+swtch	oct 000000014000   9 row left
+	oct 000000000000   9 row right
+	oct 000020000000   8 l
+	oct 000000000000   8 r
+ 	oct 500200000000   7 l
+	oct 000000000000   7 r
+	rem page
+	oct 000000020000   6 l
+	oct 000000000000   6 r
+	oct 020100700600   5 l
+	oct 000000000000   5 r
+	oct 000000000000   4 l
+	oct 000000000000   4 r
+	oct 041000003000   3 l
+	oct 000000000000   3 r
+	oct 014005000000   2 l
+ 	oct 000000000000   2 r
+	oct 200410000000   1 l
+	oct 000000000000   1 r
+	oct 015004023000   0 l
+	oct 000000000000   0 r
+	oct 140200110200   11 l
+	oct 000000000000   11 r
+	oct 620531604400   12 l
+	oct 000000000000   12 r
+*image
+*set special feature tape switch and press start
+	oct 001001000400   9 row left
+	oct 200400000000   9 row right
+	oct 000000000040   8 l
+	oct 000000000000   8 r
+	oct 010000020000   7 l	
+	oct 400000000000   7 r
+	oct 000040001000   6 l
+	oct 000000000000   6 r
+	oct 204020410004   5 l
+	oct 100000000000   5 r
+	oct 000002000002   4 l 
+	oct 000000000000   4 r
+	oct 102204100300   3 l
+	oct 002200000000   3 r
+	oct 420000002000   2 l
+	oct 064000000000   2 r
+	oct 000410040010   1 l
+	oct 001000000000   1 r
+	oct 520006103200   0 l
+	oct 066200000000   0 r
+	oct 010201020004   11 l
+	oct 600400000000   11 r
+	oct 207470450552   12 l
+	oct 101000000000   12 r
+* image
+* 9glt test complete
+fnpt	oct 200000000000
+	oct 000000000000
+	oct 000000000000
+	oct 000000000000
+	oct 100010000000
+	oct 000000000000
+	oct 000040000000
+	oct 000000000000
+	oct 002002400000
+	oct 000000000000
+	rem page
+	oct 000020000000
+	oct 000000000000
+	oct 064505000000
+	oct 000000000000
+	oct 001000000000
+	oct 000000000000
+	oct 000000000000
+	oct 000000000000
+	oct 025401000000
+	oct 040074000000
+	oct 000000000000
+	oct 10210240000
+	oct 000000000000
+rdfld	bss 1000
+bwrd1	iocd rdfld,0,68
+brec1	dec 3	l 3
+brec1	dec 69
+wcnt1	dec 641
+wcnt2	dec 681
+wcnt3	dec 681
+wcnt4	dec 205
+xrc	oct 0
+rect1	dec 6
+rect2	dec 11
+rect3	dec 11
+rect4	dec 3
+abc	iocd rdfld,0,646
+abd	nop test3
+abe	tefa *-3
+aaa	dec 646
+zero	dec 0
+one	dec 1
+two	dec 2
+five	dec 5
+six	dec 6
+nine	dec 9
+ten 	dec 10
+twnty	dec 20
+twthr	oct 23
+back1	tra tes1a
+back5	tra test3
+redy1	dec 641
+redy2	dec 3
+redy3	dec 321
+redy4	dec 2
+redy5	dec 681
+redy6	dec 21
+redy7	dec 205
+redy8	dec 7
+redy9	dec 612
+decm	dec 18
+decm2	dec 681
+decm3	dec 21
+decm4	dec 34
+decm5	dec 2
+	rem page
+decm6	dec 331
+decm7	dec 11
+post2	tra tes1a
+ts1	dec 0
+tem	dec 0
+tem2	dec 0
+tem3	dec 0
+tem4	dec 0
+tem5	dec 0
+post1	tra begin+4
+file	dec 0
+addr	cla grp5
+brec2	dec 2
+bwrd2	dec 133
+need	oct 3737374000000
+need1	oct 3737370000040
+ok	equ 3401
+error	equ 3396
+konst	equ 3430
+wdno	equ 3438
+rdnck	equ 3440
+recno	equ 3439
+	end 24

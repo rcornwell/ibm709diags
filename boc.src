@@ -1,0 +1,106 @@
+           GD BOC1   709 FOUR CARD BINARY-OCT L UPPER LOADER            BOC10000
+           R C SHEPARDSON        DECEMBER 1952                          BOC10001
+       FUL                                   2                          BOC10002
+       ORG     -96                           2                          BOC10003
+       IOCD    RCD,0,93                      2                          BOC10004
+       TCOA    1                             2                          BOC10005
+       TTR     RCD                           2                          BOC10006
+ RCD   RCDA                                  2                          BOC10007
+ 9ROW  EQU     RCD-20                        2                          BOC10008
+ COM   EQU     9ROW+19                       2                          BOC10009
+ U     EQU     9ROW-12                       2                          BOC10010
+ Q1    EQU     9ROW+2                        2                          BOC10011
+ Q2    EQU     9ROW+3                        2                          BOC10012
+       RCHA    C1                            2                          BOC10013
+       LDQ     C1+2                          2                          BOC10014
+       TEFA    EF                            2                          BOC10015
+       SCHA    COM                           2                          BOC10016
+       LXA     COM,1                         2                          BOC10017
+       TXL     *-3,1,9ROW                    2                          BOC10018
+       CAL     9ROW                          2                          BOC10019
+       TZE     OCT                           2                          BOC10020
+       ANA     M1                            2                          BOC10021
+       PDX     ,1                            2                          BOC10022
+       SXD     C1+1,1                        2                          BOC10023
+       TXL     RET,1,0                       2                          BOC10024
+       STA     C1+1                          2                          BOC10025
+       ANA     M2                            2                          BOC10026
+       TNZ     RCD                           2                          BOC10027
+       PXA     ,1                            2                          BOC10028
+       ADD     C1+1                          2                          BOC10029
+       STA     *+5                           2                          BOC10030
+       TCOA    *                             2                          BOC10031
+       NZT     9ROW+1                        2                          BOC10032
+       TRA     RCD                           2                          BOC10033
+       CAL     9ROW                          2                          BOC10034
+       ACL     -,1                           2                          BOC10035
+       TIX     *-1,1,1                       2                          BOC10036
+       ERA     9ROW+1                        2                          BOC10037
+       TZE     RCD                           2                          BOC10038
+       HTR     RCD            CHECKSUM STOP  2                          BOC10039
+ OCT   STQ     C1+1                          2                          BOC10040
+       AXT     12,1                          2                          BOC10041
+       STZ     U+12,1                        2                          BOC10042
+       TIX     *-1,1,1                       2                          BOC10043
+       AXT     15,1                          2                          BOC10044
+       AXT     6,4                           2                          BOC10045
+       TCOA    *                             2                          BOC10046
+ OCT2  TXI     *+1,1,-1                      2                          BOC10047
+       LDQ     9ROW+18,1                     2                          BOC10048
+ OCT1  AXT     12,2                          2                          BOC10049
+       ALS     2                             2                          BOC10050
+       LGL     1                             2                          BOC10051
+       TIX     *-2,2,1                       2                          BOC10052
+       ORS     U+6,4                         2                          BOC10053
+       CAL     U+6,4                         2                          BOC10054
+       ACL     U+12,4                        2                          BOC10055
+       SLW     U+12,4                        2                          BOC10056
+       XEC     S+6,4                         2                          BOC10057
+       TIX     OCT2+1,1,1                    2                          BOC10058
+       AXT     15,1                          2                          BOC10059
+       PXD                                   2                          BOC10060
+       ACL     9ROW+20,1                     2                          BOC10061
+       TIX     *-1,1,2                       2                          BOC10062
+       TXH     *+3,1,1                       2                          BOC10063
+       SLW     Q2                            2                          BOC10064
+       TXI     *-5,1,15                      2                          BOC10065
+       LDQ     Q2                            2                          BOC10066
+       LGL     11                            2                          BOC10067
+ A6    AXT     6,3                           2                          BOC10068
+       PBT                                   2                          BOC10069
+       TRA     *+3                           2                          BOC10070
+       LGL     12                            2                          BOC10071
+       TXI     *-3,2,-1                      2                          BOC10072
+       SXD     T,2                           2                          BOC10073
+       PXD                                   2                          BOC10074
+       LDQ     U+6                           2                          BOC10075
+       LGL     18                            2                          BOC10076
+       ADD     A6                            2                          BOC10077
+       STA     AD                            2                          BOC10078
+ T     TXL     *+6,1,-                       2                          BOC10079
+       LGL     18                            2                          BOC10080
+       LDQ     U+13,1                        2                          BOC10081
+       LGL     18                            2                          BOC10082
+ AD    SLW     -,1                           2                          BOC10083
+       TIX     T,1,1                         2                          BOC10084
+       CLA     Q2                            2                          BOC10085
+       LGR     6                             2                          BOC10086
+       TQP     RCD                           2                          BOC10087
+       CAL     U+11                          2                          BOC10088
+       ARS     3                             2                          BOC10089
+ RET   STA     *+2                           2                          BOC10090
+       TOV     *+1                           2                          BOC10091
+       TRA     -                             2                          BOC10092
+ S     TIX     OCT1,4,1                      2                          BOC10093
+       TIX     OCT1,4,1                      2                          BOC10094
+       TIX     OCT2,4,1                      2                          BOC10095
+       TIX     OCT1,4,1                      2                          BOC10096
+       TIX     OCT1,4,1                      2                          BOC10097
+       AXT     6,4                           2                          BOC10098
+ C1    IOCP    9ROW,0,2                      2                          BOC10099
+       IOCD                                  2                          BOC10100
+       IOCD    9ROW+2,0,18                   2                          BOC10101
+ M1    OCT     100037777777                  2                          BOC10102
+ M2    OCT     100000000000                  2                          BOC10103
+ EF    HTR     RCD        END OF FILE        2                          BOC10104
+       END                                   2                          BOC10105

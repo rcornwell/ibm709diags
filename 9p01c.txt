@@ -1,0 +1,580 @@
+                                                                9P01-C WRITE UP
+                                                                PAGE 1
+
+
+                      9P01-C
+
+                709 ON-LINE PRINTER
+
+           DIAGNOSTIC AND RELIABILITY TEST
+
+A. PURPOSE OF TEST
+
+   To test the performance of the 716 Printer and related circuits of the
+   766 Data Synchronizer as an output component of the 709 System. It is
+   designed to be a combination of diagnostic and reliability check of the
+   printer operation under program control.
+
+   In particular, it covers print wheel and magnets, calculator entries
+   and exits, print entries, echo exits all coselectors and pilot selectors,
+   the 912 programmed carriage and a comprehensive exercise of the the
+   766 Circuitry under read and write printer.  A survey of worst case
+   printer patterns was made and teh resutls incorporated in as easily
+   diagnosable form as possible in an attempt to force marginal components
+   and adjustments into a detectable and diagnosable condition on preventative
+   maintenance time rather than in customer operation.
+
+B. METHOD OF TEST
+
+   9P01 is divided into two distinct sections.
+   
+   1. Part one includes the select and interlock test, the printer electrical
+      and mechanical tests, the data synchronizer control word tests, the
+      subroutine package and the constants.  All of this is contained in the
+      first 4096 locations of storage regardless of the core memory size.
+   
+   2. Part two contains the printer carriage control test and its associated
+      constants and may be contained in core storage above 4096. In the
+      case of a 4k core memory, Part Two will be read in after Part One has
+      been run and relace portions of Part One.  A core size test provides
+      for this feature automatically.
+   
+      In order to reduce storage space requirements and to make program
+      flow more visible to user, the detailed operations of Data
+      Synchronizer Register Checking, Echo Checking and certain often
+      repeated print l..ys have been placed in subroutines.  Once the operation
+      of the subroutine is understood, it can be largely ignored in following the
+      flow of the program.  Strong stress has been placed upon making loop
+      lock-in on failure convenient and sure.  At many places in the program,
+      "NOP" instructions have been placed to facilitate quick custom build
+      diagnostic loops for elusive failures.
+      
+      
+\l                                                              Page 1
+      
+                                                                9P01-C WRITE UP
+                                                                PAGE 2
+
+
+
+      Most of the testing is done under read printer in order to get
+      maximum error detection and diagnosis.  However, write printer
+      is thoroughly exerised in teh Data Synchronizer control word
+      tests as well as in the mechanical and electrical test section.
+      
+      A modified form of 9IOM allows this program to check the printer
+      on any channel on line.  Standard entry key formats apply.
+      
+      All types of errors that are program detectable are printed out.
+      Each type of error has its own distinctive printout to provide
+      maximum information with minimum interpretation.
+      
+      Each subroutine is provided with a desciption of its purpose and
+      method of linkage to the main flow of the program printed with its
+      listing.  This provides a ready reference at the point of use.
+      
+C. AREA OF THE MACHINE REQUIRED
+      
+   1. Units - MF, any size CF, CR, DS, PR.
+      
+   2. Storage - 00000 - 12274 with remaining memory filled with
+                              TSX SPACE,4
+
+                 0000 -  7777 on 4k machine
+
+D. PROGRAM CONTROL
+
+   1. Deck    000             9LD01 Diagnostic Loader
+                             
+              001 - 169       9P01 Part One
+                             
+              170             TRA Card, TRA 7754
+                             
+              171             9LD01 Diagnostic Loader
+                             
+              172 - 226       9P01 Part Two
+                             
+              227             Transfer Card, TRA 12256
+                             
+              228 - 229       Two blank cards
+
+   2. 716 Printer Control Board
+
+      a.  A slightly revised but completely redrawn printer board wiring
+          diagram is part of 9P01-C and the board it descibres must be
+          used to properly run 9P01-C.  This board is compatible with all 
+          present diagnostics execpt 9P01-A and 9P01-B, which it supercedes.
+
+\l                                                            Page 2
+
+                                                                9P01-C WRITE UP
+                                                                PAGE 3
+
+          For normal operations of the printer it is compatible with the
+          Share II Board.  With Alteration Switch I -ON- it permits proper
+          printout of program assembly operations using 709-DAP or
+          SE-DAP. (For 709-DAP or SE-DAP, a carriage tape with no
+          overflow punch should be used).
+       
+       b. Board sense exit functions are as follows:
+       
+          Sense Exit                 Function
+          
+          1                          Skip to 1
+          3                          Double space
+          4                          Octal space
+          5                          Short skip
+          9                          Right side and suppress space
+          
+          5 + 10                     Non print
+          7 + 2                      Extra space
+          6, 7, 10 + 2               Selective space before printing
+          6 + 2                      Skip to 2
+          6, 7, + 2                  Skip to 3
+          
+          6, 8 + 2                   Skip to 4
+          6, 8, 10 + 2               Skip to 5
+          10 + 2                     Skip to 6
+          7, 10 + 2                  Skip to 7
+          8, 10 + 2                  Skip to 8
+                                    
+          7, 8, 10 + 2               Skip to 9
+          6, 10 + 2                  Skip to 10r
+          6, 7, 8 + 2                Suppress space
+          7, 8 + 2                   Suppress space + extra space
+          6, 7, 8, 10 + 2            Selective space, suppress space and
+                                     extra space.  Makes selective space
+                                     a completely after print operations.
+                                    
+          8 + 2                      Selective space and extra space.
+                                     Selective space before print and
+                                     again after print.
+         
+          When Sense Exit -2- is used as a "hot shot" to energize a 
+          coselector tree, there must be a 2 millisecond delay between
+          the rest of teh sense exit instructions and the sense exit -2-
+          instruction to allow coselector transfer.
+          
+\l                                                             Page 3
+
+                                                                9P01-C WRITE UP
+                                                                PAGE 4
+
+       c. Alteration Switch 1 -ON- connects the overflow hub to skip to
+          one, thus allowing overflow without program intervention.
+          Since the printer test is designed to run with this switch -OFF-,
+          improper overflows will occur on 120 character print lines if
+          the switch is left on while runnning this test.  Overflow switch 1
+          -ON- also connects sense exit 7 to sense entry to allow printer
+          board to check compatible with the Share II board.
+       
+       d. Alteration Switch 4 -ON- places the printer in Non Print status.
+  
+    3. 912 Carriage Control Tape
+    
+       Carriage Control Tape must be punched as follows:
+    
+           Line                     Channel
+            
+            1                        1
+            7                        2
+            8                        11
+            10                       11
+            13                       3, 11
+                                    
+            17                       11
+            19                       4
+            22                       11
+            25                       5
+            28                       11
+                                    
+            31                       6
+            35                       11
+            37                       7
+            43                       8
+            49                       9
+                                    
+            55                       10
+            59                       11
+            61                       12
+            66 Cutoff Tape for 11 inch form
+    
+    4. Sense Switch Control
+
+       a. SSW 1 up                    No effect
+                Dn                    Repeat last printed line
+                                   
+       b. SSw 2 Up                    Check for error
+                Dn                    Bypass error indications
+                                   
+\l                                                           Page 4
+
+                                                                9P01-C WRITE UP
+                                                                PAGE 5
+
+       c. SSW 3 Up                    Print on error
+                Dn                    Stop on error
+                    
+       d. SSW 4 Up                    No effect
+                Dn                    Repeat test section 40 times
+                    
+       e. SSW 5                       Not used
+                    
+       f. SSW 6 Up                    Read in next diagnostic
+                Dn                    Repeat diagnostic
+
+E. NORMAL STOPS
+
+    I/O Channel Modification Stops
+
+    07561  Channel A
+  
+    07575  Channel C
+
+    07602  Channel E
+
+           At each stop, set up keys according to the 9IOM I/O entry
+           format.  Press start to continue.  If multiple channels
+           are to be tested, enter multiple tag at 07561 stop.  Unless
+           this is done, machine will stop only at 07561 and Channel A
+           only will be preformed.
+
+           Entry Key Settings:
+
+           Entry Key S Read in program from cards
+
+                     20 Channel A
+
+                     19 Channel C
+
+                     18 Channel E
+
+                     34 Printer
+
+F. ERROR STOPS 
+
+   The following stop occur regardless of sense settings:
+
+     00064 or     I/O instructions not correctly initialized.  Check 9IOM Key
+     10060        entry and press start to reload the keys and restart program.
+
+\l                                                        Page 5
+
+                                                                9P01-C WRITE UP
+                                                                PAGE 6
+
+
+     03414   Program sequencing has lost control.  The address
+             from which we recovered control is in the accumulator
+             decrement.  The starting address of the test in progress
+             at the time of the sequence failure is in the accumulator
+             address. Press start to return to the beginning of the
+             sequence that lost control.
+
+   The following stops occur only when sense switch 3 is down:
+
+    03546    A data synchronizer runaway occurred.  The storage
+             register address contains the error test exit location.
+             The accumulator contains the DSC register contents
+             recorded by a SCHA instruction that are in error.  The
+             MQ contains the correct DSC register limits.  Press
+             start to continue.
+            
+    03610    An I/O check occurred.  The storage register address
+             contains the location at which the I/O check was detected.
+             Press start to continue.
+            
+    03656    A store channel error occurred on the previous line of 
+             printout.  The storage register address contains the error
+             test exit location.  The accumulator contains the DSC
+             register contentsrecorded by the store channel instruction.
+             The MQ contains the correct DSC register contents.  Press
+             start to continue.
+            
+    03744     An echo check occured on the previous line of test
+             printout.  The storage register address contains the
+             location from which the echo check test routine was entered.
+             The accululator contains the echo word in error.  The MQ
+             contains the correct print image word.  The sense indicators
+             contain the error card image row number 11-1, octal, in
+             the decrement or in the address to indicate left or right row
+             image.  Press start to continue.
+            
+    04072    The print image was modified in the process of printing the
+             previous line.  The storage register contains the address
+             from which the print image check test was entered.  The
+             accumulator contains the modified print image word.  The
+             MQ contains the correct print image word.  The sense
+             indicators contain the error card image row number 13-1,
+             octal, in the decrement or address to indicate the left or
+             right row image.  Zero row is indicated by 77777. Press 
+             start to continue.
+
+\l                                                               Page 6
+
+                                                                9P01-C WRITE UP
+                                                                PAGE 7
+
+   01144     (4K Memory only)
+     or
+   11144     The 912 carriage has reached overflow line 63 where
+             the program does not allow it.  The accumulator contains
+             707070707070.  Press start to continue.
+   
+   01157    (4K Memory only)
+     or 
+   11157    The 912 carriage has not reached overflow line 63 where 
+            the program requires it.  The accumulator contains
+            777777777777.  Press start to continue.
+
+G. PRINT-OUTS
+
+   Normal - See examples of proper print-outs following this write up.
+
+   Error - See examples of error print-outs following the correct print-out
+           which follow this write up.  Sense switch 3 must be -UP-.
+
+   Two Error Printouts are of specail note -
+
+   1.  The echo check error print consits of six lines of print as follows:
+
+       a.  An echo error occurred on the previous line of test
+           pattern printout.
+
+       b.  Program exit at - XXXXX.  Section starts at - YYYYY.
+          
+       c.  A line of numbers which represents the units position of the
+           print columns being printed.
+          
+       d.  The print line in which the error occurred printed under write
+           printer instead of read printer.
+          
+       e.  A line of print representing the echo image with the 8-4 and
+           8-3 rows inserted into the 8 and 3 ros of the echo image.
+          
+       f.  A line of print resulting from a print image built by an exclusive
+           -OR- of the corresponding words of the print and echo images.
+           In other words, the error bit image.
+
+   2. The print image modification check error print is similar to the
+      echo check print out except that all its references aer to the modified
+      and unmodified print images.
+
+      a.   The print image was modified during the previous line of printout.
+
+\l                                                               Page 7
+
+                                                                9P01-C WRITE UP
+                                                                PAGE 8
+
+      b.   Program exit at - XXXXX.  Section starts at - YYYYY.
+          
+      c.   A line of numerals corresponding to the units position of the
+           typewheels printed.
+          
+      d.   The line of unmodified test pattern printed under WPR.
+          
+      e.   The line of modified test pattern printed under WPR.
+          
+      f.   A line of print representing the error bit pattern produced by
+           an exclusive -OR- of the two images.
+
+H. COMMENTS
+  
+   1.  A sequence checking and wild transfer subroutine similar to the
+       monitor routine in 9M05A and 9COMB is provided to insure that
+       the program does not get lost.
+     
+   2.  The # sign used just to the left of the symbolic operation code
+       indicates that the instruction is part of an error routine.
+     
+   3.  At various places in the listing comment field a single -X- is used
+       to denote ditto marks or a continuation of the action described in
+       a preceding comment.
+     
+   4.  Program loading instructions are as follows:
+     
+       a.  Place new 9P01 printer board wired to the diagram supplied
+           at the end of this write up in the printer and make printer
+           ready.
+          
+       b.  Ready the 9P01 deck in the card reader.
+          
+       c.  Press load cards button.  Program will read in the first 150
+           cards and stop.
+          
+       d.  When machines stops enter the desired I/O format as detailed
+           in Section E (normal stops) above into the entry keys and press
+           start.  Program will execute automatically thereafter.
+          
+           NOTE - In the case of a machine with a 4K Memory, part
+           one will execute under control of sense switch 6 and will
+           not enter part two until sense switch 6 is raised.  After
+           part two has executed, part one can only be re-entered by
+           reading in the deck a second time.
+          
+          
+\l                                                               Page 8
+
+                                                                9P01-C WRITE UP
+                                                                PAGE 9
+          
+           In contrast, a machine with a memory larger than 4K handles
+           part two as a direct continuation of part one and does not
+           refer to sense switch 6 until after part two is completed. The
+           complete program will execute as long as sense switch 6 is
+           down.
+     
+   5.  The complete test requires approximately 8 minutes pre pass assuming
+       no errors.
+     
+                                                               Page 9
+
+                                                                 9P01-C INDEX
+                                                                 PAGE 1
+
+                               9P01-C INDEX
+
+                                PART ONE
+
+LOC      Page    Section                       Description
+                
+00070     2       AA       Printer Disconnect Test
+00256     5       AB       Cursory Test Columns 1-72 Under Write Printer
+00277     6       AC       Cursory Test Columns 73-120 Under Write Printer
+00323     7       ACM      Quick Check Armatures and Analyzer Setup,
+                           (Columns 1-120 Under Read Printer)
+00405     8       AD       120 Columns of Spaced Numerics and Zones Under
+                           Read Printer
+                          
+00637    12       AE       120 Columns of Light Ripple Under Read Printer
+00665    13       AF       Bleacher Test Under Read Printer
+00756    15       AG       Light-Heavy Ripple Test Under Read Printer
+01037    16       AJ       12-9 Magnet Kickback Test
+01155    18       AK       Nearby Numerics and Zones Test
+                          
+01236    19       AL       120 Column Random Character Test Under Read Printer
+01315    21       AM       Write Printer Binary, One Select Per Line
+01363    22       AN       Write Printer Binary, Multiple Lines With One Select
+01433    23       AP       Octal Space RightSide, Alternate Lines Under
+                           Write Printer
+01460    25       BA       Set-up Data Synchronizer Control Words Test Under
+                           Write Printer.  Must be entered befoer other Write
+                           Printer tests of Section B if transferring in from some
+                           other area than Section B.
+                          
+01473    25       BB       WPR-IOCD, WC-24
+01510    26       BC       WPR-IOST, LCHA
+01546    26       BD       WPR-IOCT, LCHA
+01604    27       BE       WPR-TCH, IOST, LCHA
+01647    28       BF       WPR-IOCP, IOST, LCHA
+                          
+01705    29       BG       WPR-IOSP, IOCP, LCHA
+01743    30       BH       WPR-IOST, IORP, IOCP, IOST, WC-48
+01775    31       BJ       WPR-IOST, IORT, RCHA blast-out, IORT, WC-24
+02027    32       BK       WPR-IOSP, IOCP, IOST, TCH, IOST, IOCT, IOCP,
+                           TCH, IORT
+02060    33       BL       WPR-IOST, IOCD, blast-out with IORT
+                          
+\l                                                                   Page 10
+
+                                                                   9P01-C INDEX
+                                                                   PAGE 2
+
+LOC      Page    Section                       Description
+
+02113 34 BM   WPR multiple lines under one select on sense
+                  exit holdover.
+02153 35 BN   Set-up Image for Read Printer Data Synchronizer
+     Control Word Tests.  Must be entered before any
+    of the Read Printer Tests of Section B if transferring
+   from other the Section B
+02166 35 BP  RPR-IOCT, IOST, WC-46
+02244 36 BQ  RPR-TCH, IOSP, IOST, IOCT, IOSP, IOST, WC-46
+02343 38 BR  RPR-TCH, IOCP, IOCT, IOST, IOCP, IOCT, WC-46
+
+02442 39 BS  RPR-IOCP, IOSP, TCH, TCH, IOSP, IOCP, TCH,
+               IOSP, IORT, WC-46
+02476 40 BT  RPR-IOST, IOCT, IOCT, IOST, IOCT, IORP, TCH,
+     IOCD, WC-46
+02534 41 BU  RPR-RCHA blast-out using control words from
+     section BT
+02575 42 BV RPR-multiple lines under one select on sense
+            exit holdover
+02630  43 BW RPR-test trigger 19
+
+
+   SUBROUTINE PAGKAGE
+
+03405  46 SPACE Program sequence error indicator
+03421 47 CHCKR Program sequence monitor
+03455 48 RESET Clear console and initialize program monitor
+03476 48 OK   Section repeat control
+03512 49 IODSC Check data synchronizer channel runaway
+
+03572 52 SCHTA   Test for I/O check then
+03636 52 SCHT   Check data synchronizer channel register contents
+03702 55 ECHK   Perform echo check for read printer operations
+04036 58 IMGCK Print image compare subroutine
+04174 61 ERLOC Print program exit and section start locations
+
+04210 61 ERSCH Print data synchronizer channel contents on error
+04225 62 BLANK Mask out columns 49-72 of print image
+04235 62 CLARA  Clear echo image
+04242 63 CLEAR  Clear print images
+04251 63 CLERA  Clear core storage as specified by teh calling sequence
+
+04265 64 CNVTD  Convert binary decrement to BCD octal
+04302 64 CNVWD  Convert binary word to BCD octal
+04320 65 MOVE   Move information in core storage
+04335 65 XHCNG  Interchange information in core storage
+04354  66 RTATE  Rotate print image -IMAGE- as 72 columns
+
+\l Page 11
+
+            9P01-C INDEX
+                 PAGE 3
+
+
+LOC Page Section    Description
+
+04370 66 RTATA   Rotate print image -IMAGA- as 72 columns
+04404 67 RTATB   Rotate print image -IMAGE- as 48 columns
+04422 67 SPRA2  Delay 2 MS and SPRA 2
+04430 68 READE   RPRA, overflow test, IOT, and SCH test
+04446 68 SPTAR  RPTA and overflow test
+
+04473 69 SPTAW  WPRA and overflow test
+04502 69 WRITD  WPRA, overflow test, IOT, and SCH test
+04520 70 ZONE  Alternate zones for Section AD
+04557 71 WRITC Print 72 columns under WPRA
+04635 73 READ Print 72 columns under RPRA
+
+04673  74 READB Print 120 columns under RPRA
+04777 76 READC Random character print routine for section AL
+05042 77 RANDN Random character BCD record generator
+05125 79 SPLAT 72 column BCD print routine
+05136 79 SPLTA  Overflow check and double space then enter SPLAT
+
+05144 79 SPLTB  Overflow check then enter SPLAT
+05151 81 SPLTR 72 column BCD to print image converter
+
+              PART TWO
+
+10064  114 AQ    Programmed carriage control test
+  or
+00064
+
+11067  127 CARR  Print routine for carriage test
+  or
+01067
+
+
+\l
+File Attachments:   Source \Asource\a    Cards \Acard\a      Deck \Adeck\a    Page 12
+
+
+
+
+
+

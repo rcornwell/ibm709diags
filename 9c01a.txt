@@ -1,0 +1,368 @@
+                                                             9C01A
+                                                             7/1/58
+                                                             PAGE 1.001
+
+                                    9C01A
+
+                   CARD READER TIMING AND RELIABILITY TEST
+                                FOR MODEL 250
+
+A. UNIT TESTED - 711 CARD READER
+
+   1. PURPOSE OF TEST
+
+      A. INITIALLY DETERMINE THE SPEED OF THE CARD READER PER CYCLE AND
+         SUBSEQUENTLY TEST ALL PHASES OF TIMING TO DETERMINE MAXIMUM TIME
+         BETWEEN VARIOUS OPERATIONS.
+
+      B. TO DETERMINE RELIABILITY OF THE CARD READER WHILE REACHING FOR
+         MAXIMUMN TIME BETWEEN VARIOUS OPERATIONS.
+
+      C. TO DETERMINE RELIABILITY OF THE CARD READER BY CAUSING THE CARD
+         READER TO INTERMITTENTLY LATCH UP.
+   2. METHOD OF TEST
+
+      A. KEYS 1-6 ARE USED TO INCREMENT TIMING, BETWEEN VARIOUS OPERATIONS
+
+      B. WITH KEYS 1-6 UP, THE CARD READER READS EACH RECORD WITH NORMAL
+         PROGRAMMING DELAYS.
+
+      C. WITH SENSE SWITCH 5 DOWN, THE CARD READER IS INTERMITTENTLY
+         LATCHED UP BETWEEN RECORDS.
+
+B. MACHINE UNITS AND STORAGE AREA
+
+   1. UNITS REQUIRED
+
+      MF, CF, DSU, PRINTER, CR MODEL 250
+
+   2. STORAGE LOCATIONS
+
+      00030-02433 - CARD READER PROGRAM
+      05500-06476 - MODIFICATION PROGRAM
+      06500-07712 - ERROR PRINT PROGRAM
+
+C. PROGRAM CONTROL
+
+   1. DECK
+
+               000             9LD01 LOW END LOADER 
+               001 - 059       9C01
+               060 - 083       MODIFICATION PROGRAM
+
+                                                             9C01A
+                                                             7/1/58
+                                                             PAGE 1.002
+
+               084 - 112       9DEPR DIAGNOSTIC PRINT SUBROUTINE
+               113             TRANSFER CARD TRA 00030
+               114 - 413       300 TEST CARDS
+               414 - 415       TWO BLANK CARDS
+
+2. SENSE SWITCH CONTROL
+
+               3 UP            PRINT ON ERROR OR MAXIMUM TIMING
+               3 DOWN          HALT ON ERROR OR MAXIMUM TIMING
+               5 UP            NORMAL PROGRAMMING DELAY BETWEEN 12 RIGHT
+                               AND 9 LEFT
+               5 DOWN          VARIABLE DELAYS BETWEEN 12 RIGHT AND SELECT
+                               CAUSING INTERMITTENT LATCH-UP
+               6 UP            LOAD NEXT DIAGNOSTIC AFTER TESTING ALL CARD
+                               READERS ON LINE.
+               6 DOWN          REPEAT TEST AFTER TESTING ALL CARD READERS
+                               ON LINE
+   
+3. SENSE LIGHTS
+
+               1 ON            ERROR INDICATED BETWEEN WORD READ FROM CARD
+                               AND WORD IN STORAGE
+               2 ON            INDICATES TEST HAS DETERMINED SPEED OF THE
+                               CARD READER
+               3 ON            INDICATES MAXIMUM TIME HAS BEEN REACHED
+                               BETWEEN 11 RIGHT AND 12 LEFT ROWS.
+            
+4. *NOTE* KEYS MUST BE DEPRESSED ONE AT A TIME
+
+               1 UP            NO EFFECT
+               1 DOWN          INCREEMENT TIME BETWEEN SELECT AND RESET
+                               LOAD CHANNEL
+               2 UP            NO EFFECT
+               2 DOWN          INCREMENT TIME BETWEEN WORDS
+               3 UP            NO EFFECT
+               3 DOWN          INCREMENT TIME BETWEEN ROWS
+               4 UP            NO EFFECT
+               4 DOWN          INCREMENT TIME BETWEEN RECORDS
+               5 UP            NO EFFECT
+               5 DOWN          INCREMENT TIME BETWEEN 12 RIGHT TIME AND
+                               EOR TIME
+               6 UP            NO EFFECT
+               6 DOWN          INCREMENT TIME BETWEEN 12 RIGHT TIME AND
+                               SELECT
+               
+5. INDICATORS
+
+   AN INDICATOR 1 THROUGH 6 ON INDICATES A CORRESPONDING KEY HAS BEEN
+   DEPRESSES TO DETERMINE THE MAXIMUM TIMING OF AN OPERATIONS. INDICATOR
+
+                                                             9C01A
+                                                             7/1/58
+                                                             PAGE 1.003
+
+   7 ON INDICATES THE TEST HAS DETERMINED THE SPEED OF THE CARD READER
+   PER CYCLE.
+
+D. NORMAL STOPS
+
+   01146   NO PRINTER ON LINE AND MAXIMUM TIMING HAS BEEN REACHED FOR ALL
+           OPERATIONS EXCEPT THE TIME BETWEEN 12 RIGHT TIME AND EOR.
+   01147   NO PRINTER ON LINE AND MAXIMUM TIMING HAS BEEN REACHED BETWEEN 12
+           RIGHT TIME AND EOR
+   05517   ENTER CONTROL WORD IN KEYS TO INDICATE TESTING THE CARD READER AND
+           THE NUMBER OF CHANNELS ON LINE.AT THIS STOP,TEST CARDS ARE
+           TO BE RELOADED IN THE CARD READER IF MOER THEN ON PASS
+           IS DESIRED.
+
+E. ERROR STOP
+
+   06545   WORD READ FROM CARD AND WORD IN STORAGE DID NOT COMPARE CORRECTLY.
+
+F. PRINT-OUTS
+
+   1. PROGRAM IDENTIFICATION IS PRINTED OUT INITIALLY IF A PRINTER IS ON
+      LINE ON CHANNEL A.
+
+   2. AFTER 300 RECORDS HAVE BEEN READ BY THE CARD READER, PASS COMPETE IS
+      PRINTED OUT IF A PRINTER IS ON LINE ON CHANNEL A.
+
+   3. TEST CARDS ARE PUNCHED TO INDICATE WHICH WORD FAILED IN A COMPARISION
+      ERROR. THE DECIMAL SUM OF EVERY 2 OCTAL DIGITS EQALS THE WORD.
+      THE ZERO ROW IS INDICATED BY THE DECIMAL SUM OF 10.
+
+      EXAMPLES 9 ROW  9L 727272727272 9R 27272727272
+               0 ROW  0L 737373737373 0R 37373737373
+
+   4. SEE THE PAGE FOLLOWING THE CONSTANT-DELAY TIME TABLES FOR EXAMPLES
+      OF ALL PRINTOUTS.
+
+G. COMMENTS
+
+   1.  SEE PAGE 1 OF THE LISTING FOR INSTRUCTIONS ON HOW TO ENTER KEYS FOR
+       TESTING OF CARD READERS ON A SINGLE OR MULTIPLE CHANNELS.
+
+   2.  TO DETERMINE THE MAXIMUM TIMINGS BETWEEN VARIOUS OPERATIONS WITH NO 
+       PRINTER ON LINE ON CHANNEL A, DISPLAY XRB OR LOCATION 02254 AND CONSULT
+       THE CONSTANT-DELAY TIME TABLE FOR THE TIMING COMPARABLE TO THE VALUE
+       IN XRB OR LOCATION 02254. *NOTE* IF SENSE LIGHT 3 IS ON WHEN DETERMINING
+       THE TIME BTWEEN ROWS, ADD SIX OCTALLY TO THE VALUE IN XRB OR LOCATION 
+       02254 AND CONSTULT THE CONSTANT-DELAY TIME TABLE FOR TIMING BETWEEN ROWS
+       SENSE LIGHT 3 IS TURNED ON ONLY IF MAXIMUM TIMING BETWEEN ROWS OCCURS
+       BETWEEN 11 ROW RIGHT AN 12 ROW LEFT.
+
+                                                             9C01A
+                                                             7/1/58
+                                                             PAGE 1.004
+
+
+   3.  IF THERE IS A COMPARISON ERROR AND NO PRINTER ON LINE * SENSE LIGHT
+       1 ON-PROGRAM STOP AT LOCATION 06545 * THE VALUE IN XRB OR LOCATION
+       02255 SUBTRACTED OCTALLY FROM 455 WILL GIVE THE RECORD THAT FAILED AND
+       THE VALUE IN XRA OCTALLY SUBTRACTED FROM 31 WILL GIVE THE WORD THAT
+       FAILED. THE ACCUMULATOR WILL CONTAIN THE WORD READ FROM THE CARD AND
+       THE MQ WILL CONTAIN THE CORRECT WORD IN STORAGE. XRC CONTAINS THE
+       2 S COMPLEMENT OF THE ADDRESS WHERE THE ERROR WAS DETECTED. TO CONTINUE
+       PROGRAM, PUSH START.
+
+   4.  TO TEST CARD READER RELIABILITY WITH NORMAL PROGRAMMING DELAY, RUN
+       THE TEST WITH SENSE SWITCH 5 AND ALL KEYS UP. WITH SENSE SWITCH 5 DOWN
+       AND ALL KEYS UP, THE ADDRESSES OF THE PROGRAM CAUSE A VARIABLE DELAY
+       BETWEEN 12 RIGHT AND SELECT CAUSING INTERMITTENT LATCH UP BETWEEN
+       RECORDS.
+
+   5.  WHEN DETERMINING TIMING BETWEEN VARIOUS OPERATIONS, ONLY ONE KEY MAY
+       BE DEPRESSED AT A TIME.
+
+   6.  THE SPEED OF THE CARD READER IS THE INITIAL TEST OF THE PROGRAM AND IS
+       NO UNDER CONTROL OF THE OPERATOR. AFTER THE FIRST PASS, THIS TEST IS
+       BYPASSED.
+
+   7.  WHEN TESTING THE TIME BETWEEN 12R AND SELECT,THE CARD READRER 
+       SHOULD LATCH UP BEFORE REACHING MAXIMUM TIMING.IF THE CARD
+       READER IS SLOW,IT MAY BE NECESSARY TO INCREASE THE PROGRAMMED
+       DELAY OF 110 MS IN XRA FOR THE TIMING BETWEEN 12R AND 9L FOR
+       THE I/O CHECK LIGHT TO BE ON AND THE TEST OPERATE CORRECTLY.
+       AND INCREMENT OF 16 OCTAL TO THE ADDRESS OF THE INSTRUCTION
+       IN LOCATION 01060 INCREASES THE DELAY BETWEEN 12R AND 9L BY
+       ONE MILLISECOND.
+
+   8.  THIS TEST HAS A MODIFICATION PROGRAM WHICH AUTOMATICALLY
+       ALTERS THE PROGRAM FOR EACH CHANNEL ON LINE.
+
+   9.  THE ARROW OPPOSITE THE TIMING IN THE CONSTANT-DELAY TIME TABLES
+       INDICATES THE TIME MOST FREQUENTLY FOUND ON VARIOUS CARD
+       READERS CHECKED.
+
+   10. IF AT ANY TIME IT IS DESIRED TO RELOAD THE PROGRAM UPON ITSELF,
+       IT IS SUGGESTED THAT THE MACHINE BE CLEAR BEFORE PUSHING LOAD
+       CARDS BUTTON.
+
+                                                             9C01A
+                                                             7/1/58
+                                                             PAGE 1.005
+
+
+
+
+
+
+
+                       CONSTANT-DELAY TIME TABLES
+
+                           CARD READER CYCLE
+
+XRB-LOC 02254  MILLISEC                              XRB-LOC 02254  MILLISEC
+ 
+    02607        230                                     3453         240
+    02661        231                                     3525         241
+    02733        232                                     3577         242
+    03005        233                                     3651         243
+    03057        234                                     3723         244
+    03131        235                                     3775         245
+    03203        236                                     4047         246
+    03255        237                                     4121         247
+    03327        238                                     4173         248
+    03401        239                                     4245         249
+
+                         SELECT-RCH KEY 1 DOWN
+
+
+XRB-LOC 02254  MILLISEC    XRB-LOC 02254  MILLISEC    XRB-LOC 02254  MILLISEC
+    4360         55.0          5224         65.0          6070         75.1
+    4432         56.0          5276         66.0          6142         76.1
+    4504         57.0          5350         67.1          6214         77.1
+    4556         58.0          5422         68.1          6266         78.1
+    4630         59.0          5464         69.1          6340         79.1
+    4702         60.0          5546         70.1          6412         80.1
+    4754         61.0          5620         71.1          6464         81.1
+    5026         62.0          5672         72.1          6536         82.1
+    5100         63.0          5744         73.1          6610         83.1
+    5152         64.0          6016         74.1          6662         84.1
+
+                   LEFT WORD-RIGHT WORD KEY 2 DOWN
+
+XRB-LOC 02254   USEC                                  XRB-LOC 02254   USEC
+    10           300                                      15          420
+
+                                                             9C01A
+                                                             7/1/58
+                                                             PAGE 1.006
+
+
+    11           324                                      16          444
+    12           348                                      17          468
+    13           372                                      20          492
+    14           396                                      21          526
+
+                        BETWEEN ROWS KEYS 3 DOWN
+
+XRB-LOC 02254  MILLISEC    XRB-LOC 02254  MILLISEC    XRB-LOC 02254  MILLISEC
+    511          8.0           573          9.2           655         10.4
+    516          8.1           600          9.3           662         10.5
+    523          8.2           605          9.4           667         10.6
+    530          8.3           612          9.5           674         10.7
+    535          8.4           617          9.6           701         10.8
+    542          8.6           624          9.8           706         11.0
+    547          8.7           631          9.9           713         11.1
+    556          8.8           636          10.0          720         11.2
+    561          8.9           643          10.1          725         11.4
+    566          9.0           650          10.2          732         11.4
+
+                   * 11 RIGHT-12 LEFT SENSE LIGTH 3 ON
+
+  ADD 6 OCTALLY TO VALUE IN XRB OR LOC 02254 AND SEE ABOVE TABLE FOR TIME
+
+                       BETWEEN RECORDS KEY 4 DOWN
+
+XRB-LOC 02254  MILLISEC    XRB-LOC 02254  MILLISEC    XRB-LOC 02254  MILLISEC
+
+   52            85.0          374          90.0           706         95.0
+   124           86.0          446          91.0           770         96.0
+   176           87.0          520          92.0           1042        97.1
+   250           88.0          572          93.0           1134        98.1
+   322           89.0          644          94.0           1366        99.1
+
+                     BETWEEN 12 RIGHT-EOR KEY 5 DOWN
+
+XRB-LOC 02254  MILLISEC    XRB-LOC 02254  MILLISEC    XRB-LOC 02254  MILLISEC
+
+    14           5.0           73           6.0           141          7.0
+    23           5.1           100          6.2           150          7.1
+    30           5.2           105          6.3           155          7.2
+    35           5.3           112          6.4           162          7.4
+
+                                                             9C01A
+                                                             7/1/58
+                                                             PAGE 1.007
+
+
+    42           5.4           117          6.5           167          7.5
+    47           5.6           124          6.6           174          7.6
+    54           5.7           131          6.8           201          7.7
+    61           5.8           136          6.9           206          7.8
+    66           5.9           105          6.3           213          8.0
+
+                   BETWEEN 12 RIGHT-SELECT KEY 6 DOWN
+
+XRB-LOC 02254  MILLISEC                               XRB-LOC 02254  MILLISEC
+
+    640          30.0                                     1020         38.0
+    656          31.0                                     1036         39.0
+    674          32.0                                     1054         40.0
+    712          33.0                                     1072         40.0
+    730          34.0                                     1110         40.0
+    746          35.0                                     1126         40.0
+    764          36.0                                     1144         40.0
+    1002         37.0                                     1162         40.0
+
+                                                             9C01A
+                                                             7/1/58
+                                                             PAGE 1.008
+
+
+
+
+                            SAMPLE PRINTOUT
+
+                    NOW PERFORMING DIAGNOSTIC 9C01
+
+                     SPEED OF THIS CARD READER   238 MS PER CYCLE
+
+MAXIMUN TIME BETWEEN SEL AND RESET LD CHANNEL    075.1 MS
+CARD READER DISCONNECTING AT EOR TIME 224 ON INDEX
+
+        MAXIMUM TIME BETWEEN WORDS  9L AND  9R   327 USEC
+
+         MAXIMUM TIME BETWEEN ROWS  9R AND  8L   011.2 MS
+
+              MAXIMUM TIME BETWEEN RECORDS       098.1 MS
+             TIME MEASURED BETWEEN EOR AND 9 LEFT TIME
+
+     MAXIMUM TIME BETWEEN 12R TIME AND EOR TIME  007.5 MS
+
+     MAXIMUM TIME BETWEEN 12 RIGHT AND SELECT    041.0 MS
+
+TEST LOC 00710, OPN RCDA  ,ERROR LOC 00720, 0 LOC 002000000110,SW 000001
+MSE 1000, COMP ERROR, WORD GENERATED 101 111 101 111 101 111 101 111 101 111
+XEC 00453, WORD 00030,    WORD READ  101 111 101 111 101 111 101 111 101 110
+INDS 000000700001, KEYS 000000700001
+
+
+              PASS COMPLETE FOR CARD READER ON CHANNEL A 9C01
+
+              PASS COMPLETE FOR CARD READER ON CHANNEL C 9C01
+
+              PASS COMPLETE FOR CARD READER ON CHANNEL E 9C01
+
+
+\l
+File Attachments:   Source \Asource\a    Cards \Acard\a      Deck \Adeck\a
+

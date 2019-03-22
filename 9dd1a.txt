@@ -1,0 +1,192 @@
+                                     9DD1A
+        
+                    SPECIAL FEATURE DIRECT DATA DIAGNOSTIC
+        
+                         (WITHOUT I/O TRAP INCLUDED)
+
+
+                             B. M. 568800 - 709
+                             B. M. 568802 - 766
+
+
+
+A.   PURPOSE OF TEST
+
+     1.    Test all Circuitry for the Direct Data Feature
+
+     2.    Test Cable and line connections for Direct Data Simulator
+
+B.   METHOD OF TEST
+
+     1.    The feature which is logically build into Channel B is tested through
+           the use of Channel A by Cabling from the summary punch shoe for
+           Channel A tape (335021) to the summary punch receptical box
+           (566461) and back to Direct Data Summary Punch shoe in the 766
+           (319489).
+
+     NOTE:        See page 6 of this write up for the layout of the receptacle
+                  box and cables.
+
+     2.    Channel B, D or F may be tested through the use of 9IOM modification
+           program.
+
+     3.    The following is a list of tests which will be performed by the
+           diagnostic.
+
+           a.     00147   Store sense lines to see that it does not decode as store
+                          channel.
+           
+           b.     00171   Present sense lines with all zeros.  Only ETT on chan.
+                          A should come up.
+           
+           c.     00225   Test Present Sense line positions 8, 10, 16
+           
+           d.     00266   Test Direct Data WRS
+           
+           e.     00315   Test Direct Data RDS
+           
+           f.     00345   Select tape units 1-5 on Channel A to test sense input
+                          lines 8-12.
+
+                                                            9DD1A
+                                                            Page 2
+
+           
+           g.     00523   Test store sense lines - position 16 by giving DD WRS
+                          and RCH to bring up Channel ready write.
+           
+           h.     00546   Test store sense lines - position 17 by giving DD RDS
+                          and RCH to Bring up Channel Ready read.
+           
+           i.     00572   Use Reset and load Channel with Ind. 1
+                          on - WC 0, to test EOF on Channel B.
+           
+           j.     00606   Test PSL and SSL indirectly addressed, indexed,
+                          and indirectly addressed and indexed.
+           
+           k.     00733   Write DD and pulse EOR to test disconnect from
+                          Direct Data.
+           
+           l.     00754   Write DD and Read Channel A to move one word.
+           
+           m.     01004   Transmit 36 words by rippling one bit to test each
+                          position of the data Register.
+           
+           n.     01057   Test write Channel A and Read Direct Data, for
+                          transmission of one word.
+           
+           o.     01104   Transmit a word every 60 us.
+           
+           p.     01230   Test that B time can get in during ER time of TCOB
+                          through use od END OPN Switch on MF CE Panel.
+           
+           q.     01255   Test that interrupt when not enabled will not trap.
+                                                 ---
+           r.     01275   Enable and interrupt - Check for trap.
+           
+           s.     01320   Check that enable with zeros resets previous enable.
+           
+           t.     01357   Interrupt when not enabled.  Enable and check for trap.
+           
+           u.     01412   Interrupt when inhibited - Restore and check for trap.
+           
+           v.     01457   Interrupt when inhibited enable and check for trap.
+           
+           w.     01524   Enable different Channel and Check for interrupt trap.
+
+        NOTE:     See page 7 of this write up for diagram of line connections.
+
+C.   ERROR PRINT ROUTINES
+
+     Two Print Routines are Used:
+
+     1.    The standard 9DEPR is used.
+
+                                                            9DD1A
+                                                            Page 3
+
+
+     2.    A special error print routine is used to test for correct traps and
+           correct data placed in trap locations.
+
+           The symbolic entrance to this routine is "SPRT".
+
+           A BCD print subroutine is used to print trap errors and comments the
+           symbolic entrance to this routine is "SPLAT".
+
+D.   AREA OF MACHINE REQUIRED
+
+     1.    MF, CF, 1, 2 or 3 DATA Synchronizers and the Special
+           Feature summary punch receptacle and cables, as described on
+           page 6.
+
+     2.    Storage Locations
+
+           9DDI 00030 - 01756, 02303 - 03415
+           9DEPR 06500 - 07663
+           9I0M 05500 - 06477
+
+E.   PROGRAM CONTROL
+
+     1.    Deck 000                9LD01A Binary Loader
+                001 - 080            9DD1
+                132                TRA Card - TRA 2271
+                133 - 134            Blank Cards
+
+     2.    Sense Switch Control
+
+           Switches 1, 2, 3, 4 as per 9DEPR
+
+           Switch = 5 UP         Program will make 1 pass on all Channels
+                                 selected, and test switch 6 to repeat or call
+                                 in next program.
+
+           Switch = 5 DOWN       Program will loop in Channels initially selected,
+                                 without returning to halt to enter control.
+
+           Switch = 6 UP         Call next program
+
+           Switch = 6 DOWN       Will return to halt at beginning of program to
+                                 enter keys with new selection.
+
+F.   NORMAL STOPS
+
+     05517        To enter Contral for 910M
+     01231        Throw End Opn Switch on MF, CE panel to "ON" position.
+     01242        Throw End Opn Switch on MF, CE panel to "OFF" position.
+
+
+                                                            9DD1A
+                                                            Page 4
+
+G.   ERROR STOPS
+
+     With SW 3 DOWN 06517 or 06545 in "9DEPR"
+
+H.   I/O SELECTION
+
+     I/O selection is the format used in 9IOM
+
+     NOTE:          See Diagram attached to this write-up on Page 5
+
+I.   COMMENTS
+
+     1.   The Direct Data receptacle must be connected to the system with the
+          cables, previously mentioned, before starting program.
+         
+     2.   Page 7 of this write up contains a diagram of the lines from the Tape
+          Channel to the Direct Data Receptacle, and from the Direct Data
+          Receptacle to the Tape Channel.
+         
+          The left side of the diagram labelled Chan. B refers to Direct Data,
+          and the right side of the diagram labelled Chan. A refers to the
+          Tape Channel.
+         
+          The Cables should be laid out with each position, as indicated.
+         
+     3.   Any positions of the Cables which are not used, are floating, but are
+          shielded.  The "SPARES" go to edge connectors.
+
+\l
+File Attachments:   Source \Asource\a    Cards \Acard\a      Deck \Adeck\a
+

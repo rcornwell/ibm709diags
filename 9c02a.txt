@@ -1,0 +1,340 @@
+                                                        9C02A
+                                                        4/4/60
+                                                        Page 1.001
+
+                                    9C02A
+
+                   CARD READER TIMING AND RELIABILITY TEST
+
+A. Unit Tested - Card Reader 500 CPM
+
+   1. Purpose of Test
+
+      A. Initially determine the speed of the card reader per cycle and
+         subsequently test all phases of timing to determine maximum time
+         between various operations.
+
+      B. To determine reliability of the card reader while reaching for
+         maximumn time between various operations.
+
+      C. To determine reliability of the card reader by causing the card
+         reader to intermittently latch up.
+
+   2. Method of Test
+
+      A. Keys 1-6 are used to increment timing, between various operations.
+
+      B. With keys 1-6 up, the card reader reads each record with normal
+         programming delays.
+
+      C. With sense switch 5 down, the card reader is intermittently
+         latched up between records. Correct location 723 compare
+         every word on the test card.
+
+B. Machine Units and Storage Area
+
+   1. Units required
+
+      MF, CF, DSU, Printer, CR Model 500
+
+   2. Storage Locations
+
+      00030-02433 - Card Reader Program
+      05500-06476 - Modification Program
+      06500-07712 - Error Print Program
+
+
+                                                        9C02A
+                                                        4/4/60
+                                                        Page 1.002
+
+C. Program Control
+
+   1. Deck
+
+               000             9LD01 Low End Loader 
+               001 - 059       9C01
+               060 - 083       Modification Program
+               084 - 112       9DEPR Diagnostic Print Subroutine
+               113             Transfer Card TRA 00030
+               114 - 413       300 Test Cards
+               414 - 415       Two Blank Cards
+
+   2. Sense Switch Control
+
+               3 Up            Print on error or maximum timing
+               3 Down          Halt on error or maximum timing
+               5 Up            Normal programming delay between 12 right
+                               and 9 left
+               5 Down          Variable delays between 12 right and select
+                               causing intermittent latch-up
+               6 Up            Load next diagnostic after testing all card
+                               readers on line.
+               6 Down          Repeat test after testing all card readers
+                               on line
+   
+    3. Sense Lights
+
+               1 On            Error indicated between word read from card
+                               and word in storage
+               2 On            Indicates test has determined speed of the
+                               card reader
+               3 On            Indicates maximum time has been reached
+                               between 11 right and 12 left rows.
+            
+    4. *Note* Keys must be depressed one at a time
+
+               1 Up            No effect
+               1 Down          Increement time between select and reset
+                               load channel
+               2 Up            No effect
+               2 Down          Increment time between words
+               3 Up            No effect
+               3 Down          Increment time between rows
+               4 Up            No effect
+               4 Down          Increment time between records
+               5 Up            No effect
+               5 Down          Increment time between 12 right time and
+                               EOR time
+
+                                                        9C02A
+                                                        4/4/60
+                                                        Page 1.003
+
+               6 Up            No effect
+               6 Down          Increment time between 12 right time and
+                               select
+               
+        5. Indicators
+
+           An indicator 1 through 6 on indicates a corresponding key has 
+           been depresses to determine the maximum timing of an operations.
+           Indicator 7 on indicates the test has determined the speed of the
+           card reader per cycle.
+
+D. Normal Stops
+
+   01146   No printer on line and maximum timing has been reached for
+           all operations except the time between 12 right time and EOR.
+   01147   No printer on line and maximum timing has been reached 
+           between 12 right time and EOR
+   05517   Enter control word in keys to indicate testing the card reader
+           and the number of channels on line.  At this stop, test cards
+           are to be reloaded in the card reader if more then on pass
+           is desired.
+
+E. Error Stop
+
+   06545   Word read from card and word in storage did not compare 
+           correctly.
+
+F. Print-Outs
+
+   1. Program identification is printed out initially if a printer is on
+      line on channel A.
+
+   2. After 300 records have been read by the card reader, pass compete is
+      printed out if a printer is on line on channel A.
+
+   3. Test cards are punched to indicate which word failed in a comparision
+      error.  The decimal sum of every 2 octal digits equals the word.
+      The zero row is indicated by the decimal sum of 10.
+
+      Examples 9 Row  9L 727272727272 9R 27272727272
+               0 Row  0L 737373737373 0R 37373737373
+
+   4. See the page following the constant-delay time tables for examples of
+      all printouts.
+
+
+                                                        9C02A
+                                                        4/4/60
+                                                        Page 1.004
+G. Comments
+
+   1.  See page 1 of the listing for instructions on how to enter keys for
+       testing of card readers on a single or multiple channels.
+
+   2.  To determine the maximum timings between various operations with
+       no printer on line on channel A, display XRB or location 02254 and
+       consult the constant-delay time table for the timing comparable to
+       the value in XRB or location 02254. *Note* If sense light 3 is on
+       when determining the time btween rows, add six octally to the value
+       in XRB or location 02254 and constult the constant-delay time table
+       for timing between rows.  Sense light 3 is turned on only if maximum
+       timing between rows occurs between 11 row right an 12 row left.
+
+   3.  See 9C01A program for flow chart.
+
+   4.  Six words on a test card are compared: 9L, 7L, 5L, 3L, 1L, 11L.
+       A complete card cannot be compared if keys 1-6 are down.
+
+   5.  In order to compare the complete card, change the decrement of
+       location 723 from 4 to 1.
+
+
+                                                        9C02A
+                                                        4/4/60
+                                                        Page 1.005
+
+
+                       CONSTANT-DELAY TIME TABLES
+
+                           CARD READER CYCLE
+
+XRB - Loc 02254  Millisec                              XRB-Loc 02254  Millisec
+  
+     2607         110                                    3453           120
+     2661         111                                    3525           121
+     2733         112                                    3577           122
+     3005         113                                    3651           123
+     3057         114                                    3723           124
+     3131         115                                    3775           125
+     3203         116                                    4047           126
+     3255         117                                    4121           127
+     3327         118                                    4173           128
+     3401         119                                    4245           129
+
+                        SELECT-RCH KEY 1 DOWN
+
+
+XRB-Loc 02254  Millisec    XRB-Loc 02254  Millisec    XRB-Loc 02254  Millisec
+    2334         30.0          3522         45.0          4710         60.1
+    2406         31.0          3574         46.0          4762         61.2
+    2460         32.0          3646         47.0          5034         62.2
+    2532         33.0          3720         48.1          5106         63.2
+    2604         34.0          3772         49.1          5160         64.2
+    2656         35.0          4044         50.1          5232         65.2
+    2730         36.0          4116         51.1          5304         66.2
+    3002         37.0          4170         52.1          5356         67.2
+    3054         38.0          4242         53.1          5430         68.2
+    3126         39.0          4314         54.1          5502         69.2
+    3200         40.0          4366         55.1          5554         70.2
+    3252         41.0          4440         56.1          5626         71.3
+    3324         42.0          4512         57.1          5700         72.3
+    3375         43.0          4564         58.1          5752         73.3
+    3450         44.0          4636         59.1          6024         74.3
+
+                                                        9C02A
+                                                        4/4/60
+                                                        Page 1.006
+
+
+       LEFT WORD - RIGHT WORD KEY 2 DOWN
+
+XRB - Loc 02254   USec                          XRB-Loc 02254     USec
+     10           300                                  15          420
+     11           324                                  16          444
+     12           348                                  17          468
+     13           372                                  20          492
+     14           396                                  21          526
+
+                 BETWEEN ROWS KEYS 3 DOWN
+
+XRB - Loc 02254  Millisec             XRB-Loc 02254      Millisec
+     242          4.0                         324         5.1   
+     247          4.1                         331         5.3   
+     254          4.2                         336         5.4  
+     261          4.3                         343         5.5 
+     266          4.4                         350         5.6 
+     273          4.6                         355         5.7 
+     300          4.7                         362         5.8
+     305          4.8                         367         5.9
+     312          4.9                         374         6.1
+     317          5.0          
+
+     * 11 Right - 12 Left  Sense ligth 3 on add 6 octally to value in XRB
+       or loc 02254 and see above table.
+
+             BETWEEN RECORDS KEY 4 DOWN
+
+XRB - Loc 02254  Millisec               XRB - Loc 02254    Millisec 
+
+     52           42                             520        49
+     124          43                             572        50
+     176          44                             644        51
+     250          45                             716        52
+     322          46                             770        53
+     446          48                            1042        54
+
+
+                                                        9C02A
+                                                        4/4/60
+                                                        Page 1.007
+
+                     BETWEEN 12 RIGHT-EOR KEY 5 DOWN
+
+XRB - Loc 02254  Millisec               XRB - Loc 02254  Millisec 
+
+    10            2.5                          77         3.8
+    15            2.6                         104         3.9
+    22            2.7                         111         4.0
+    27            2.8                         116         4.1
+    34            2.9                         123         4.3
+    41            3.1                         130         4.4
+    46            3.2                         135         4.5
+    53            3.3                         142         4.6
+    60            3.4                         147         4.7
+    65            3.5                         154         4.9
+    72            3.7                         161         5.0
+    
+               BETWEEN 12 RIGHT-SELECT KEY 6 DOWN
+
+XRB - Loc 02254  Millisec                        XRB - Loc 02254  Millisec
+
+    213          10                                     373         18
+    231          11                                     411         19
+    247          12                                     427         20
+    265          13                                     445         21
+    303          14                                     463         22
+    321          15                                     501         23
+    337          16                                     517         24
+    355          17                                     525         25
+
+
+                                                        9C02A
+                                                        4/4/60
+                                                        Page 1.008
+
+                            SAMPLE PRINTOUT
+
+Now performing diagnostic   9C02
+
+Speed of this card reader   119 MS per cycle
+
+Maximun time between sel
+and reset LD channel         42.0 MS
+Card reader disconnecting
+at EOR time 224 on index
+
+Maximum time between words
+9L and  9R                   400 USEC
+
+Maximum time between rows
+9R and  8L                     5.1 MS
+
+Maximum time between records   49.0 MS
+Time measured between 
+EOR and 9 left time
+
+Maximum time between 12R
+time and EOR time              4.7 MS
+
+Maximum time between 12 right
+and select                     15.0 MS
+
+Test loc 00710, opn rcda  ,error loc 00720, 0 loc 002000000110, sw 000001
+Mse 1000, comp error, word generated 101 111 101 111 101 111 101 111 101 111
+xec 00453, word 00030,    word read  101 111 101 111 101 111 101 111 101 110
+Inds 000000700001, keys 000000700001
+
+
+Pass complete for card reader on channel A 9C02
+
+Pass complete for card reader on channel C 9C02
+
+Pass complete for card reader on channel E 9C02
+
+\l
+File Attachments:   Source \Asource\a    Cards \Acard\a      Deck \Adeck\a
+

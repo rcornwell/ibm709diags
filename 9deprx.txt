@@ -1,0 +1,351 @@
+                                               DEPRX
+                                               3-15-60
+                                               PAGE 1.001
+
+
+
+
+
+                        DEPRX
+
+SENSE SWITCH INTERROGATION AND DIAGNOSTIC PRINT SUBROUTINE
+
+
+
+A.   PURPOSE OF THIS SUBROUTINE
+
+     This subroutine under control of the SENSE SWITCHES will:
+     
+     1.    Print out the status of the machine at the time of error.  The
+           printout will provide information which is useful when running
+           diagnostic programs.
+         
+     2.    Check for a TAPE REDUNDANCY on all CHANNELS.
+         
+     3.    Provide for looping in any section of the main program.
+         
+         
+B.   METHOD OF TEST
+
+     This subroutine may be used only with programs which have provided
+     the basic linkage to the subroutine.
+     
+     1.    Insert a BCD word of SHARE MNEMONICS OPERATION CODE at
+           the beginning of each section of a program to indicate what operation
+           is being tested.
+        
+           Immediately folloowing this BCD word will be the first instruction
+           of the section being tested.  This instrcutipn is in location X
+           referred to in the entries.
+        
+                    Example:
+     
+                                   BCD     1CLA
+                          X        CLA      AAA
+        
+     2.    The basic linkage to the subroutine will depend on what type of
+           printout or checking is desired.
+        
+     3.    6 Entries are available to this subroutine.  Purpose and Linkage
+           to each entry are described on subsequent pages of this write-up.
+        
+
+                                               DEPRX
+                                               3-15-60
+                                               PAGE 1.002
+
+     a.           TSX  ERROR,4 
+                  TSX  OK,4
+                  TRA  X
+     
+           This ENTRY causes a FOUR LINE MAIN FRAME printout as
+           shown on page 1.008.  Return is made to 2 instructions following
+           TRA X.  If SENSE SWITCH 1 is DOWN, return is made to TRA
+           X which will cause a repeat of the section being tested.  Entry
+           to TSX OK,4 will allow for checking SENSE SWITCHES to
+           determine whether to repeat the section of program or continue
+           with the next section.
+
+           If SENSE SWITCH 4 is DOWN, the tested section will be repeated
+           the number of times stored in KONST+2.  Initially this is 40
+           DECIMAL but can be changed by storing the desired constant in
+           KONST+1 & KONST+2.
+
+
+  \I9deprx-0.png\i
+
+
+                                               DEPRX
+                                               3-15-60
+                                               PAGE 1.003
+
+
+     b.            TSX   ERROR-1,4
+                   TRA   X
+     
+           This ENTRY causes a FOUR LINE MAIN FRAME printout
+           as shown on page 1.008.
+     
+           Return is made to 1 instruction: following TRA X.
+     
+           If SENSE SWITCH 1 is DOWN, return is made to TRA X
+           which will cause a repeat of the section being tested.
+     
+           SENSE SWITCH 4 is not interrogated.
+
+  \I9deprx-1.png\i
+
+
+                                               DEPRX
+                                               3-15-60
+                                               PAGE 1.004
+
+
+     c.            TSX RDNCK,4
+                   TRA  X
+     
+            This ENTRY will interrogate the TAPE INDICATORS for
+            all CHANNELS. If any tape indicator is on a TWO LINE
+            printout will occur as shown on Page 1.009.
+     
+            Return will be to the instruction following TRA  X.
+     
+            If SENSE SWITCHES 1 and 2 are DOWN no printout will occur
+            and return will be made to TRA X, which will cause a repeat
+            of the section begin tested.  With only SENSE SWITCH 1 DOWN,
+            a printout will occur and the section will be repeated.
+
+  \I9deprx-2.png\i
+
+
+                                               DEPRX
+                                               3-15-60
+                                               PAGE 1.005
+
+     d.             TSX OK,4
+                    TRA X
+     
+     
+             This entry will provide for looping in a program section any
+             number of times.  With SENSE SWITCH 1 DOWN, the section
+             will be repeated until SENSE SWITCH 1 is RAISED. With
+             SENSE SWITCH 1 UP and SENSE SWITCH 4 DOWN, the program
+             section will loop the number of times specified in KONST+2.  This
+             is 40 DECIMAL times initially but can be changed by storing desired
+             constant in KONST+1 & KONST+2.  SENSE SWITCHES 1 and 4 UP,
+             the program section will not be repeated.
+
+
+  \I9deprx-3.png\i
+
+
+                                               DEPRX
+                                               3-15-60
+                                               PAGE 1.006
+
+ 
+ 
+         e.            TSX ERROR-4,4
+                       TSX OK
+                       TRA X
+         
+               This entry and it's returns are the same as TSX ERROR,4.
+               The printout however is a 4 line I/O printout as shown on
+               Page 1.009.
+         
+         f.            TSX ERROR-2,4
+                       TRA  X
+         
+               This entry and it's returns are the same as TSX ERROR-1,4.
+               The printout however is a 4 line I/O printout as shown on
+               Page 1.009.
+     
+     4.                TRA   X  OR   TXL   X
+     
+          In TRA X, the X denotes the starting instruction of the section
+          being tested.
+     
+          If the TRA X is changed to TXL X only one line will be printed
+          when an error occurs.  See Page 1.009
+     
+     5.              TXL   X,4
+     
+          If TXL X is given a Tag of 4, the instruction will be treated as a
+          NOP.
+     
+     
+     6.           ETT
+     
+          An error track identification has been incorporated into this sub-
+          routine.  A typical printout is shown on Page 1.009.
+     
+          This routine will provide identification for tracks on which errors
+          have occurred.  This routine is called in by using the basic I/O
+          linkage and inserting a 1 in the DECREMENT of the TSX instruction.
+     
+              Example:
+     
+                      TSX  ERROR-2,4,1
+                      TRA  X
+     
+            The printout provided is useful on tape comparison errors but is
+            meaningless when called in on card machine comparison errors.
+     
+
+                                               DEPRX
+                                               3-15-60
+                                               PAGE 1.007
+
+     
+     7.     When writing an I/O test, prior to entering this subroutine:
+     
+            Store the WORD COUNT of each RECORD in INDEX REGISTER A.
+            Store the RECORD COUNT in INDEX REGISTER B.
+            Store the TOTAL WORD COUNT +1 in "WDNO"
+            Store the TOTAL RECORD COUNT +1 in "RECNO"
+     
+     8.     If a section of the program uses the TRAPPING MODE, the BCD
+            word at the start of the section should be followed by a hyphen.
+     
+                 Example:
+    
+                            BCD    1CLA-
+
+
+C.   PROGRAM CONTROL
+
+     1.  Deck
+
+         001-032                     Place Binary Deck just
+                                     before TRA card of assemble
+                                     program to be tested.
+
+     2.  716 Printer Control Board
+
+         Standard Diagnostic Board.
+
+     3.  Sense Switch Control
+
+         SSW  1   UP          Test Sense SW4
+                  DOWN        Repeat test loop
+
+         SSW  2   UP          Indicate errors-test SSW 3 to Print or Halt
+                  DOWN        Bypass error indicators-test SSW 1
+
+         SSW  3   UP          Print on error if SSW 2 is up then test SSW 1
+                  DOWN        Stop on error if SSW 2 is up then test SSW 1
+
+         SSW  4   UP          Proceed to next test
+                  DOWN        Repeat section N times but if error occurred
+                              go to next section.
+
+         SSW  5               No used
+
+         SSW  6   UP          End test-call in next program.
+                  DOWN        Repeat entire program
+
+
+                                               DEPRX
+                                               3-15-60
+                                               PAGE 1.008
+
+D.   ERROR STOPS
+
+
+                                   A HTR will occur here if entry is from ERROR
+                                   or ERROR-4 and SENSE SWITCH 3 is down.  The
+                                   address of the ERROR LOCATION is in INDEX
+                                   REGISTER C.
+       76471\I9deprx-6.png\i
+                                   A HTR will occur here if entry is from ERROR-1
+                                   ERROR-2 or RDNCK and SENSE SWITCH 3 is down,
+                                   The Address of the ERROR LOCATION is INDEX
+                                   REGISTER C.
+
+E.    STORAGE AREA USED FOR TEST
+
+            76400-77710
+
+
+F.    PRINTOUTS
+
+            There are four types of Print-Outs, as follows
+
+    1.            MAIN FRAME PRINT - OUT
+
+TEST LOC 00031, OPN STP    ,ERROR LOC 00052, 0 LOC 40200000031, SW 000000
+LITE 0000, MQ 00001010101, XRA 00001, XRB 00001, XRC 07726, TRAP TGR  0
+ACC &,Q 0,P 0, 30001010101, DIV CK 0, ACC OVFL 0,
+INDS 00000000000, KEYS 00200000030
+
+          a.  Test Loc 00031     Indicates the start of the section of the program
+                                 in error.
+          
+          b.  Opn STP            Indicates the OPERATION being tested.  Test
+                                 instruction is STORE PREFIX.
+          
+          c.  Error Loc 00052    Indicates the location where the error was detected.
+                                 Error in program occurred at Location 00052.
+          
+          d.  PSE SW 00000,      Indicates the status of the 6 SENSE SWITCHES.  A 0
+                                 indicates that the SWITCH is UP and a 1 indicates
+                                 that the SWITCH is DOWN.  SENSE SWITCHES and
+                                 SENSE LIGHTS are read sequentially from LEFT TO
+                                 RIGHT.
+          
+          e.  Lite 0000          Refers to 4 SENSE LITES.  A binary 1 indicates that
+                                 a LIGHT is ON and a binary 0 indicates that a
+                                 LIGHT is OFF.
+
+
+                                               DEPRX
+                                               3-15-60
+                                               PAGE 1.009
+
+
+    2.                       I/O PRINT - OUT
+
+TEST LOC 00202, OPN RTBA 1 ,ERROR LOC 00230, 0 LOC 000000100001, SW 000000
+MSE 0000, COMP ERROR, WORD GENERATED 010 000 101 100 001 001 100 111 011 011
+REC 00001, WORD 00002, WROD READ.    100 000 101 000 001 001 100 010 011 001
+INDS 00000000000, KEYS 000000000     BA          8               4 1      2
+
+          a. OPN RTBA 1         Indicates that the error occurred as a result
+                                of READING TAPE 1 in BINARY on CHANNEL A.
+          
+          b. Word Generated     Refers to the WORD WRITTEN or GENERATED
+                                in storage that is being compared to the WORD
+                                READ from TAPE UNIT 1.
+          
+          c. Word Read          Indicates the WORD of the RECORD that was
+                                read into storage in ERROR from TAPE 1.
+          
+          d. MSE 0000           Indicates the status of the 4 SENSE LIGHTS.
+          
+          e. ETI                ERROR TRACK IDENTIFICATION just below
+                                word read provides a quick identification of the
+                                FAILING TRACK.  This identification will occur
+                                only if it is called in by the TSX instruction.
+
+             When SENSE SWITCH 3 is DOWN the MQ will contain the CORRECT
+             WORD and the ACC will contain the WORD READ.
+
+    3.                 TAPE REDUNDANCY PRINT - OUT
+
+TEST LOC 01204, OPN RTBA , ERROR LOC 01230, 0 LOC 000026007650, SW 000001
+INDS 0000000000, KEYS 002000001151 TAPE CK-CHN A0, B1, C0, D0, E0, F0, G0, H0
+
+          a.  Tape CK-CHAN       Identifies channel in which a Redundancy
+                                 Error Occurred. A one denotes an ERROR on
+                                 this channel. A zero denotes NO ERROR on
+                                 this channel.
+
+
+    4.                   ONE LINE PRINT - OUT
+
+TEST LOC 01224, OPN TCOA , ERROR LOC 01226, 0 LOC 000026007650, SW 000001
+
+
+\l
+File Attachments:   Source \Asource\a    Cards \Acard\a  
+

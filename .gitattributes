@@ -1,0 +1,11 @@
+*.jpg binary
+*.png binary
+*.bcd binary
+*.vcproj binary
+*.exe binary
+*.cbn binary
+*.dck binary
+*.tap binary
+*.asm test eol=crlf
+*.ini test eol=crlf
+*.ctl test eol=crlf

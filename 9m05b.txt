@@ -1,0 +1,574 @@
+                                                              9M05B
+                                                              8-15-59
+                                                              Page 1.001
+
+
+                               9M05
+
+                  709 FLOATING POINT DIAGNOSTIC
+
+                  THIS PROGRAM ASSUMES THAT ALL
+                     FIXED POINT AND INDEXING
+                     INSTRUCTIONS ARE CORRECT
+
+
+A. UNIT TESTED
+
+   1. PURPOSE
+
+      To examine the results of floating point operations, to provide an accuracy
+      and reliability test for floating point, to provide a trace to insure that each
+      test is undertaken in proper sequence.
+
+   2. METHOD
+        General
+      In general, a floating point operation is performed, and the results are examined
+      by means of the fixed-point instructions.  The program is divided into three
+      parts, each part is divided into two sections.  They are as follows:
+
+         Part 1
+      Section 1 - This is the basic execution controls program, with floating point
+      operations which should not trap, non-linear programming begins late in this
+      section to provide more vigorous test.
+
+      Section 2 - This is the basic floating point trap program.  Its purpose is to insure
+      that floating point trap will occur on spill conditions.
+
+         Part 2
+      Section 1 - This is the floating point trap program which provides a complete
+      examination of floating point trap operation by extended use of non-linear programming.
+
+      Section 2 - This is the floating point accuracy and reliability program. Its purpose
+      is to insure reliability of floating point under all worst case conditions likely to be
+      encountered during actual application by a customer.  Extensive use is made of
+      subroutines and indexing for program control.  As the program proceeds, the tests
+      become more complex and more extensive floating point operations are performed
+      before the answers can be check.  If and error occurs in this section and not in the
+      the preceeding sections, then there is most likely a sliver condition developing and
+      causing a beat failure.
+
+
+
+
+                                                              9M05B
+                                                              8-15-59
+                                                              Page 1.002
+
+ 
+         Part-3
+      Section 1 - This section repeats the operations of Part 2, Section 1, with the addition
+      of indirect addressing, except that it begins with a cursory check of the three floating
+      point circuits with indirect addressing.  The purpose of this section is to see what effect,
+      if any, indirect addressing will have on floating point trap.
+
+      Section 2 - This section repeats the accuracy tests of Part 2, Section 2, with the
+      addition of indirect addressing.  Its purpose is to see what effect, if any, indirect
+      addressing will have on floating point accuracy and reliablity.
+
+         Monitor
+      9M05 includes a program monitor to prevent the program from skipping wildly into unused
+      portions of core storage, and to provide some means of detecting random address errors
+      which are difficult to predict.  This is accomplished as follows:
+
+      When 9M05 is begun at the normal starting addres, 6273, all locations in core storage,
+      regardless of size, which are not used by the normal operation of 9M05 are replaced
+      by TSX Space 4.  In addition, the starting address of every test is recorded by monitor.
+      Thus, if the program skips out of control, monitor can recover control and return to the
+      test which has been underway when this error occurred.
+     
+         Tracing
+      In addition to monitor, 9M05 includes a tracing routine.  9M05 may be operated in the 
+      tracing mode as follows:
+
+      When 9M05 is first loaded and tracing is caled for by the special transfer card supplied
+      with the deck, explained under program control, the normal start of 9M05, 6273 is
+      bypassed, 9M05 and 9DEPR are altered, and 9M05 will begin at 30.  As each test is
+      completed the address recorded in monitor and the terminating address of the test is
+      printed in octal.  Any error indications will also be printed normally by 9DEPR if sense
+      switch 3 is up.  When 9M05 has completed one pass in the tracing mode, the trace program
+      is erased, the program is restored to normal, and will proceed once more from 6273 in the
+      normal mode.  Tracing will not take place again unless the program is reloaded.  Sense
+      switch settings do not suppress tracing.  Note that tracing merely follows 9M05 whenever
+      it may go.  It does not interfere with its operation, but it does make some changes which
+      are not restored until one pass of the program is completed.  If tracing is to be suspended
+      before the end of one pass, manually transfer to 6302.  The program will then be restored,
+      the tracing routine erased, and 9M05 will restart in the normal mode.
+
+B. AREA REQUIRED
+
+      Units-Card Reader, Printer, Main Frame.
+      All core locations are written when 9M05 starts at 6273, See-Unit Tested.
+
+
+
+                                                               9M05B
+                                                               8-15-59
+                                                               Page 1.003
+
+C. PROGRAM CONTROL
+
+   Deck
+   1 - For normal operation, ready in card reader.
+       9M05B 000 through
+       9M05B 192
+       This deck includes 9DEPR diagnostic error print subroutine.
+       Cards 191 and 192 are used only with 4k machine.
+
+   Depress Load cards
+
+   Card 9M05B 188 is the normal transfer card which transfers to 6???.  The start routine
+   sets monitor, erases the trace program and transfers to 30 to being 9M05 in the normal
+   mode.
+
+   2 - For Trace Operation
+       Place 9M05B 189 in
+       Front of 9M05B 188
+
+   Depress Load Cards
+
+   Card 9M0B 189 is the trace transfer card which transfers to 6341.  The trace program
+   will make suitable alteratuions in 9M05B, and transfer to 30 to being 9M05B in the tracing
+   mode.  When one pass has been completed, the tracing program is erased, and 9M05
+   will restart normally at 6273.
+    Sense Switches.
+         Refer to the write-up of 9DEPR for sense switch settings.
+         If switch 5 is down, perform FDH with halt.
+
+D. NORMAL STOPS
+
+   With sense switch 5 down, stop at 0621 with divide check on, on first pass of the
+   program only.
+
+E. ERROR STOPS
+
+   With sense switch 3 down and 2 up, normal etrror stops in 9DEPR at 6517 or 6545.
+
+F. PRINT-OUTS
+
+   With sense switch 2 and 3 up, normal error prints by 9DEPR,. When operating in tracing
+   mode,  trace prints regardless of sense switch settings.  it is highly recommended that
+   errors be allowed to print, since the print-out is not likely to be misleading.
+
+G. COMMENTS
+
+   9M05 is designed to provide not only a basic test of floating-point, but also to provide a
+   rigorous test under all extreme conditions that can be predicted in normal customer
+   applications.  Diagnostic Engineering will be grateful for any suggestions, criticisms or
+   complaints regarding this test.
+
+
+
+
+                                                                9M05B
+                                                                8-15-59
+                                                                Page 1.004
+
+H. HOW TO USE 9M05
+
+   A single pass of the program without errors takes about 5 seconds. Most effective use
+   of the program would be to allow it to repeat for several minutes under sense switch 4
+   and/or 6 control.
+
+   Each part of the test will be considered separately.
+
+      Part 1
+   Section One is the basic execution controls test.  Section Two is the basic floating point
+   trap program.  There are no legal trap conditions in Section One.
+
+   Non-linear programming is introduced in Part One.  This means, simply, that subroutines
+   are used to a great extent to check results of each test, and to service each test.
+   The use of subroutines has several advantages.
+
+      1.  They conserve storage space, since routines which are performed most often
+          are written only once for the entire program rather than once for each test.
+
+     2.   They provide for a more rigorous test, since each test is free to perform complete
+          checking at a minimum expenditure of storage.
+
+     3.   They make the main program easier to follow, since all instructions not directly
+          pertaining to the operation but only incidental to it are listed elsewhere.  In
+          addition, when an error occurs, the engineer is referred to a place on the listing
+          which not only indicates what error occurred, but also contains the correct
+          arithmetic result directly on the listing.
+
+     4.   The job of learning the program is simpler, since each error or service subroutine
+          need be studied only once, rather tehn once for each test in the program.
+
+     The subroutines are described on later pages.
+
+     Part 2
+ 
+   Section One provides an extended test of floating point trap.  Not only are all the arithmetic
+   results checked but also all the information written at zero is checked.  All possible
+   combinations of the four indicator bits are provided for.
+
+   Section Two is the Reliability Tests.
+
+      Part 3
+
+   Part 3 is essentially the same as Part 2 except that indirect addressing is included.  If
+   Part 1 and Part 2 run and Part 3 does not, it may be safe to assume that indirect
+   addressing is interferring with floating point, or visa versa.
+
+
+                                                                 9M05B
+                                                                 8-15-59
+                                                                 Page 1.005
+
+   What the subroutines do, and what the error indication mean.
+
+6211   Clear - This subroutine checks the sequence of each test which uses it to assure that
+       each test is being performed in proper order and that nothing has been skipped.  Every
+       test within 9M05, except the very first test, enters clear, thus, before every test
+       starts, we make sure that this test is in its proper sequence.  Three conditions are
+       tested for:
+       1.  With sense switch 1 or 4 down the test should be repeated.  See that the starting
+           address of this test is the same as the address recorded in 6120. Or
+       2.  Normal sequence. Sense switch 1 and 4 up.  See that this test is the one which
+           follows the test whose starting address is recordded in 6120.  Or
+       3.  Manual Transfer - See that the keys contain the instruction TRA X, and that X is the
+           same as teh starting address of the test now being entered.
+       If these conditions are fulfilled, then the program goes on to-Reset- if not then tranfer
+       is made to  -Space-. See below.
+
+6246   Reset - This routine simply resets all registers and indicators in the main-frame,
+       clears location zero, and stores the address of the test which uses it in the decrement
+       of 6120. -Resset- does not check program sequence.
+
+6265   Part 2 - This subroutine simple turns on sense light 4 and goes to Clear+1. Light 4 is
+       used to signal the trap routine that a return address has been placed at Sect 2, 6131.
+
+6270   Part 3 - This subroutine turns on sense light 3 and goes to Part 2. Light 3 is merely
+       a visual signal to indicate that indirect addressing is being used by the test.
+
+5137   ACB - This subroutine checks columns S, Q, P and 35 of the accumlator as follows:
+       The word following the instruction TSX ACB,4 is loaded into indicator register columns
+       32, 33, 34 and 35.  Then, if ACC 35 is a 1, indicator column 35 is inverted, if P is a 1,
+       indicator 34 is inverted, if Q is 1, indicator 33 is inverted, if S is a 1, indicator 32 is
+       inverted. The ACC and MQ are restored after this operation.  If the test is successful,
+       the indicators will be zero, otherwise the indicators will contain an octal number
+       corresponding to the bits S, Q, P and/or 35 of the ACC which were wrong.  This bit code
+       is given in a table listed with the subroutine.  If the indicators are not zero, the sub-
+       routine executes TIX error-1,4 note that the ERR location complement is already in
+       XRC, and is reduced by one, therefor the error location given is the address of the word
+       which contains the correct bit code, the indicators contain the bit codes for the bits in
+       error.
+       ACC and MQ are unchanged.
+       This subroutine also stores the logical accumulator at SALON+5, 5717, and the MQ at Q,
+       6115 in preparation for the following routines.
+
+5164   ACCF - This subroutine assumes that ACB has stored the ACC at 5717, and checks,
+       then, the accumulator columns 1 through 34 as follows:
+
+
+
+                                                                9M05B
+                                                                8-15-59
+                                                                Page 1.006
+
+       The word at 5717 is brought to the accumulator by ADM, and column 35 is dropped by
+       ANA - then the correct answer, which follows the TSX ACCF,4 instruction is subtracted
+       from the accumulator, if the test is successful, the ACC zeros.  If the ACC does not
+       zero, the word subtracted is added back, then the correct answer is placed in the MQ,
+       and the subroutine executes TIX error-1,4,1. Thus the error location given is the word
+       which contains the correct answer.  Note that the accumulator contains its original result,
+       that is, the incorrect result, and the MQ contains the correct result.
+      
+5174   MQF - This subroutine assumes that ACB has stored the original MQ result at 6115, and
+       checks this result as follows: The word following the TSX MQF,4 instruction is teh correct
+       answer, this is loaded into the MQ.  Then the word at 6115 is brought into the ACC, and
+       then checking proceeds as described in ACCF.  Thus the error location is the address of
+       the correct answer.  The ACC contains the original MQ result, that is, the incorrect answer.
+       The MQ contains the correct result.
+      
+5177   ZERO - This subroutine checks the address written in location zero as follows:
+       The word following the instruction TSX Zero,4 is the correct address.  The address past 
+       of location zero is brought to the ACC through XRA, the correct address is loaded into the 
+       MQ, checking proceeds as described in ACCF.  Thus the error location given is the address
+       of the word which contains the correct address that should have been written in zero, the
+       accumulator contains the address which was written in zero. The MQ contains the correct
+       address.  Location zero is unchanged.
+      
+5203   BITS - This subroutine checks the decrement part of location zero in the same manner as
+       descibed for _ZERO-, above.
+      
+5212   SETIT - This subroutine services test ITS -2575-, two divsions are performed if the first
+       division causes a trap, the error lcoation given will be from -SETIT-,-5212-. If the test
+       is to continue, this subroutine clears the previous MQ and ACC contents, and sets the
+       correct contents and returns to ITS+7, to continue the test.
+      
+5217    SETID - This subroutine services test IDIH, 4352, in the same way and for the same
+       reason as given above for SETIT.
+      
+5125   UONLY - This subroutine checks the overflow and divide check trigs, ACC overflow trigger
+       should be off, if it is on, the error location will be the address of the instruction TSX
+       UONLY,4.  If the divide check trigger is on the error location will be 2 locations following
+       the TSX UONLY,4 instruction.
+      
+       OONLY - EQUALS-UONLY
+      
+5224   SQRT - This subroutine takes the square root of the floating point number which is in the
+       accumulator upon entry to the subrouine. If the ACC is minus, the subroutine returns to
+       the location following the TSX SQRT,4 instruction, which is defined as an error return.
+       If the ACC is not minus, but is zero, the return is two locations following the TSX
+       SQRT,4 instruction, because the square root of zero is zero and no calculation is required.
+
+
+                                                                9M05B
+                                                                8-15-59
+                                                                Page 1.007
+
+       Otherwise the square root is extracted by the basic Newtonion iteration method,
+       which is:
+
+
+                  X\s1\S = 1/2 (X\s0\S + \U\SN \s\u)
+                                 X\s0\S
+
+       Where X\s0\S is teh first trail root, and N is the radicand.
+       The iteration continues for 13 cycles, namely until X\s13\S has been calculated. This
+       should give the floating point root exact to 9 octal places.  When the iterations have
+       been completed, the root is placed in the accumulator and return is made to the second
+       location following the TSX SQRT,4 instruction.  The results are checked there in the
+       main program.
+
+****** If you wish to repeat this routine witha given number for scoping, perform the
+       following steps:
+
+       1.  Store the desired number at 77777
+
+       2. Replace 5242 with the instruction CLA 77777
+
+       3. Replace 5243 with the instruction TRA 5227
+
+       4. Depress reset
+
+       5. Set the instruction counter to 5241 by manual tranfer
+
+       6. Execute TSX 6246 TAG 4.
+
+       7. Put sense switch 2 down
+
+       8. Put in automatic and press start
+
+       The square root of the chosen number will continually be extracted.  If the routine traps
+       of skips into space control will be returned to the routine by monitor.  If switch 2 is up,
+       these last two conditions will cause an error indication by 9DEPR.
+
+5246   SQRI - This subroutine is exactly the same as SQRT described above, except that
+       indirect addressing is used.
+
+****** If you wish to repeat the iterations with a given value for scoping, perform the following
+       steps:
+       1. Store the desired value at 77777
+     
+       2. Replace 5264 with the instruction CLA 77777
+
+       3. Replace 5266 with the instruction TRA 5251
+
+
+
+                                                                  9M05B
+                                                                  8-15-59
+                                                                  Page 1.008
+
+       4. Depress reset
+
+       5. Set the instruction counter to 5263
+
+       6. Execute TSX 6246 TAG 4.
+
+       7. Put sense switch 2 down
+
+       8. Put in automatic and press start
+
+       The square root of the chosen number will continually be extracted.  If the routine 
+       traps of skips wildly into space, control will be returned to the routine by monitor.
+       If switch 2 is up, these last two conditions will cause an error indication by 9DEPR. 
+
+
+5266   ENK - This subroutine is used to examine the console keys.  If the S key is down the
+       value in the keys is entered and examined.  If the value is a floating point number
+       whose characteristic is greater then 200, but less then 233, and whose fractional
+       part represents an octal integer, that is, a whole number, then the value is accepted
+       by the program, otherwise it is not accepted.  S is not entered. This value is used
+       by -FXFLM-, -3427.
+      
+5313   PRINT - This subroutine extracts the primitive root at the value found in the accumulator
+       upon entry.  The method used is the method of Gruenburger and proceeds as follows:
+      
+       1. The prime is checked to make sure it is greater than 2, less than 7777.
+      
+       2. The value 2 is subtracted and the prime is made a fixed point number.
+      
+       3. This number is preserved at 5713 and is called the tally count.
+         The original floating point prime is stored at 5712.
+      
+       4. The tally count is placed in XRB, and 12 is placed in XRA.
+      
+       5. The first trial root is selected and stored at 5757.
+      
+       6. The trial root is squared, and the squared placed at 5760, then divided by the
+          prime.
+      
+       7. The decimal places are removed from the quotient, and the whole number part,
+          the integral part only, is used.  This is multiplied by the original prime.
+      
+       8. Then the value at 5760, the dividend, is subtracted from the above product. If
+          the result is minus one, and if the tally count is one, then the root has been
+          found.  If the result is less than minus one, and,
+      
+                IF-The tally count is greater than one, then the tally count is stepped
+                down one, the result just calculated is stored at 5757, and used as the 
+                the trial root, and the iteration repeats.
+
+
+
+                                                              9M05B
+                                                              8-15-59
+                                                              Page 1.009
+
+                OR- The tally count is one.  The tally count is reset to its initial value,
+                a new trial root is selected, and the iteration repeat.
+
+       In any event, if the result at step 8 is positive, then there is sure proof of a machine
+       failure, since no combination of positive whole numbers can produce a positive
+       remainder in step 8.  All the primes and correct answers are listed on page 51 of
+       the program listing. 
+      
+       The error locations from the primitive root routine are as follows:
+
+3706   The root calculated was wrong, the correct root is in the MQ.  Refer to page 51 of
+       the listing for the prime used.  This error could have occurred almost anywhere.
+       See -Error Analysis- for methods of detecting the trouble.
+      
+3721   The power to which the root must be raised is wrong.  This values is simply the value
+        at 5712 minus one.  The error occurred most likely in CLA and FSB.
+      
+3724   RATS - The prime given to the subroutine was found to be out of range; this of course
+       is wrong.  The correct root is in the MQ.  You may refer to the table on page 51 to
+       find the prime involved.  Display XRB, if XRB is 3740 then the error occurred between
+       5314 and 5332. Otherwise, the error occurred within the iteration.  See Error Analysis.
+      
+3731   This error indicates that a prime number had divided evenly into some other number,
+       which is impossible. Error was detected at 5431. See Error Analysis.
+      
+3734   This indicates that the result went plus at 5351 or 5354. This is not arithmetically
+       possible with any two positive whole numbers as explained before. See Error Analysis.
+      
+      
+3742   This indicates that a F.P. trap occurred.  The address of the instruction that caused
+       trap is in XRB.
+
+  ERROR ANALYSIS - This program takes over a thousand iterations. Its purpose is to provide
+       an extreme case reliability test of floating point.  Errors which this test is designed to
+       show up are intermittant beat failures which, as you know, are extremely difficult even
+       to detect, much less pin down.  A list of all correct answers for each step of the
+       iteration would be impractical, since this would require a table 80 pages long. The
+       best way to detect teh trouble would be either.
+      
+                  If you suspect a given floating point instruction, transfer to a basic
+                  test and scope that
+                  or
+                  scope he primitive root iteration. This may be accomplished in the
+                  following way.
+
+5712   When error indication is given, the prime used is still stored at 5712, and the tally
+       count at 5713. You may display these locations to check, and refer to the table on
+       page 51 to find the proper root.  Remember, the tally count is 2 less than the fixed
+
+
+
+                                                              9M05B
+                                                              8-15-59
+                                                              Page 1.010
+
+       point value of the prime.  After you have made sure the desired values are at these
+       locations then, to scope the test
+      
+       1.  Replace 5362 with the instruction TSX 5332 TAG 4
+      
+       2.  Replace 5365 with the instruction TRA 5362
+      
+       3.  Replace 5366 with the instruction TRA 5362
+      
+       4.  Set the instruction counter to 5361
+      
+       5.  Execute TSX 6246 TAG 4
+      
+       6.  Sense switch 2 Down
+      
+       7.  Put in automatic and press start
+      
+       The primitive root will continually be extracted for the desired number. If the routine
+       traps or skips wildly into space, control will be returned to teh routine by monitor.
+      
+5374   PRID - This subroutine is exactly the same as PRIRT, execpt that it uses indirect
+       addressing.  All the indirect addresses refer to PRIRT. The prime is stored at 5712
+       and the tally count at 5713 as in PRIRT.  To scope the test
+      
+       1.  Replace 5443 with the instruction TSX 5413 TAG 4
+      
+       2.  Replace 5446 with the instruction TRA 5443
+      
+       3.  Replace 5447 with the instruction TRA 5443
+      
+       4.  Set the instruction counter to 5442
+          
+       5.  Execute TSX 6246 TAG 4
+          
+       6.  Sense switch 2 Down
+          
+       7.  Put in automatic and press start
+      
+       The primitive root will continually be extracted for the desired number. If the routine
+       traps or skips wildly into space, control will be returned to teh routine by monitor.
+      
+6121   SEQ - This is the trap sequence.  If sense light 4 is on the XRC is 0, then the instruction
+       at SECT2 is executed.  If light 4 is off, a transfer is made to -WHAT-, 6132, where the
+       nature of the trap error is determined.
+      
+6156   If light 4 is on, it remains on, and XRC is examined. If XRC is not zero, transfer is
+       made to XRCE, 6156. The value in XRC is moved to XRB and an error indication is given.
+
+
+
+                                                              9M05B
+                                                              8-15-59
+                                                              Page 1.011
+
+       The error location is at or near the address at zero.  Please remember that this is
+       a floating point trap address.  After the error, XRCE returns to SEQ, which
+       preserves the trap address and then executes the instruction at SECT2, 6131. ACC
+       and MQ are unchanged.
+      
+6132   WHAT - This routine is entered as explained in SEQ.  The address of zero is examined,
+       if this address is zero, or if it is the same as the last trap address written as recorded
+       at 6137 decrement, then transfer is made to OUTER, 6171. If these conditions do not
+       exist, then transfer is made to FADED, 6152.  ACC and MQ are unchanged.
+      
+6152   FADED - This error indication means that the program arrived at 10 when no trap
+       should have occurred.  The error location is one less than the address at zero.  This
+       routine returns to the main program at the address specified at zero.  ACC and MQ
+       are unchanged.
+      
+6171   OUTER - This routine merely sets XRC and transfers to SPACE, 6174.
+      
+6174   SPACE - This routine is entered whenever the program skips to an unused portion of
+       core storage or skips from one test to another out of sequence.  The address to which
+       the skip was made is in the decrement of the indicator register.  The address to which
+       the routine returns control is in the address of the indicators, and is considered to be
+       the location of the test which skipped out of control.  ACC and MQ are unchanged.
+      
+      
+      
+                            9M05B - 4K STORAGE
+      
+       To run 9M05B with 4K Storage, insert cards 191 and 192 in front of card 188 and
+       remove cards 186 and 187 from the program deck.
+      
+       This change will eliminate the following two typeouts - NOW PERFORMING DIAGNOSTIC
+       9M05, and 10 PROGRAM PASSES COMPLETE.
+
+\l
+File Attachments:   Source \Asource\a    Cards \Acard\a      Deck \Adeck\a

@@ -1,0 +1,320 @@
+                                                                             9IOTA
+                                                                             Page 1
+                                    9IOTA
+
+                      SPECIAL FEATURE I/O TRAP DIAGNOSTIC
+
+                                   B.M. 580000
+
+         A. PURPOSE OF TEST
+
+            1. Test all conditions of the I/O Trap feature for the 709 Main Frame
+               and Data Synchronizer.
+
+            2. Test added logic and circuitry for the feature.
+
+         B. METHOD OF TEST
+
+            1. The feature is tested through the use of Tape Unit 2 on any or all
+               channels.
+
+            NOTE: Only unit 2 is used, and any other units selected in the keys
+                  are blocked out.
+
+            2. Any or all of the six channels are tested in order.  (Chan A, Chan B,
+               Chan C) etc.
+
+               A test is executed for each of the following conditions:
+
+               a.     00140   All conditions of trap on HTR, HPR, and Manual Status.
+
+            NOTE:     This test will be executed on teh first pass, but will nto be
+                      performed again unless a manual transfer is preformed.
+
+               b.     00354   Indicator 18 using all combinations of the other
+                              indicators, including indicator 19.
+
+               c.     01057   Floating Point Trap and Store and Trap without being
+                              in the I/O Trap Mode.
+
+               d.     01135   The mode is entered and Store and Trap without being
+                              in the I/O Trap Mode.
+
+               e.     01256   ENABLE instruction to see that is does not act as LDQ.
+                              The operation code for LDQ is 0560 and the opertation
+                              code for ENABLE is 0564.
+
+               f.     01306   ENABLE is tested while indexed, indirectly addressed,
+                              and index and indirectly address.
+
+                                                                              9IOTA
+                                                                              Page 2
+
+               g.     01400   RESTORE is tested to see that it does not trap when
+                              the 709 is not enabled for trap.
+
+               h.     01450   Once the Inhibit trigger is turned on, the next RESTORE
+                              or ENABLE will not trap until after performing the
+                              instruction following the ENABLE or RESTORE.
+
+               i.     01516   Checks that TRA, XEC, LDI, FAD, and PBT work
+                              correctly at the trap locations.
+
+               j.     02024   Floating Point Trap takes priority over an I/O trap.
+
+               k.     02150   Load Channel given in time does not trap.
+
+               l.     02177   Test each type of trap individually on each channel.
+
+               m.     02324   No trap occurs after being enabled with zeros.
+
+               n.     02367   One trap inhibits another and that all traps waiting on
+                              one channel will be executed after a RESTORE instruction
+                              is given.
+
+               o.     02444   ENABLE, after trap is conditioned, will trap immediately
+                              and all future traps are inhibited.
+
+               p.     02516   No trap occurs until after executing the instruction
+                              following a select.
+
+               q.     02612   TRA on RDNCK and TRA on end of file will act as NOPS
+                              if enabled for these conditions also that a select will not
+                              reset the command disc. tgr. if enabled for command disc.
+
+               r.     02761   Bring up all trapping conditions on all channels.  Using
+                              restore, sequence traps Chan A, Chan. B, Chan. C. etc.
+
+               NOTE:  All channels will be tested individually, before multi
+                      channel testing is attempted.
+
+         C. ERROR PRINT ROUTINES
+
+            Three Print Routines are used
+
+            1. The standard 9DEPR is used.
+
+            2. A special error print routine is used to test for correct traps and
+               correct data placed in trap locations.
+
+               The symbolic entry to this routine is "SCHCK".  The symbolic entry
+               for resetting trap locations is "SREST".
+
+                                                                             9IOTA
+                                                                             Page 3
+
+
+            3. A BCD print subroutine is also used to indicate trapping errors.
+
+               The Symbolic entry to this routine is "SPLAT".
+
+               EXAMPLE ERROR PRINTS FOLLOW:
+
+a.   PRGM EXIT 01325 TRAP ENABLE 00000000001 SHOULD TRAP, TRAP IN ERROR
+     CORRECT - TRAP LOC 00012 TYPE 4  TRP LOC ADDR 01321 XEC LOC 00013
+     ERROR -- TRP LOC 00012 TYPE 0 TRP LOC ADDR 00000 XEC LOC 00013
+     ERROR -- TRP LOC 00014 TYPE 4 TRP LOC ADDR 01321 XEC LOC 00014
+
+b.   TEST LOC 00354, OPN SCHB 2, ERROR LOC 00410, 0 LOC 0000000000 SW 000001
+     LITE 000, MQ 304214004230, XRA 00000, XRB 00000, XRC 77373, TRAP TRG 0
+     ACC, Q0, P0, 504212004225, DIV CK 0, ACC OVFLO, INDS 00000000000, KEYS0000000000
+
+c.   TEST LOC 00472, OPN IND 18, ERROR LOC 00502, 0 LOC 0000000000 SW 000001
+     MSE 0000, COMP ERROR, WORD GENERATED 001 101 001 101 001 101 001 101 001 101 001
+     REC 00001, WORD 00001, WORD READ     000 000 000 000 000 000 000 000 000 000 000
+
+d.   PRGM EXIT 02404 TRAP ENABLE 000002000002 SHOULD TRAP, NO TRAP SHOWN
+     CORRECT - TRP LOC 00014 TYPE  2 TRP LOC ADDR 02400 XEC LOC 00015
+
+e.   PRGM EXIT 02105 TRAP ENABLE 000002000002 SHOULD TRAP, TRAP IN ERROR
+     CORRECT - TRP LOC 00014 TYPE  4 TRP LOC ADDR 00010 XEC LOC 00015
+     ERROR --- TRP LOC 00014 TYPE  4 TRP LOC ADDR 02100 XEC LOC 00015
+
+f.   PRGM EXIT 02651 TRAP ENABLE 000002000002 SHOUDL TRAP, TRAP IN ERROR
+     CORRECT - TRP LOC 00014 TYPE  7 TRP LOC ADDR 02646 XEC LOC 00015
+     ERROR --- TRP LOC 00014 TYPE  5 TRP LOC ADDR 02646 XEC LOC 00015
+     SHOULD HAVE INDICTATED ALL TRAPS - SAME CHANNEL
+
+g.   PRGM EXIT 03175 TRAP ENABLE 000077000077 SHOULD TRAP, NO TRAP SHOWN
+     CORRECT - TRP LOC 00014 TYPE  7 TRP LOC ADDR 03172 XEC LOC 00015
+     ABOVE ERRORS OCCURRED WHILE TYING TO SEQUENCE TRAPS ON ALL CHANNELS
+
+           4. Explanation of Print Outs
+
+              \U"A" Print-out\u
+
+              a. First Line of Print
+
+                 1) "PRGM Exit" Indicates the Prgram Error Exit
+
+                 2) "TRAP ENABLE" Indicates the word at th ENABLE(Y)
+                    location.  Channel A is indicated by the 1.
+
+                 3) Comment at right of first line will indicate what error
+                    occurred.  (Nothing stored at LOC 12, stored at LOC 14
+                    instead.)
+
+
+                                                                             9IOTA
+                                                                             Page 4
+
+
+              b. Second Line is the Correct Trap Information
+
+                 1) "TRAP LOCATION" is location at which the instruction
+                    counter was stored.
+
+                 2) "TYPE" indicates which type of trap should have occured.
+
+                    Type 1 means Control Word Trap
+                    Type 2 means End of File Trap
+                    Type 4 means Tape Check Trap
+
+                    Any combination of these may also be shown.
+
+                 3) "TRP LOC ADDR" is the correct contnents of the Instruction
+                    Counter when the trap occurred.
+
+                 4) "XEC LOC" is the location which was executed after the trap
+
+              c. Third Line Indicates Error Trap Information
+
+                 This line indicates that at Trap Location 12 nothing was stored
+
+              d. Fouth Line Indicates Error Trap Information
+
+                 This line indicates that the trap information was stored at 14
+                 instead of 12.
+
+              \U"B" Print Out\u
+
+                 This print-out indicates a store channel error with the MQ
+                 containing the correct result, and the ACC the error.
+
+              \U"C" Print Out\u
+
+                 This printout indicates a comparision error in transmission of
+                 data.  "OPN" on the first line will indicate the operation being
+                 tested.
+
+              \U"D" Print Out\u
+
+              a. The first line is the same as the "A" print-out with the comment
+                 stating that no trap occurred, except that all traps on channel B
+                 are enabled, as indicated by 2 in decrement and address.
+
+              b. The second line indicates what should appear in the trap location
+                 indicated.
+
+                                                                             9IOTA
+                                                                             Page 5
+
+
+              \U"E" Print Out\u
+
+              a. First line is the same as type "A" print-out
+
+              b. Second line shows the address which should have been stored
+                 in trap location.
+
+              c. Third line shows the address which was stored at the trap
+                 location, indicating that F. P. Trap did not take priority over
+                 I/O Trap.
+
+              \U"F" Print Out\u
+
+              a. First line is the same as type "A" print-out
+
+              b. Second line shows that all 3 types of trap should have occurred.
+
+              c. Third line shows that only 2 types did occur, and which two.
+                 (Refer to 2 on second line of Type "A")
+
+              d. Comment after trap error is additional information
+
+              \U"G" Print Out\u
+
+              a. first line is the same as Type "A" print-out, except showing
+                 that all trap on all channels were enabled and all traps on
+                 Channel B should have occured.
+
+              b. Comment after trap error is additional information
+
+        D. AREA OF MACHINE REQUIRED
+
+           1. MF, CF, 1, 2 or 3 Buffers, Tape Unit 2 per DSC.
+
+           2. Storage Locations
+
+              9IOT      00000 - 03457, 04254 - 04702
+              9DEPR     06500 - 07663
+              9IOM      05500 - 06477
+              SCHCK     03460 - 04253
+              SPLAT     04703 - 05466, 07713 - 07761
+
+        E. PROGRAM CONTROL
+
+           1. Deck      000           9LD01A Binary Loader    
+                        001 - 183     9IOT                 
+                        184           TRA Card - TRA 05115
+                        185 - 186     Blank Cards
+
+                                                                             9IOTA
+                                                                             Page 6
+
+
+
+           2. Sense Switch Control
+
+              Switches 1, 2, 3, 4 as per 9DEP
+
+              Switch = 5 UP -   Program will make 1 pass on all channels selected
+                                and test switch 6 to repeat or call in next program.
+
+              Switch = 5 DOWN   Program will loop in channels initially selected
+                                without returning to Halt to enter control
+
+              Switch = 6 UP -   Call next program
+
+              Switch = 6 DOWN   Will return to Halt at beginning of program to enter
+                                keys with new selection.
+
+        F. NORMAL STOPS
+
+           05517   To enter Control for 9IOM
+           00160   Will not Trap on Halt when not enabled - press start
+           00174   Will Trap one instruction before HTR - press start
+           00210   Will Trap on HTR Instruction - Press start
+           00223   Will leave Trap Mode on Reset - reset and start
+           00254   Will trap in Manual - Press single step button 3 times.
+                   Same Halt will occur, return to automatic and press start
+                   after 2nd Halt.
+
+        G. ERROR STOPS
+
+           NOTE:   There are many error Halts throughout program, if instruction
+                   counter is not performing correctly.  Commments at Halt locations
+                   will indicate errors.
+
+           With SW #3 DOWN
+
+           06517 or 06545 in "9DEPR" Error Routine
+                    03636 in "SCHCK" Error Routine
+
+        H. I/O SELECTION
+
+           I/O Selection is the format used in 9IOM.
+
+           NOTE:    See Diagram Attached to this Write-up on page 7
+
+        I. COMMENTS
+
+           The section which test I/O trap during Halts, is set-up to run during
+           the first pass only.  To re-enter this section, a manual TRA to 00140
+           is necessary.
+
+
+\l
+File Attachments:   Source \Asource\a    Cards \Acard\a      Deck \Adeck\a
+
+

@@ -1,0 +1,102 @@
+                                                               9V01A
+                                                               7-01-58
+                                                               PAGE 1.001
+
+                                9V01A
+
+
+                     CRT DISPLAY AND OUTPUT RECORDER TEST
+
+A.  UNIT TESTED
+
+    1.  PURPOSE OF TEST
+        TO PROVIDE A COMPREHENSIVE CRT TEST PROGRAM.
+
+    2.  METHOD OF TEST
+        FIVE PATTERNS ARE DISPLAYED ON THE CRT. SENSE CAMERA IS UNDER SENSE
+        SWITCH CONTROL. EACH PATTERN IS ALSO UNDER SENSE SWITCH CONTROL.
+
+        PATTERN 1.  A UNION JACK WITH INTENSITY SPOTS AT THE CORNERS AND
+                    MIDDLE.
+
+        PATTERN 2.  A DOT CHECKERBOARD PATTERN, DOTS EVERY 100 OCTAL POSITIONS
+
+        PATTERN 3.  AN AXIS INTENSITY PATTERN,
+     
+        PATTERN 4.  A DOT INTENSITY PATTERN,
+     
+        PATTERN 5.  FILM CREEP TEST
+
+        AT LEAST ONE SENSE SWITCH MUST BE DEPRESSED. WITHOUT DEPRESSING
+        A SENSE SWITCH PROGRAM LOOPS IN THE ROUTINE WHICH TEST SENSE
+        SWITCHES. SENSE SWITCH SIX IN UP CONDITION LOOPS PROGRAM IN
+        PATICULAR PATTERN SELECTED, BY DEPRESSING OTHER SENSE SWITCHES.
+
+        THE CAMERA IS SENSED BY DEPRESSING SWITCH SIX. THE PROGRAM THEN STOPS
+        AND WHEN START IS DEPRESSED THE PROGRAM AGAIN EXAMINES SENSE SWITCHES,
+        IF SIX IS DOWN THE CAMERA IS SENSED AGAIN.
+
+B.  AREA OF MACHINE REQUIRED
+
+    1.  UNITS
+
+       CR, MF, CF, AND CRT
+
+    2.  STORAGE LOCATIONS             0030 - 0246
+
+C.  PROGRAM CONTROL
+
+    1.  DECK        000               9LD01 LOADER
+                    001 - 007         PROGRAM CARDS
+                    008               TRANSFER CARD - TRA 0030
+                    009 - 010         TWO BLANK CARDS
+
+
+                                                               9V01A
+                                                               7-01-58
+                                                               PAGE 1.001
+
+
+    2. SENSE SWITCH CONTROL
+
+       SWITCH #1 UP                 CHECK SWITCH 2
+                 DN                 PERFORM UNION JACK PATTERN WITH DOTS IN
+                                    CORNERS AND CENTER
+       SWITCH #2 UP                 CHECK SWITCH 3
+                 DN                 PERFORM DOT CHECKER BOARD PATTERN
+       SWITCH #3 UP                 CHECK SWITCH 4
+                 DN                 PERFORM AXIS INTENSITY PATTERN
+       SWITCH #4 UP                 CHECK SWITCH 5
+                 DWN                PERFORM DOT INTENSITY PATTERN
+       SWITCH #5 UP                 CHECK SWITCH 6
+                 DWN                PERFORM FILM CREEP TEST
+       SWITCH #6 UP                 REPEAT, CHECK SWITCH 1
+                 DWN                SENSE CAMERA, HALT AND TRANSFER TO
+                                    EXAMINE SENSE SWITCHES
+
+D.  NORMAL STOPS
+
+    0055    STOP AFTER FILM FRAME ADVANCE WITH SWITCH SIX DOWN. PUSH START
+            TO REPEAT OR CONTINUE
+    0175    STOP WITH SWITCH FIVE DOWN. TEST OF FILM CREEP TEST. PUSH
+            START TO CONTINUE.
+    0201    STOP AT END OF FILM CREEP TEST. PUSH START TO PROCEED.
+
+E.  PRINT OUTS      NONE
+
+F.  COMMENTS
+
+    AT LEAST ONE OF THE SENSE SWITCHES OTHER THEN SENSE SWITCH SIX MUST BE
+    DEPRESSED TO HAVE PROGRAM DISPLAY A PATTERN.
+
+    SENSE LIGHTS ARE USED THROUGHOUT THE PROGRAM. THE LIGHTS ARE INDICATIVE
+    OF RESPECTIVE PATTERN BEING SELECTED.
+
+    SENSE LIGHT ONE          - SWITCH ONE DOWN, UNION JACK
+    SENSE LIGHT TWO          - SWITCH TWO DOWN, DOT CHECKERBOARD.
+    SENSE LIGHT THREE        - SWITCH THREE DOWN, AXIS INTENSITY
+    SENSE LIGHT FOUR         - SWITCH FOUR DOWN, DOT INTENSITY
+    SENSE LIGHT ONE AND FOUR - SWITCH FIVE DOWN, FILM CREEP
+
+\l
+File Attachments:   Source \Asource\a    Cards \Acard\a      Deck \Adeck\a

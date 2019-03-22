@@ -1,0 +1,190 @@
+                                                            9M06A
+                                                            7-01-58
+                                                            PAGE 1.001
+
+    
+                                    9M06
+
+                 BASIC 709 MAIN FRAME DIAGNOSTIC TEST
+                                MANUAL LOAD
+
+
+A.  UNIT TESTED
+
+    1.  PURPOSE OF TEST   THIS DIAGNOSTIC PROGRAM USES A MANUAL LOAD TO
+        BOOTSTRAP A MODIFIED VERSION OF 9M01 INTO THE 709 COMPUTER. THE
+        MANUAL LOAD IS PERFORMED BY USING A 24 WORD PER CARD DECK AND BY
+        MANUALLY SETTING THE CONTROL KEYS ON THE 766 DATA SYNCHRONIZER
+        UNIT, THE PROGRAM TESTS ALL MAIN FRAME INSTRUCTIONS EXCEPT THOSE
+        PRIMARILY ASSOCIATED WITH INDEXING AND FLOATING POINT. WHEN THE
+        TEST DISCOVERS A MACHINE ERROR,IT WILL INTERROGATE THE SENSE
+        SWITCHES TO SEE WHETHER AN ERROR IS TO BE INDICATED,A LOOP IS TO
+        BE ESTABLISHED,OR A CONTINUATION OF THIS TEST AND/OR A NEW TEST
+        IS DESIRED BY THE MACHINE OPERATOR.
+        NOTE    THIS IS JUST A TEST FOR 704 INSTRUCTIONS IN THE 709 AND
+        DOES NOT INCLUDE 709 INSTRUCTIONS EXCEPT IN THE END OF TEST LINK
+    
+    2.  METHOD OF TEST   THE FORMAT OF THE DIAGNOSTIC IS ESSENTIALLY
+        THE SAME AS 9M01 EXCEPT THAT 9M06 DOES NOT USE THE DIAGNOSTIC
+        ENGINEERING SENSE SWITCHES INTERROGATION AND PRINT SUBROUTINE
+        9DEPR. IN 9M06 ERROR DETECTION IS PROVIDED WITH A MINIMUM OF
+        PROGRAMMING ALTHOUGH STILL UNDER SENSE SWITCH CONTROL AS SHOWN
+        IN PART C BELOW.
+
+B.  AREA OF MACHNE REQUIRED
+
+    1.  MF, CF, CR
+    2.  STORAGE LOCATIONS   0000-4774
+
+C.  PROGRAM CONTROL
+
+    1.  DECK        106 24 WORD/CARD BINARY CARDS
+                      2 BLANK CARDS
+
+    2.  SENSE SWITCH CONTROL
+    
+        A.  SWITCH #1 UP            GO TO NEXT ROUTINE
+        B.  SWITCH #1 DOWN          LOOP IN ROUTINE
+        C.  SWITCH #2 UP            HALT ON ERROR
+        D.  SWITCH #2 DOWN          BYPASS ERROR INDICATION
+        E.  SWITCH #3               NO EFFECT
+        F.  SWITCH #4               NO EFFECT
+        G.  SWITCH #5 UP            BYPASS LONG ADDER TESTS + NORMAL DVH STOPS
+        H.  SWITCH #5 DOWN          PERFORM LONG ADDRER TESTS + NORMAL DVH STOPS
+
+                                                            9M06A
+                                                            7-01-58
+                                                            PAGE 1.002
+
+        I.  SWITCH #6 UP            READ IN NEXT DIAGNOSTIC
+        J.  SWITCH #6 DOWN          REPEAT PROGRAM
+    
+    3.  MANUAL LOAD
+    
+    A.  INITIALIZE MAIN FRAME BY DEPRESSING THE CLEAR KEY AND PUT
+        THE CARD READER IN THE READY STATUS.
+    
+    B.  SET ONE CHANNEL ON THE DSU TO MANUAL BY PUSHING EITHER THE
+        AUTO MAN A BUTTON ON THE CONTROL PANEL OF THE DSU.
+    
+    C.  PLACE AN OCTAL WORD COUNT OF 4775 IN POSITIONS 3-17 OF THE
+        KEYS ON THE DSU CONTROL PANEL AND PLACE THE ADDRESS OF THAT
+        LOCATION AT WHICH THE FIRST INSTRUCTION OF THE PROGRAM IS
+        DESIRED TO BE PLACED IN POSITIONS 21-35 OF THE SAME KEYS.
+    
+    D.  DEPRESS THE LOAD CONTROL WORD AND THEN THE LOAD CARDS BUTTONS
+        ON THE DSU CONTROL PANEL. THE MANUAL LOAD PROCEDURE IS
+        THEN COMPLETE AND CARDS SHOULD IMMEDIATELY START BEING
+        READ. AT THE END OF THE TEST THE AUTO MANU BUTTON SHOULD
+        AGAIN BE DEPRESSED TO RESTORE THE DSU TO AUTOMATIC CONTROL
+        FROM THE COMPUTER.
+    
+D.  NORMAL STOPS
+
+Q       4510                    DVH WITH HALT WHEN SENSE
+        4524                    SWITCH FVE IS DOWN.
+        4553                    PUSH START TO CONTINUE,WILL NOT HALT
+                                ON NEXT PASS.
+
+E.  ERROR STOPS
+
+    CONSULT PROGRAM LISTING AT LOCATION INDICATED BY INSTRUCTION COUNTER
+    FOR INSTRUCTION THAT FAILED. PUSHING THE START BUTTON WILL CAUSE THE
+    PROGRAM TO CONTINUE.
+
+F.  PRINT OUTS
+
+    NONE
+
+G.  COMMENTS
+        THIS DIAGNOSTIC IS TO BE USED WHEN 9M01 WILL NOT LOAD WITH
+        EITHER OF ITS LOADERS,OR WHEN A TIGHTER LOOP IS DESIRED FOR
+        SCOPING A MAIN FRAME INSTRUCTION EXCEPT FOR THOSE ASSOCIATED
+        WITH INDEXING,FLOATING POINT,OR UNIQUELY WITH THE 709. THERE IS
+        A RESTART IN THE PROGRAM WHICH IS RESET AFTER THE TRAPPING
+        ROTUINES. RESTART IS TO THE BEGINNING OF THE TEST. AFTER THE 9M06
+        HAS BEEN RUN,RESTORE THE DSU TO AUTOMATIC BY AGAIN DEPRESSING
+        THE AUTO MAN BUTTON ON THE CONTROL PANEL OF THE DSU THAT WAS
+        DEPRESSED IN INITIALLY LOADING 9M06.
+
+                                                            9M06A
+                                                            7-01-58
+                                                            PAGE 1.003
+
+
+                    TABLE OF MAIN FRAME INSTRUCTION LOCATIONS
+                       AND ORDER IN WHICH THEY ARE TESTED.
+
+     1.   TOV                              BEGINS AT                  0032
+     2.   TNO                              BEGINS AT                  0062
+     3.   TZE                              BEGINS AT                  0111
+     4.   TNZ                              BEGINS AT                  0137
+     5.   ALS                              BEGINS AT                  0156
+     6.   ARS                              BEGINS AT                  0220
+     7.   LBT                              BEGINS AT                  0261
+     8.   PBT                              BEGINS AT                  0302
+     9.   TPL                              BEGINS AT                  0325
+    10.   TMI                              BEGINS AT                  0344
+    11.   CLM                              BEGINS AT                  0363
+    12.   SSP                              BEGINS AT                  0422
+    13.   SSM                              BEGINS AT                  0462
+    14.   CHS                              BEGINS AT                  0502
+    15.   LLS                              BEGINS AT                  0604
+    16.   LRS                              BEGINS AT                  0703
+    17.   LGL                              BEGINS AT                  0777
+    18.   RQL                              BEGINS AT                  1072
+    19.   TQP                              BEGINS AT                  1111
+    20.   NOP                              BEGINS AT                  1120
+    21.   COM                              BEGINS AT                  1163
+    22.   ADD                              BEGINS AT                  1353
+    23.   SUB                              BEGINS AT                  1424
+    24.   SBM                              BEGINS AT                  1610
+    25.   CLA                              BEGINS AT                  1659
+    26.   CLS                              BEGINS AT                  1774
+    28.   CAL                              BEGINS AT                  2034
+    29.   ACL                              BEGINS AT                  2102
+    30.   STO                              BEGINS AT                  2163
+    31.   SLW                              BEGINS AT                  2174
+    32.   STP                              BEGINS AT                  2222
+    33.   STA                              BEGINS AT                  2339
+    34.   STD                              BEGINS AT                  2402
+    35.   CAS                              BEGINS AT                  2432
+    36.   LDQ                              BEGINS AT                  2545
+    37.   STQ                              BEGINS AT                  2571
+    38.   SLQ                              BEGINS AT                  2624
+    39.   TLQ                              BEGINS AT                  2666
+    40.   RND                              BEGINS AT                  2742
+    41.   MPY                              BEGINS AT                  2754
+    42.   MPR                              BEGINS AT                  3132
+    43.   DVP                              BEGINS AT                  3216
+    44.   DCT                              BEGINS AT                  3270
+    45.   DVH WITH NO HALT                 BEGINS AT                  3343
+    46.   ANA                              BEGINS AT                  3423
+
+                                                            9M06A
+                                                            7-01-58
+                                                            PAGE 1.004
+
+    47.   ANS                              BEGINS AT                  3519
+    48.   ORA                              BEGINS AT                  3571
+    49.   ORS                              BEGINS AT                  3659
+    50.   TTR                              BEGINS AT                  3751
+    51.   ETM                              BEGINS AT                  3760
+    52.   LTM                              BEGINS AT                  3760
+    53.   PSE LIGHTS                       BEGINS AT                  4225
+    54.   MSE LIGHTS                       BEGINS AT                  4225
+    55.   STZ                              BEGINS AT                  4364
+    56.   PSE SENSE SWITCHES               BEGINS AT                  4402
+    57.   M06 TEST                         BEGINS AT                  4450
+    58.   M07 TEST                         BEGINS AT                  4467
+    59.   DVH WITH HALT                    BEGINS AT                  4506
+    60.   ADDER TEST                       BEGINS AT                  4541
+    61.   MPY TEST                         BEGINS AT                  4625
+    62.   MPY/DVP TEST                     BEGINS AT                  4656
+
+
+
+\l
+File Attachments:   Source \Asource\a    Cards \Acard\a 
+
+

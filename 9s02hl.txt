@@ -1,0 +1,161 @@
+                                                                      9S02HA-LA
+                                                                      7-01-58
+                                                                      PAGE 1.001
+ 
+
+
+
+                               9S02 HA AND 9S02 LA
+
+
+                   CORE COMPLEMENT CHECKERBOARD RELIABILITY
+                             FOR 737 STORAGES ONLY
+
+A.  PURPOSE
+
+    1.  9S02 H AND 9S02 L WILL TEST A 4K, 8K, OR 16K STORAGE. IT SHOULD NOT
+        BE USED ON A 738 AS THE PATTERN WILL BE INCORRECT.
+
+    2.  THE CORE STORAGE IS TESTED BY PUTTING THE PATTERN BELOW PHYSICALLY IN
+        STORAGE
+                                   00110011
+                                   00110011
+                                   11001100
+                                   11001100
+                                   00110011
+
+         AS THE ACTUAL PROGRAM LOCATIONS DIFFER FROM THE PHYSICAL LOCATIONS, A
+         MEMORY PRINTOUT WILL SHOW BLOCKS OF MEMORY LIKE THIS
+
+                     0. . . .20. . . .40. . . .60. . . .77
+                     .
+                     .   0      1S       0S       1S
+                     .
+                     .
+                  2000. . .2020. . .2040. . .2060. . .2077
+                     .
+                     .   1S     0S       1S      0S
+                     .
+                     .
+                  4000. . .
+                         0S     1S
+
+B.  AREA OF MACHINE REQUIRED
+
+    1.  UNITS    CARD READER, MF, CF, AND PRINTER.
+
+    2.  STORAGE LOCATIONS           9S02 H               0000 TO 0315
+                                AREA TESTED              0210 TO 37777
+
+                                    9S02 L               77463 TO 37777
+                                AREA TESTED              00000 TO 37567
+
+C.  PROGRAM CONTROL
+
+    1.  DECK        000            9LD02 HIGH BINARY LOADER
+
+                                                                      9S02HA-LA
+                                                                      7-01-58
+                                                                      PAGE 1.002
+ 
+
+                    001 - 010      9S02 H DIAGNOSTIC
+                    012            TRANSFER CARD TO 207
+
+                    001 - 010      9S02 L DIAGNOSTIC
+                    011            TRANSFER CARD  TO 77463
+                    012 - 015      BLANK CARDS
+
+   2.  SENSE SWITCH CONTROL
+
+       A.  SWITCH 3 UP - PRINT OUT ON ERROR
+       B.  SWITCH 3 DOWN - STOP ON ERROR
+       C.  SWITCH 6 DOWN - WILL LOAD NEXT PROGRAM FROM THE CARD READER.
+       D.  SWITCH 6 UP - CONTINUOUS REPEAT
+
+D.  ERROR STOPS
+
+    1.  TESTING SIZE OF STORAGE
+        9S02 H  0240                9S02 L 77514
+        PUSH START KEY TO CONTINUE AND TEST MACHINE ASSUMING A 4K STORAGE.
+
+    2.  TRYING TO TEST 32K STORAGE
+        9S02 H  0240                9S02 L 77514
+    
+    3.  PROGRAM ERROR STOP
+        9S02 H  0107                9S02 L 77674
+
+        ERROR ADDRESS IN ACCUMULATOR DECREMENT, ONES IN THE ACCUMULATOR ADDRESS
+        IF A COMPLEMENT ERROR
+        ERROR WORD IN MQ
+
+    4.  PRESS START BUTTON TO RETURN TO PROGRAM. THE ERROR IS CORRECTED AND THE
+        TEST CONTINUES.
+
+E.  EXAMPLE OF PRINTOUT
+
+    THE FIRST LINE OF THE PRINTOUT CONTAINS THE ADDRESS OF THE WORD IN ERROR
+    AND THE ERROR WORD. THE SECOND LINE CONTAINS AN INDICATION AS TO WHETHER IT
+    IS AN INITIAL OR COMPLEMENT ERROR AND WHAT THE ERROR WORD SHOULD HAVE BEEN.
+    THE FIRST POSITION OF THE WORD IS THE SIGN POSITION.
+    EXAMPLE I
+    000010111011               111 111 111 111 111 111 111 111 111 101 111 111
+                               111 111 111 111 111 111 111 111 111 111 111 111
+
+    IN EXAMPLE I AN INITIAL ERROR OCCURRED AT ADDRESS 273. ALL ONES SHOULD HAVE
+
+                                                                      9S02HA-LA
+                                                                      7-01-58
+                                                                      PAGE 1.002
+ 
+    BEEN WRITTEN. THE ERROR WORD HAS DROPPED A ONE IN POSITION 28.
+
+    EXAMPLE 2.
+    000010111011               000 000 010 000 000 000 000 000 000 000 000 000
+                  111111111111 000 000 000 000 000 000 000 000 000 000 000 000
+
+    IN EXAMPLE 2 A COMPLEMENT ERROR OCCURRED AT ADDRESS 273. ALL ZEROS SHOULD
+    HAVE BEEN WRITTEN. THE ERROR WORD HAS PICKED UP A ONE IN POSITION 7, THE
+    GROUP OF ONES IN THE SECOND LINE INDICATE WHEN A COMPLEMENT ERROR OCCURS.
+
+F.  COMMENTS
+
+    1.  THE PROGRAM TAKES ABOUT TWO SECONDS TO MAKE A SUCCESSFUL PASS IN ONE
+    CORE STORAGE.
+
+    2.  THE PROGRAM WRITES A COMPLETE PATTERN, CHECKS EACH WORD, COMPLEMENTS
+    THE WORD, CHECKS THE COMPLEMENT AND THEN RESTORES THE PATTERN. AFTER ONE
+    COMPLETE PATTERN IS READ, THE PROGRAM THEN WRITES AND CHECKS AN INVERSE
+    PATTERN.
+
+    3.  THE PROGRAM MAY FAIL DUE TO AN ALTERATION IN THE PROGRAM ITSELF DUE TO
+    A STORAGE FAILURE.
+
+    4.  PROGRAM 9S02 H WILL LOAD INTO THE FIRST 315 LOCATIONS IN STORAGE AND
+    WILL TEST ALL OF THE AVAILABLE STORAGE ABOVE 206. PROGRAM 9S02 L WILL LOAD
+    INTO THE LAST 315 LOCATIONS AVAILABLE IN STORAGE AND WILL TEST ALL OF THE
+    REST OF STORAGE.
+
+    5.  BOTH PROGRAM 9S02 H AND 9S02 L SHOULD BE RUN TO CHECK ALL OF THE
+    STORAGE AREA. THESE PROGRAMS CAN BE USED WITH ONLY 737 CORE
+    STORAGES. THE PROGRAM TESTS FOR THE SIZE OF STORAGE AND THE ADJUSTS THE
+    PROGRAM ACCORDINGLY. THE TEST WILL THEN WIPE OUT THE AREA WHICH WAS USED TO
+    TEST THE SIZE OF STORAGE.
+
+    6.  THE TEST WORDS WHICH ARE USED IN THIS TEST ARE LOCATED AT 171 AND 172 IN
+    9S02 H AND AT 77774 AND 77775 IN 9S02 L
+    THESE TWO TEST WORD WILL ALTERNATE THROUGH THE NORMAL OPERATION OF THE TEST.
+
+    7.  IF A PATTERN OTHER THEN ALL ONES OR ALL ZEROS IS DESIRED IN THIS TEST,
+    JUST CHANGE THE TWO TEST WORDS AND RUN THE TEST.
+    THE PROGRAM WILL RUN CORRECTLY FOR ANY TEST WORDS.
+
+    8.  DURING THE FIRST PASS THE TEST FOR SIZE OF STORAGE WILL BE WRITTEN OVER.
+    IF A RESTART IS NEEDED, IT WILL BE NECESSARY TO TRANSFER MANUALLY TO 0000 OR
+    77570
+
+
+\l
+File Attachments:  9s02h  Source \Asourceh\a    Cards \Acardh\a      Deck \Adeckh\a
+File Attachments:  9s02l  Source \Asourcel\a    Cards \Acardl\a      Deck \Adeckl\a
+

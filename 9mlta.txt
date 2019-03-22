@@ -1,0 +1,100 @@
+                                    9MLTA                
+                     
+                SPECIAL FEATURE PROGRAM FOR EIGHT SENSE LIGHTS
+                     
+                                  RPQ E87449           
+                     
+A.  PURPOSE OF TEST  
+                     
+    THIS DIAGNOSTIC TESTS FOR THE PROPER FUNCTIONING OF EIGHT SENSE LIGHTS.
+                     
+B.  METHOD           
+                     
+    A DESCRIPTION OF THE ROUTINE USED FOLLOWS.
+                     
+    1.  0032        TURN ALL SENSE LIGHTS OFF AND TEST EACH LIGHT FOR OFF
+                    STATUS.             
+                     
+    2.  0123        TURN EACH SENSE LIGHT ON INDIVIDUALLY AND TEST EACH LIGHT
+                    FOR ON STATUS. EACH LIGHT SHOULD BE TURNED OFF WHEN IT IS 
+                    TESTED FOR ON STATUS.
+                     
+    3.  0234        ALL SENSE LIGHTS SHOULD BE IN OFF STATUS BECAUSE OF THE
+                    PREVIOUS ROUTINE. TEST EACH SENSE LIGHT LIGHT FOR OFF
+                    STATUS.           
+                     
+    4.  0324        TURN EACH SENSE LIGHT ON INDIVIDUALLY AND TURN IT OFF
+                    AGAIN USING THE SLF INSTRUCTION. TEST THE LIGHT FOR OFF
+                    STATUS.          
+                     
+    5.  0434        TURN EACH SENSE LIGHT OFF INDIVIDUALLY. TEST EACH LIGHT
+                    FOR IMPROPER ON STATUS RESULTING FROM TURNING ON ANOTHER
+                    SENSE LIGHT.      
+                     
+    6.  0545        TURN EACH SENSE LIGHT ON INDIVIDUALLY. TEST EACH LIGHT FOR
+                    IMPROPER OFF STATUS RESULTING FROM TURNING OFF ANOTHER
+                    SENSE LIGHT.    
+                     
+    7.  0675        TEST THE NOP INSTRUCTION FOR IMPROPER INTERPRETATION AS
+                    THE SLT INSTRUCTION.
+                     
+    8.  0710        TURN ALL SENSE LIGHTS ON AND HALT UNDER SWT 5 CONTROL.
+                     
+C.  AREA OF MACHINE REQUIRED.
+                     
+    1.  MAIN FRAME       
+    2.  CORE STORAGE 0030 TO 0730
+    3.  CARD READER      
+    4.  DSU              
+                     
+D.  PROGRAM CONTROL  
+                     
+    1.  DECK        000                  9LD01A LOW END LOADER
+                    001-021              9MLTA DIAGNOSTIC
+                    022                  TRANSFER CARD TRA 0030
+
+                    023-024            2 BLANK CARDS
+                     
+2.  SENSE SWITCHES   
+                     
+    SWT 1 UP - PROCEED TO NEXT ROUTINE.
+    SWT 1 DN - REPEAT ROUTINE.
+                     
+    SWT 2 UP - HALT ON ERROR.
+    SWT 2 DN - BY PASS ERROR STOP AND TEST SWT 1.
+                     
+    SWT 5 UP - BYPASS TURNING ALL LIGHTS ON AND HALTING. TEST SWT 6.
+    SWT 5 DN - TURN ALL SENSE LIGHTS ON AND HALT.
+                     
+    SWT 6 UP - READ IN NEXT DIAGNOSTIC
+    SWT 6 DN - REPEAT 9MLTA.
+                     
+E.  NORMAL STOP IN SWT 5 DN
+                     
+    0720 - ALL SENSE LIGHTS SHOULD BE ON. PRESS START TO TEST SWT 6.
+                     
+F.  ERROR STOPS      
+                     
+    EACH OF THE ROUTINES 1-7, AS DESCRIBED IN SECTION 8 OF THIS WRITE UP
+    HAS ONE ERROR STOP FOR EACH SENSE LIGHT. ROUTINE 8 HAS ONE ERROR STOP.
+    IF AN ERROR STOP OCCURS, REFER TO THE PROGRAM LISTING FOR THE CONDITION
+    OF THE ERROR.     
+                     
+    IF SWT 1 AND SWT 2 ARE UP WHEN AN ERROR STOP OCCURS, PRESSING START AT THIS
+    TIME WILL CAUSE THE PROGRAM TO CONTINUE ON FROM THE ERROR STOP LOCATION.
+                     
+    IF AN ERROR STOP OCCURS THE MACHINE CAN BE SET TO LOOP AT THAT POINT IN THE
+    PROGRAM BY DEPRESSING SWT 1 AND SWT 2 AND PRESSING START.
+                     
+G.  COMMENTS         
+                     
+    IF SWT 5 IS DOWN THE PROGRAM WILL HALT AT 0347 WITH ALL SENSE LIGHTS ON.
+    THIS ALLOWS THE OPERATOR TO OBSERVER THE PROPER OPERATION OF THE CONSOLE
+    NEONS. PRESSING START AT THIS TIME WILL CAUSE THE MACHINE TO TEST SWT 6.
+                     
+
+
+
+
+\l
+File Attachments:   Source \Asource\a    Cards \Acard\a      Deck \Adeck\a

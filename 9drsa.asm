@@ -1,0 +1,588 @@
+                                                             9DRS1A          
+                                                            6-1-59
+       REM
+       REM  9DRS1A
+       REM
+       REM
+*PROGRAM TO TEST--DROP READY STATUS---AND---TEST READY STATUS
+       REM
+       REM
+       ORG 24
+*ENTER I/O SELECTION FOR ALL UNITS TO BE TESTED.
+       REM
+*THIS PROGRAM MUST HAVE ENTERED INTO KEYS, IN
+*THE NORMAL 9IOM FORMAT, THE UNITS TO BE
+*TESTED.--SEE 9IOM FOR SELECTION FORMAT
+       REM
+       CLA RESET
+       STO 0
+       TRA PRINT-3   TO PRINT IDENTIFICATION
+       REM
+BEGIN  TSX IOC,4     TO ENTER I/O SELECTION
+       REM
+       CLA CTRL1     BRING IN FIRST
+       TMI *+2       TEST FOR PROGRAM ON TAPE
+       STL SWTCH     S KEY IS UP-YES CALL TAPE
+       TRA COUNT
+       REM
+       TSX CTX,4     TO MODIFY THE PROGRAM
+       HTR *+1,0,*+10
+       TRA *+2
+       REM
+       REM
+*TEST TRS WITH TAPES IN READY STATUS
+       REM
+BCD    BCD 1WTBA 1   DUMMY BCD
+       REM
+       WTBA 1
+       RCHA CNTRL    IOCD-WC 2
+       TCOA *        WAIT FOR END OPN
+       REWA 1
+       AXT BCD,1
+       TRSA 1        TEST READY STATUS CHAN X
+       TRA *+4       TAPE NOT READY-OK
+       TSX ERROR,2   TAPE READY DURING REWIND
+       BCD 1TRS0 0
+       TRA *-9       REPEAT
+       REM
+       CLA IOCNT     COUNT OF TOTAL UNITS
+       SUB ONE       L+1
+       STO IOCNT     RESTORE COUNT
+       TNZ BCD-3     RETURN FOR NEXT UNIT
+       REM
+       CLA IOCT      BRING IN COUNT
+       STO IOCNT     RESTORE
+       REM
+       TSX CTX,4     TO MODIFY PROGRAM
+       HTR *,0,*+8
+       TRA *+2
+       REM
+*THIS SECTION WILL TRY TO DROP READY WITH CHANNEL IN OPN.
+*DRS SHOULD NOT OPERATE UNTIL CHANNEL IS NOT IN OPERATION.
+       REM
+       REM
+       BCD 1WTBA 1
+       REM
+WTB    WTBA 1        SELECT TAPE
+       RCHA CNTRL    WRITE TWO WORDS
+       DRSA 1        DROP READY-AFTER SELECT
+       REM           TO SEE IF DROP READY
+       REM           WILL OPERATE BEFORE WRITE
+       AXT WTB-1,1   OPERATION IS FINISHED.
+       TRSA 1        TEST-TRS AFTER DRS
+       TRA *+4       NO IN OPN-OK
+       TSX ERROR,2   TAPE DRIVE SHOULD NOT
+       BCD 1TRSO 0   BE IN READY STATUS
+       TRA *-8
+       REM
+       CLA IOCNT     COUNT OF TOTAL UNITS
+       SUB ONE       L+1
+       STO IOCNT     RESTORE COUNT
+       TNZ WTB-2
+       REM
+       CLA IOCT      BRING IN COUNT
+       STO IOCNT     RESTORE
+       REM
+       TSX CTX,4     TO MODIFY PROGRAM
+       HTR *+1,0,*+5
+       TRA *+3
+       REM
+       REM
+*TEST TRS WITH TAPE DRIVES NOT IN READY STATUS
+       REM
+BCD1   BCD 1WTBA 1
+       WTBA 1
+       REM
+       AXT BCD1,1
+       TRSA 1        TEST READY STATUS WITH
+       REM           UNIT NOT READY
+       TRA *+4
+       TSX ERROR,2   OUT TO PRINT ERROR-MAY
+       BCD 1TRSO 0   INDICATE DRS DID NOT DROP
+       REM           READY, OR TRS SAW UNIT
+       REM           IN READY STATUS. LOOK AT
+       REM           DRIVE INDICATED IN PRINT
+       REM           OUT. IF DRIVE IS IN READY
+       REM           DRS DID NOT OPERATE. IF
+       REM           DRIVE IS NOT IN READY
+       REM           STATUS, TRS DID NOT 
+       REM           OPERATE PROPERLY.
+       TRA *-5       REPEAT
+       REM
+       CLA IOCNT     TOTAL UNIT COUNT
+       SUB ONE       L+1
+       STO IOCNT     RESTORE COUNT
+       REM
+       TNZ BCD1-3
+       REM
+       CLA IOCT      TOTAL UNIT COUNT
+       STO IOCNT     RESTORE
+       REM
+       HTR *+1       AT THIS HALT --RESET AND PRESS
+       REM           START ON ALL DRIVES SELECTED
+       REM           I WILL WAIT.------
+       REM           ARE ALL DRIVES IN READY
+       REM           STATUS-FINE,--NOW PRESS
+       REM           START BUTTON ON CONSOLE
+       REM
+       REM
+       TSX CTX,4     TO MODIFY PROGRAM
+       HTR *,0,*+8
+       TRA *+2
+       REM
+       REM
+*READ TAPES TO CHECK FOR ALL INFORMATION BEING WRITTEN
+       REM
+       REM
+       BCD 1WTBA 1
+       REM
+WTB1   BSRA 1        BACKREM RECORD.
+       RTBA 1
+       RCHA CNTL1    READ 2 WORDS
+       TCOA *        WAIT FOR DSC
+       AXT WTB1-1,1
+       REM
+       AXT 2,4
+       CLA RD2WD+2,4 WORD READ
+       LDQ ONES+2,4  CORRECT WORD
+       CAS ONES+2,4
+       TRA *+2       ERROR
+       TRA *+4
+       TSX ERROR,2   ERROR HERE WILL INDICATE
+       BCD 1DRS0 0   THAT DRS DROPPED READY
+       REM           ONE THE TRAP DRIVE BEFORE
+       REM           THE WRITE OPN WAS COMPLETED
+       TRA WTB1
+       TIX *-8,4,1   COMPARE ALL WORDS
+       REM
+       CLA IOCNT     TOTAL UNIT COUNT
+       SUB ONE       L+1
+       STO IOCNT     RESTORE COUNT
+       TNZ WTB1-2
+       REM
+       CLA IOCT      TOTAL UNIT
+       STO IOCNT
+       REM
+       TSX CTX,4     MODIFY PROGRAM
+       HTR *+1,0,*+11
+       TRA *+2
+       REM
+       REM
+*TEST TRS WITH CHANNEL IN OPERATION-TRS SHOULD HOLD UP MF.
+       REM
+BCD2   BCD 1WTBA 1   DUMMY BCD FOR 9IOM
+       REM
+       TCOA *        MAKE SURE CHANNEL IS
+       AXT BCD2,1    NOT PRINTING
+       WTBA 1        SELECT TAPE
+       RCHA CNTRL    MOVE INFORMATION
+       REM
+       TRSA 1
+       HTR ERR+3     THE PROGRAM SHOULD NEVER
+       REM           ARRIVE AT THIS POINT. TRS
+       REM           SHOULD DELAY UNTIL CHANNEL
+       REM           GOES OUT OF OPERATION
+       REM           THEN SHOW DRIVE IN READY
+       REM           STATUS.
+       REM
+       TCOA ERR      IF CHANNEL IS IN OPERATION
+       REM           THIS IS AN ERROR.
+       REM
+       SCHA SAVE2    CONTENTS OF CHANNEL
+       CLA SAVE3     CORRECT CONTENTS OF CHANNEL
+       REM           IF WORD MOVED
+       CAS SAVE2
+       TRA *+2       DID NOT MOVE WORD-ERROR
+       REM
+       TRA ERR+3     OK
+       TSX ERROR,2   SCH COMPARISION AFTER
+       BCD 1TRS0 0   WRITE NOT CORRECT
+       TRA BCD2+1    REPEAR
+       TRA ERR+3     CONTINUE-OK
+       REM
+ERR    TSX ERROR,2   ERROR
+       BCD 1TRSO 0
+       TRA BCD2+1    REPEAT
+       REM
+       CLA IOCNT     TOTAL UNIT COUNT
+       SUB ONE       L+1
+       STO IOCNT     RESTORE
+       TNZ BCD2-3    RETURN FOR NEXT UNIT
+       REM
+       CLA IOCT
+       STO IOCNT     RESTORE INITIAL COUNT
+       REM
+       TSX CTX,4
+       HTR *,0,*+8
+       TRA *+2
+       REM
+*TEST THAT DRS GIVEN DURING REWIND WILL NOT ALLOW
+*TAPE DRIVE TO COME BACK TO READY AFTER COMPLETION OF REWIND
+       REM
+       REM
+       BCD 1WTBA 1
+       REM
+REW    WTBA 1
+       RCHA CNTRL    IOCD-WC 2
+       TCOA *        WAIT
+       REWA 1        REWIND
+       DRSA 1        DROP READY
+       REM
+       REM           DROP READY SHOULD NOT
+       REM           ALLOW DRIVE TO COME
+       REM           BACK TO READY AFTER
+       REM           REWIND. IF ANY DRIVE
+       REM           READY STATUS, DRS DID
+       REM           NOT HOLD READY DOWN
+       REM           DURING REWIND.
+       REM
+       CLA IOCNT     TOTAL UNIT COUNT
+       SUB ONE       L+1
+       STO IOCNT     RESTORE
+       TNZ REW-2     RETURN FOR NEXT UNIT
+       REM
+       CLA IOCT
+       STO IOCNT     RESTORE INITIAL COUNT
+       REM
+       HTR *+1       AT THIS HALT RESET AND PRESS
+       REM           START ON ALL DRIVES
+       REM           SELECTED. IF ANY ARE
+       REM           IN READY STATUS, DRS
+       REM           DID NOT HOLD DOWN
+       REM           READY, AFTER REWIND
+       REM         
+       REM           PRESS START ON CONSOLE
+       REM           TO CONTINUE
+       SWT 5
+       TRA *+2
+       TRA *+17
+       CLA REST     RESET CONSTANT
+       STO CTRL1    RESET CONTROL FOR CHAN A
+       STZ CTRL2    CLEAR CTRL2
+       STZ CTRL3    CLEAR CTRL3
+       TSX CTX,4    OUT TO RESET PROGRAM
+       HTR BCD-2,0,BCD+8
+       TSX CTX,4
+       HTR WTB-1,0,WTB+4
+       TSX CTX,4
+       HTR BCD1-1,0,BCD1+4
+       TSX CTX,4
+       HTR WTB1-1,0,WTB1+4
+       TSX CTX,4
+       HTR BCD2-1,0,BCD2+9
+       TSX CTX,4
+       HTR REW-1,0,REW+5
+       REM
+       WPRA
+       SPRA 3
+       TSX SPLAT+1,4
+       PZE 5,0,18
+       BCD 5PASS COMPLETE-ALL UNITS-9DRS1
+       REM
+       SWT 5        IF SWITCH 5 IS DOWN
+       REM          PROGRAM WILL USE UNITS
+       TRA *+2      SELECTED, INITIALLY, WITHOUT
+       TRA BEGIN+5  ANOTHER HALT
+       REM
+       SWT 6
+       TRA *+2
+       TRA BEGIN
+       REM
+       ZET SWTCH    TEST FOR SIGN KEY
+       TRA CHNG
+       REM
+NPR    RCDA         CALL NEXT PROGRAM
+       RCHA CNP
+       LCHA 0
+       TRA 1
+       REM
+CHNG   CLA TPSEL    TAPE SELECT
+       STO NPR      CHANGE CARD SELECT
+       TRA NPR      CALL NEXT PROGRAM
+       REM
+CNP    IOCT 0,0,3
+       REM
+       SWT 3
+       TRA *+2
+       TRA BEGIN
+       REM
+PRINT  WPRA
+       SPRA 3
+       TSX SPLAT+1,4
+       PZE 6,0,18
+       BCD 6NOW PREFORMING -9DRS1- TRS, DRS TEST
+       TRA BEGIN
+       REM
+ERROR  SWT 2          TEST SWITCH #2
+       TRA *+4        UP-TEST SWITCH #3
+       SWT 1          DOWN-IGNORE ERROR
+       TRA 3,2        UP-COUNTINUE PROGRAM
+       TRA 2,2        DOWN-LOOP IN SECTION
+       REM            AND UNIT NEW SELECTED
+       REM
+       SWT 3          TEST SWITCH #4
+       TRA ERT        UP-PRINT
+       SXA HPR,2      STORE 2S COMP ERROR ADDR.
+       SXA SAVE4,2    SAVE XRBV
+       LAC HPR,2      PLACE CORRECT ADDR IN XR
+       SXA HPR,2      STORE CORRECT ADDR
+       LXA SAVE4,2    RESTORE XRB
+HPR    HPR **         CORRECT ADDR WILL APPEAR IN SR
+       TRA ERROR+2    RETURN
+       REM
+ERT    CAL 1,2        TO SET
+       SLW TRS+3
+       SXA *+1,1
+       CAL 0          UP BCD
+       ANA MASK
+       ORA TRS+3      PRINT
+       SLW TRS+3      IMAGE
+       PXA 0,2
+       SXA SAVE,2     SAVE XRB
+       PAC 0,2        COMPLEMENT TO XRB
+       PXA 0,2        ORGINAL ADDRESS IN ACC
+       SXD SAVE1,2    SAVE ORGINAL ADDRESS
+       LDQ SAVE1
+       RQL 3
+       PXD
+       AXT 5,2        SET UP
+       ALS 3
+       LGL 3          ERROR
+       TIX *-2,2,1    ADDRESS
+       ALS 6
+       ADD FRTY       ADD DASH
+       SLW TRS+2      STORE IN BCD IMAGE
+       REM
+       WPRA
+       SPRA 3
+       SXA SAVE5,4    SAVE XRC
+       TSX SPLAT+1,4  OUT TO PRINT ERROR
+       PZE 6,0,18
+TRS    BCD 6 ERROR ADDR 00000-TRS0 0 FAILED
+       LXA SAVE5,4    RESTORE XRC
+       LXA SAVE,2     RESTORE XRB
+       TRA ERROR+2    RETURN
+       REM
+       REM
+SAVE4  OCT 0
+SWTCH  OCT 0
+MASK   OCT 770077
+IOCNT  OCT 0
+ONE    OCT 1
+FRTY   OCT 40
+SAVE   OCT 0
+SAVE1  OCT 0
+SAVE2  OCT 0
+SAVE5  OCT 0
+ONES   OCT 777777777777
+SAVE3  IOCD ONES+2,0,CNTRL+1
+TPSEL  WTBA 1
+RESET  TRA 24
+REST   OCT 400000100030
+STOP   IOCD
+CNTRL  IOCD ONES,0,2
+CNTL1  IOCD RD2WD,0,2
+RD2WD  BSS 2
+       REM
+COUNT  CLA IOCT     COUNT OF I/O UNITS
+       STO IOCNT    SAVE COUNT
+       TRA BEGIN+5  RETURN
+       REM
+       REM INDEXABLE BCD PRINT SUBROUTINE.
+       REM
+*THIS  SUBROUTINE USES THREE SYMBOLS, THEY ARE...
+       REM
+       REM SPLAT, THE FIRST WORD OF THE ROUTINE
+       REM
+       REM CI, USED FOR CARD IMAGE, 26 LOCATION
+       REM
+       REM SUBET, THE CONTENTS OF XRC ARE STORED
+       REM           IN THE ADDRESS OF SUBET.
+       REM
+*CONDTION  OF THE ACC, MQ, AND ACC OVERFLOW
+*TRIGGER IS NOT GUARANTEED ON EXIT FROM THIS ROUTINE.
+       REM
+       REM THE PRINTER ON CHANNEL A IS USED
+       REM YOU MAY ENTER SPLAT+1 IF YOU HAVE
+       REM ALREADY GIVEN WRIT SELECT.
+       REM
+       REM THE RCHA INSTRUCTION IS AT SPLAT+60.
+       REM
+       REM THERE IS NO CHANNEL DELAY IN THE
+       REM SUBROUTINE, THEREFORE TAKE CARE NOT
+       REM TO USE CI UNTIL AFTER 12 ROW-RIGTH
+       REM HAS BEEN WRITTEN. FOR THIS REASON,
+       REM YOU MUST GIVE WRS FOR EACH ENTRY
+       REM OR ENTER AT SPLAT.
+       REM
+       REM
+SPLAT  WPRA          GET GOING
+       SXA SPLAT+61,1
+       SXA SPLAT+62,2
+       SXA SUBET,4   SAVE ORGINAL XRC.
+       NZT 1,4       IF CONTROL WORD ZERO.
+       REM
+*5
+       TRA 2,4       RETURN
+       REM
+       CAL 1,4       GET NON-ZERO WORD
+       SLW SPLAT+85  SAVE CONTROL WORD
+       PDX 0,1       TYPE WHEEL NO.
+       TXL SPLAT+65,1,0 IF DECR. ZERO, GET
+       REM           NEW CONTROL WORD
+       REM
+*10
+       SXD *+2,4     GET EXIT ADDRESS
+       PAC 0,2       BY ADDING TWOS COMP.
+       TXI *+1,2,0   OF N TO XRC.
+       SXA SPLAT+63,2 EXIT VALUE.
+       REM
+       REM SET BIT INDEX TO STARTING WHEEL
+       REM
+       SXA *+3,1     FOR SHIFTING
+       REM
+*15
+       AXT 1,3       1 TO XRA AND XRB
+       CAL SPLAT+82  BIT INDEX TO P
+       LGR 0,1       SHIFT TO STARTING POINT
+       TNZ *+3       IF ACC IS ZERO, SET FOR
+       STQ SPLAT+83  RIGHT ROW, AND MAKE
+       REM
+*20
+       TXI *+2,2,1   XRB A DUECE
+       SLW SPLAT+83  OTHERWISE, LEFT ROW.
+       AXT 26,1
+       STZ CI+26,1   CLEAR CARD IMAGE
+       TIX *-1,1,1
+       REM
+       REM
+       REM FORM CARD IMAGE.
+       REM
+*25
+       TIX *+1,4,1   ADDRESS OF FIRST WORD.
+       AXT 6,1       CHARACTER COUNT.
+       LDQ 1,4       GET THE WORD.
+       REM           SOME PEOPLE NEVER
+       REM           DO, YOU KNOW
+       REM
+       SXA SPLAT+54,1 SAVE CHARACTER COUNT.
+       PXD           CLEAR ACC
+       REM 
+*30
+       LGL 2         ZONE
+       ALS 1         TIMES 2
+       PAX 0,1
+       SXA SPLAT+45,1 FOR FUTURE REFERENCE.
+       CLM
+       REM
+*35
+       LGL 4         DIGIT
+       ALS 1         TIMES 2
+       SLW CI        TEMP0
+       CAL SPLAT+83  BIT INDEX
+       NZT CI        IS DIGIT ZERO.
+       REM 
+*40
+       TXH SPLAT+80,1,0 IS ZERO ZONE TOO.
+       LXA CI,1      OK, PROCEED
+       TXH SPLAT+48,1,24 CHECK FOR ILLEGAL
+       TXH SPLAT+78,1,20 SPECIAL CHARACTER.
+       ORS* SPLAT+92,2 XRB PICKS LEFT OR RIGHT.
+       REM
+*45
+       AXT 0,1       ZONE AGAIN.
+       TXL *+2,1,0   NOTHING FOR ZERO ZONE
+       ORS* SPLAT+90,2 PLACE ZONE BIT.
+       REM
+       REM  COLUMN SET.
+       REM
+       ARS 1         SET BIT INDEX TO 
+       TNZ *+4       NEXT COLUMN, IF ANY.
+       REM
+*50
+       TXH SPLAT+60,2,1 IF BX ZERO,+XRB 1, STOP
+       REM
+       CAL SPLAT+82  IF NOT, SET TO RIGHT
+       TXI *+1,2,1   ROW AND PROCEED.
+       SLW SPLAT+83  BX READY FOR NEXT COLUMN.
+       AXT 0,1       MORE CHARACTERS.
+       REM 
+*55
+       TIX SPLAT+28,1,1 NEXT COLUMN
+       LXA SPLAT+85,1 MORE WORDS MAYBE.
+       TNX *+3,1,1    IF NOT, STOP.
+       SXA SPLAT+85,1 YUMMY, GO GET EM.
+       TXI SPLAT+25
+       REM
+       REM FIFTEEN MEN ON A DEAD MANS CHEST.
+       REM
+*60
+       RCHA SPLAT+84  LET HER RIP
+       AXT 0,1
+       AXT 0,2
+       AXT 0,4
+       TRA 2,4         EXIT
+       REM
+       REM 
+       REM  GET NEW CONTROL WORD FROM SOMPLACE
+       REM 
+       REM 
+*65
+       SXA SPLAT+63,4 FOR EXIT
+       LXA SPLAT+61,1 RESTORE XRA
+       NZT* SPLAT+85 IF CONTROL WORD ZERO
+       TRA SPLAT+61  RETURN.
+       CAL SPLAT+85  OLD CONTROL WORD
+       REM
+*70
+       STT *+1       BRING OUT INDEX
+       SXD *+2,0     REGISTER, IF ONE IS TAGED.
+       PAC 0,4
+       TXI *+1,4,0   GET EFFECTIVE ADDRESS.
+       CAL 0,4       NEW CONTROL WORD.
+       REM
+*75
+       PDX 0,1       TYPE WHEEL ID.
+       SLW SPLAT+85
+       TXI SPLAT+14,4,1 PROCEED
+       REM
+       REM YOUR AN OLD SMOOOTHY.
+       REM
+       ORS* SPLAT+88,2 PUT EIGTH IN, TAKE
+       TIX SPLAT+44,1,16 16 OUTM, - GOOD BUSINESS
+       REM 
+*80
+       TXL SPLAT+47,1,4 IF NOT BLANK, SET ZONE.
+       TRA SPLAT+48    BLANK.
+       REM
+       MZE             FOR BIT INDEX.
+       HTR             DYNAMIC BIT INDEX.
+       IOCD CI+2,,24   BUFFER COMMAND
+       REM 
+*85
+       HTR             SPECIAL SALON FOR
+       REM             THE CONTROL WORD
+       HTR CI+5
+       HTR CI+4        BROW ADDRESSES
+       HTR CI+27,1
+       HTR CI+26,1     ZONE ROW ADDRESSES
+       REM
+*90  
+       HTR CI+21,1
+       HTR CI+20,1     DIGIG ROW ADDRESSES
+       REM
+CI     BSS 26
+SUBET  BSS 1
+       REM
+       REM   TO WRITE PUNCH, USE TSX CRNCH,4.
+       REM
+CRNCH  WPUA
+       TRA SPLAT+1
+       REM
+IOC    EQU 2892
+CTX    EQU 2890
+IOCT   EQU 2883
+CTRL1  EQU 2880
+CTRL2  EQU 2881
+CTRL3  EQU 2882
+       END

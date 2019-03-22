@@ -1,0 +1,389 @@
+                                                                        9EFPA
+                                                                        1-1.60
+                                                                        PAGE 1.0001
+
+                    SPECIAL FEATURE
+            EXTENDED PRECISION FLOATING POINT
+                     FOR 709 MACHINE
+
+            B/M 580043              EC 298817
+
+                        SECTION 2
+
+A. PURPOSE OF TEST
+
+   This section provides a comprehensive test of the Extended Precision
+   Floating Point arithmetic instructions.
+
+   EMP         +0673     Extended Floating Multiply
+   EDP         +0672     Extended Floating Divide and Proceed
+   EUA         -0672     Extended Unnormalized Floating Add
+   EAD         +0671     Extended Floating Add
+   ESB         -0671     Extended Floating Subtract
+
+B. METHOD OF TEST
+
+   Section 2 assumes that ELD and EST as checked in Section 1 are
+   functional.
+   And extended instruction is given and the results are examined by
+   fixed-point instructions. The results are checked by the Program Check
+   Subroutine. The correct resutls of each test routine are found in the
+   three octal locations following the TSX CHECK instruction.
+
+C. PROGRAM CONTROL
+
+   This program provides separate subroutines for controlling the operation
+   of the program within the machine. These controls are grouped under the
+   heading of MONITOR. Monitor is discussed under SUBROUTINE
+   DESCRIPTION.
+
+   1.   CARD DECK 
+
+        9EFPA     028          9LD02A - High End Loader
+                  029 - 185    Section 2 Program
+                  186 - 214    9DEPR - Diagnostic Print Routine
+                  215          Section 2 Tra Card (TRA 05211)
+                  216 - 217    Two Blank Cards
+
+        See Introductory Write-Up for comments on operating this section
+        seperately or in conjunction with Section 1.
+
+                                                                        9EFPA
+                                                                        1-1.60
+                                                                        PAGE 1.0002
+                SECTION 2
+
+    2.  SENSE SWITCH CONTROL 
+
+        Sense Switch 1
+          UP - Test SSW 4 or continue test routine.
+          DN - Repeat test routine or a loop within a test routine.
+        Sense Switch 2
+          UP - Indicate all errors, test SSW 3.
+          DN - Bypass all errors.
+        Sense Switch 3
+          UP - Print all program control and error requests.
+          DN - Bypass all printing requests and halt on errors.
+        Sense Switch 4
+          UP - Proceed to next test routine.
+          DN - Repeat each test routine 50 octal times before proceeding
+               to next test routine.
+        Sense Switch 5
+          NOT USED
+        Sense Switch 6
+          UP - End program on completion of all test routines and
+               simulate the load cards button to read in next diagnostic
+               program.
+               With SSW 3 UP print test completed.
+          DN - Repeat program upon completion of last test routine.
+
+      3. SENSE LITE INDICATIONS
+
+         SLT 1    Error in OV Tgrs.
+         SLT 2    Error in ACC S-35
+         SLT 3    Error in MQ S-35
+         SLT 4    Error in decrement or address of LOC ZERO.
+
+      4. I/O CHECK LIGHT CONTROL
+
+         The I/O check light is used in this program as an indication to
+         the Manual Restart Control (Part 5 - MONITOR) that the manual
+         reset button has been used.
+
+         The I/O light is turned on at the beginning of each test routine.
+         On a condtion of manual reset, the I/O lite is turned off to indicat
+         to the manual restart routine that entry to subroutine was a legal one.
+
+D. NORMAL STOPS
+
+      NONE 
+
+                                                                        9EFPA
+                                                                        1-1.60
+                                                                        PAGE 1.0003
+                    SECTION 2
+
+E. ERROR STOPS
+
+   Both error stops are under control of the 9DEPR Diagnostic Print
+   Routine.
+          To stop - SSW 2 UP and SSW 3 DN.
+             6517 - Error stop for entry with the TSX ERROR,4 instruction.
+             6545 - Error stop for entry with the TSX ERROR-1,4 instruction.
+
+   On all halts, an error bit code and true error location is provided in the
+   SI REG.  See listing write-up preceding the Program Check Subroutine for
+   bit code used.
+
+   The four Sense Lites also provide error indications. See Part C of this
+   write-up.
+
+F. PROGRAM CONTROL AND ERROR PRINTOUTS
+
+   1.  All printouts are under control of SSW 3.
+   
+   2.  All error printouts are under control of both SSW 2 and SSW 3 as
+       standardized by the DEPR Error Print Subroutine.
+
+   3.  Consult the write-up and listing of DEPR for detailed account of
+       the diagnostic print subroutine.
+ 
+   4.  The correct results of each test routine can be found in the three
+       octal locations of the test routine.
+
+   5.  See Page 1.0008 for example of program control and error printouts.
+
+G. TEST ROUTINE FORMAT
+
+   All the test routines in this program were written in the followuing format,
+   exccept for the exceptions as noted.
+
+   The main headings, arranged in order as they would appear in a test
+   routine, refer to either a single symbolic instruction or a group of
+   symbolic instructions.
+
+   The brief discussion following a heading gives the purpose for using such
+   heading in the format.
+
+   1.  BCD 10PN
+ 
+       To provide BCD word for operation location in 9DEPR.
+
+                                                                        9EFPA
+                                                                        1-1.60
+                                                                        PAGE 1.0004
+                    SECTION 2
+
+
+   2.  TSX CLEAR,4
+          Program control is transfered to MONITOR (Part 1) for
+          checking program sequence. If program is operating in
+          proper sequence, control is transferred to Part 2 of MONITOR
+          for initializing. EXCEPTION: In first test routine, program
+          sequence is not checked. Only initializing is done.
+
+   3.  TEST ROUTINE INSTUCTIONS
+
+   4.  TSX CHECK,4
+          Control is tranferred to the Program Check Routine. This
+          routine checks the results of this test routine with the correct
+          results as provided in the following three locations. On an
+          error indication, control is transferred or halt, SSW 1 and SSW 4 are
+          interrogated.
+          On a condition of no error indication, control is transferred
+          to 4,4(TSX OK,4).
+
+    5. THREE OCTAL LOCATIONS
+          These locations contain the correct result of the test routine.
+          OCT or PZE - Gives the OV, QP and Trap conditions.
+          OCT        - Correct contents of ACC S-35.
+          OCT        - Correct contents of MQ  S-35.
+
+    6. TSX OK,4
+          If test routine checks OK, control is transferred to 9DEPR
+          for interrogation of SSW 1 and SSW 4.
+
+    7. TRA X
+          To provide return to beginning of test routine under control of
+          SSW 1 or SSW 4 in 9DEPR. In our case, return is to TSX CLEAR,4.
+
+       EXCEPTIONS:
+
+       a)  In test routines that check for false trapping or divide check
+           conditions - TSX ERROR - 1,4
+                        NOP ADDRESS (Either DCTER or TRPER)
+
+           On these above errrors, a print out will occur before the results
+           of the test routine are checked. The NOP instruction gives
+           the BCD word to be inserted in the operations part of the 9DEPR
+           printout.
+
+                                                                        9EFPA
+                                                                        1-1.60
+                                                                        PAGE 1.0005
+                    SECTION 2
+
+
+       b)  In Scoping Loop Routines -
+              SWT 1 is provided for a closed loop on an extended instruction.
+              Separate temporary (temp) locations are provided for each
+              loop routine.
+
+       c)  In Reliability Section (NxN/N)
+              SWT 1 is provided for looping after each operation before
+              the zero column is shifted left.
+
+H. SUBROUTINE DESCRIPTIONS
+
+   1. PROGRAM CHECK SUBROUTINE
+
+      This subroutine checks the arithmetic results of each test routine.
+      These arithmetic resutls are checked with data provided by the 
+      test routine as found in the three locations following the TSX CHECK
+      instruction.
+
+      See write-up in listing on Page 86 for other comments.
+
+   2. MONITOR
+ 
+      Monitor is divided into six parts to include all program control
+      subroutines used in this diagnostic program.
+
+      Part 1   PROGRAM SEQUENCE CHECK
+
+      This subroutine checks to see if program is following each test
+      routine in proper sequence.  Only the three following conditions
+      are considered by this subroutine as being proper sequences:
+
+      a)  The repeating of a test routine when under control of
+          SSW 1 or SSW 4.
+
+      b)  Proceeding in sequence from each test routine to the next
+          following test routine.
+
+      c)  The condition of a manul transfer as set in machine from 
+          the keys.
+
+      This subroutine provides this program with the means for detecting
+      random addressing errors.
+
+
+                                                                        9EFPA
+                                                                        1-1.60
+                                                                        PAGE 1.0006
+                    SECTION 2
+
+      Part 2  RESET AND RETURN CONTROL
+
+      This subroutine will reset all MF registers, turn off all sense
+      lights, turn off MQ and AC OV triggers, set program into the 
+      floating point trap mode, reset nullify trigger, turn off divide
+      check trigger, clear test routine temporary locations, and
+      initialize location zero.
+
+      The beginning test location is set in SI REG to indicate error
+      location for the divide check and trap failure errors.
+      The I/O check light is turned on for the manual restart subroutine
+      (Part 5).
+
+      Part 3   SPACE SUBROUTINE
+
+      This subroutine, under control of SSW 3, will print space error
+      using the standard 9DEPR print routine. With SSW 2 DN, the
+      error inidication is bypassed. After printing or halting, the
+      program will return to last test routine that was completed in
+      proper sequence.
+
+      Part 4   PROGRAM START AND STOP CONTROL
+
+      START - This portion of the subroutine fills all unused portions
+              of storage with TSX SPACE,4. The pass and error
+              count locations are cleared. The program will be
+              identified with SSW 3 UP.
+
+      STOP  - This portions of the subroutine provides program control
+              after the completion of each program pass.
+              With SSW 6 DN, the program counters are stepped and
+              program returned to the beginning test routine. After
+              100 program passes, with SSW 3 UP, a printout of total
+              passes is provided.
+              With SSW 6 UP, the load cards button is simulated to
+              read in next diagnostic program. If SSW 3 is UP at the
+              same time, a printout of statistics and total
+              program passes is provided.
+
+
+      Part 5   MANUAL RESTART CONTROL
+
+      This subroutine, on a condition of manual reset with SSW 1 DN, will
+      return the program to the test routine that was interrupted at the time
+      of the manual reset. With SSW 1 UP, the program will return to the
+      beginning test routine.
+
+                                                                        9EFPA
+                                                                        1-1.60
+                                                                        PAGE 1.0007
+                    SECTION 2
+
+      The I/O check light is used to indicate to this subroutine that entry
+      was due to manual reset. The I/O check light is turned on at the
+      beginning of each test routine and is turned off only on a manual
+      reset.
+
+      On conditions that the I/O check light is not off or address of
+      location zero is no 00001, this subroutine will transfer to Part 3
+      to print sequence error from location 00002.
+
+      Part 6   FLAOTING POINT TRAP CONTROL
+
+      This subroutine provides program control of all traps that occured
+      during operation of the test routines. On legal traps, the program
+      is returned back to test routine that provided return address. On all
+      legal traps, XRC should be zero.
+
+      On a condition of a legal trap with XRC not zero, the program will
+      printout error, under control of SSW 2 and SSW 3, before returning
+      to the test routine. The printout uses the standard 9DEPR format
+      with the designation of I TIME for the operation code.
+
+      On a condition of entry to subroutine with no return address provided,
+      this subroutine will determine whether error was due to a trapping or
+      skipping condition. If program skipped to location 00001, program
+      control is tranfered to SPACE subrouine. If program trapped to 
+      location 00001, a printout under control of SSW 2 and SSW 3 is provided
+      before program is returned to trap location address plus one.  
+
+
+                                                                        9EFPA
+                                                                        1-1.60
+                                                                        PAGE 1.0008
+                    SECTION 2
+
+
+                    \BPROGRAM CONTROL AND ERROR PRINTOUTS\b
+
+   \BPROGRAM CONTROL PRINTOUTS\b
+
+      9EFP SECTION 2,  EXTENDED PRECISION FLOATING POINT TEST BEGINS.
+   
+       9EFP,     100 PASSES. TOTAL OF   4000 PASSES COMPLETED.
+
+       9EFP, EX. PREC. TEST ENDS.  4095 TOTAL PASSES COMPLETED.
+
+                  ERROR REPORT BY TYPE OF ERROR.
+        TOTAL      OV     P+Q     ACC      MQ    ZERO
+          145       4      13      57      33      36
+
+
+    \BPROGRAM ERROR PRINTOUTS (Using 9DEPR)\b
+
+    TEST LOC 00524, OPN EMP   ,ERROR LOC 00544, 0 LOC 500000000000,SW 000001
+    LITE 0100, MQ 200000000000, XRA 00000, XRB 00554, XRC 77234,  TRAP TRG 0
+    ACC +,Q 1,P 1,357777000000, DIV CK 0, ACC OVFL 1,
+    INDS 000000000000, KEYS 002000002120
+
+    TEST LOC 02015, OPN DCTERR,ERROR LOC 02023, 0 LOC 500000000000,SW 000001
+    LITE 0000, MQ 237777777776, XRA 00000, XRB 00000, XRC 75755,  TRAP TRG 0
+    ACC +,Q 0,P 0,040004777777, DIV CK 1, ACC OVFL 0,
+    INDS 000000002015, KEYS 002000002160
+
+    TEST LOC 02166, OPN EMPEDP,ERROR LOC 02156, 0 LOC 500000000000,SW 000001
+    LITE 0010, MQ 777777777774, XRA 00043, XRB 00000, XRC 75622,  TRAP TRG 0
+    ACC -,Q 0,P 0,440001777777, DIV CK 0, ACC OVFL 0,
+    INDS 000000000000, KEYS 002000005124
+
+    TEST LOC 05554, OPN I TIME,ERROR LOC 05560, 0 LOC 500000000000,SW 000001
+    LITE 0000, MQ 200000000000, XRA 00000, XRB 01612, XRC 77216,  TRAP TRG 1
+    ACC +,Q 1,P 1,347002000000, DIV CK 0, ACC OVFL 0,
+    INDS 000000076166, KEYS 002000001602
+
+    TEST LOC 05172, OPN SPACE ,ERROR LOC 05200, 0 LOC 500000000000,SW 000001
+    LITE 0111, MQ 777777777776, XRA 00005, XRB 00000, XRC 24502,  TRAP TRG 0
+    ACC -,Q 0,P 0,040004000000, DIV CK 0, ACC OVFL,
+    INDS 002170053275, KEYS 000000000000
+
+
+
+
+\l
+File Attachments:   Source \Asource\a    Cards \Acard\a      Deck \Adeck\a

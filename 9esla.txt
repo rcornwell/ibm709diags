@@ -1,0 +1,207 @@
+                                                                   9EFPA
+                                                                   1-1-60
+                                                                   PAGE 1.0001
+
+                    SPECIAL FEATURE
+            EXTENDED PRECISION FLOATING POINT
+                     FOR 709 MACHINE
+
+            B/M 580043              EC 298817
+
+                  INTRODUCTORY WRITE-UP
+
+UNIT TESTED - 709 CPU
+
+A. PURPOSE OF TEST
+
+   To give a comprehensive test of all the seven extended precision
+   floating point instructions as provided by this Special Feature
+
+B. METHOD OF TEST
+
+   In order to give a comprehensive test of all these extended precision
+   floating point instructions, this diagnostic program is divided into two
+   separate independent sections, as follows:
+
+   Section 1 - Tests the extended load (ELD) and extended store (EST)
+               instructions.
+
+   Section 2 - Tests the extended precision floating point arithmetic
+               instructions. (EAD, ESB, EUA, EMP, EDP)
+
+   The method of test as used in each section is discussed in the write-up
+   for that section.
+   This program assumes that all of MF is functional except the circuitry
+   required for this special feature.
+
+C. MACHINE UNITS AND STORAGE AREA
+
+   1. UNITS REQUIRED
+ 
+      MF, CF, DSU, CR, PR
+
+   2. STORAGE LOCATIONS
+
+      SECTION 1                       00000 - 01073
+
+      SECTION 2                       00000 - 06435
+                9DEPR                 06500 - 07713
+
+      These sections are sepaarate programs.
+      In the operation of each section, all of core storage is used.
+
+                                                                   9EFPA
+                                                                   1-1-60
+                                                                   PAGE 1.0002
+
+D. LOADING PROCEDURE
+
+   Both sections are loaded into core storage by using the Standard High
+   End Loader. (9LD02A)
+
+E. PROGRAM CONTROL
+
+   Program control as used by each section is discussed in write-up
+   for that section.
+
+   1.  CARD DECK
+
+       9EFPA  000          9LD02A - High End Loader
+              001 - 026    Section 1 Program
+              027          Section 1 Tra Card (TRA 00767)
+              028          9LD02A - High End Loader
+              029 - 185    Section 2 Program
+              186 - 214    9DEPR - Diagnostic Print Routine
+              215          Section 2 Tra Card (TRA 05211)
+              216 - 217    Two Blank Cards
+
+       Operation of each section as separate programs:
+
+       Section 1 - Remove 9EFPA 000 to 027 and insetr two blank cards
+                   behind 9EFPA 027 and insert this deck into CR.
+
+                   NOTE:  Section 1 does not use the DEPR print routine.
+      
+       Section 2 - Remove 9EFPA 028 and hight and insert this deck
+                   into CR.
+
+       As single loads, either section will load under SSW 6 control.
+       This is the same procedure as used in loadng consecutive
+       diagnostic programs.
+
+
+                                                                   9EFPA
+                                                                   1-1-60
+                                                                   PAGE 1.0003
+
+
+                    SPECIAL FEATURE
+            EXTENDED PRECISION FLOATING POINT
+                     FOR 709 MACHINE
+
+            B/M 580043              EC 298817
+
+                        SECTION 1
+
+A. PURPOSE OF TEST
+
+   This section provides a comprehensive test of the EXTENDED LOAD
+   (ELD) and EXTENDED STORE (EST) instructions as provided by this
+   special feature.
+
+B. METHOD OF TEST
+
+   This section is divided into two parts:
+
+     Part 1 - Cursory check of single addressing controls using
+              the STO instuction.
+
+     Part 2 - Checking ELD and EST for function.
+
+   The brief description preceding each test routine gives the purpose
+   and method of test of the test routine.
+
+   In an effort to keep the number of locations used by this section at a
+   minumum, no error printout is provided in this sections, and, also,
+   the number of subroutines used in this sections are minimized. This
+   allows more storage locations for checking addressing. To further
+   assure that all solid or random addressing errors will be detected,
+   each instruction provides test routines which address all unused
+   portions of storage.
+
+   Since no error printout is provided in this section, the machine will
+   halt on all error indications.
+
+C. PROGRAM CONTROL
+
+   A Program Sequence Control is provided in this sections. This routine,
+   located at the beginning of the program, checks SSW 1 to determine
+   whether the test routine is to be repeated or whether the program goes
+   to next test routine in sequence.
+
+                                                                   9EFPA
+                                                                   1-1-60
+                                                                   PAGE 1.0004
+
+
+   1. CARD DECK
+
+      9EFPA   000             9LD02A - High End Loader
+              001 - 026       Section 1 Program
+              027             Section TRA Card (TRA 00767)
+
+      9DEPR is not used in this section.
+      See Introductory Write-Up for comments on operating this section
+      either separately or in conjunction with Section 2.
+
+   2. SENSE SWITCH CONTROL
+
+      Sense Switch 1
+         UP - Proceed to next test routine.
+         DN - Repeat the test routine.
+      Sense Switch 2
+         UP - Indicate all errors by halting.
+         DN - Bypass all error indications.
+      Sense Switch 3
+         UP - Print Program Identification or 100 pass complete.
+         DN - Bypass all printing.
+      Sense Switch 4  Not used.
+      Sense Switch 5  Not used.
+      Sense Switch 6
+         UP - End Program on completion of all test routines and simulate
+              the load card button to read in next diagnostic program.
+         DN - Repeat program upon completion of last test routine.
+
+D. NORMAL STOPS - NONE
+
+E. ERROR STOPS
+
+   Since no error printout is provided, the machine will halt on all error
+   indications with SSW 2 UP. See listing for error halt locations.
+
+F. PROGRAM CONTROL PRINTOUTS
+      
+      Printouts are under control of SSW 3.
+
+      Program Identification
+   9EFP SECTION 1, EXTENDED PRECISION FLOATING POINT TEST BEGINS.
+
+      Program Pass Complete
+   9EFP SECTION 1 - 100 PASSES COMPLETE.
+
+G. COMMENTS
+
+   A delay is provided upon the completion of the test routines to indicate to
+   the operator that a pass of the program has been completed.
+
+
+
+
+
+
+
+
+
+
+\l
+File Attachments:   Source \Asource\a    Cards \Acard\a      Deck \Adeck\a

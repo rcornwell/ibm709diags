@@ -1,0 +1,315 @@
+                                                          9M04A
+                                                          7-01-58
+                                                          PAGE 1.001
+
+
+
+                                 9M04A
+
+           709 INDIRECT ADDRESSING DIAGNOSTIC AND RELIABILITY TEST
+
+A- UNIT TESTED
+
+   1.  PURPOSE OF TEST
+      
+       THE PURPOSE OF THIS DIAGNOSTIC PROGRAM IS TO GIVE A COMPREHENSIVE TEST
+       OF THE EXECUTION OF 709 INSTRUCTIONS WHICH ARE BOTH VALIDLY AND
+       INVALIDLY INDIRECTLY ADDRESSABLE IN AND OUT OF TRAPPING MODE, AND IN
+       CONJUNCTION WITH INDEXING. THE DIAGNOSTIC PRINTER BOARD SHOULD BE USED
+       WITH THIS TEST.
+      
+   2.  METHOD OF TEST
+      
+       THE PROGRAM IS DIVIDED INTO A VARIETY OF PARTS CONSISTING OF A CURSORY
+       TEST OF DIRECT ADDRESSING, AND INDIRECT ADDRESSING TEST WITH REFERENCE
+       TO STORAGE, WITH WORD TRANSMISSION INSTRUCTIONS, WITH LOGIC
+       INSTRUCTIONS, WITH INDEXABLE TRANFER INSTRUCTIONS, WITH INDEXABLE
+       TRANSFER INSTRUCTIONS IN THE TRAPPING MODE, WITH SENSE INDICATOR
+       TRANSFER INSTRUCTIONS, WITH INDEXABLE TRANSFER INSTRUCTIONS INDEXED,
+       AND WITH NON-INDEXABLE TRANFER INSTRUCTIONS. THE CURSORY TEST OF DIRECT
+       ADDRESSING TESTS THE CLA INSTRUCTION WITH NO BITS IN POSITION 12 AND
+       13, WITH A BIT IN POSITION 12, AND WITH A BIT IN POSITION 13. IN EACH
+       OF THESE CASES THE CLA SHOULD NOT INDIRECT ADDRESS. IN THE CASE WHERE
+       A CONDITINAL TRANFER INSTRUCTION REFERS TO A BUFFER CONDITION THE
+       ONLY CASE THAT IS TESTED IS THE ONE WHICH DOES NOT REQUIRE THE BUFFER
+       TO BE IN OPERATION. WHEN NON-INDEXABLE INSTRUCTIONS ARE TESTED WITH
+       INDIRECT ADDRESSING, THE CORRECT OPERATION IS TO IGNORE THE INDIRECT
+       ADDRESSING AN TO DIRECT ADDRESS INSTEAD. THE INSTRUCTIONS THAT ARE
+       TESTED AND THE ORDER IN WHICH THEY ARE TESTED AER GIVEN UNDER THE
+       COMMENTS SECTION OF THIS WRITE UP. THE DIAGNOSTIC ENGINEERING SENSE
+       SWITCH INTERROGATION AND PRINT ROUTINE -9DEPR- CONTROLS THE RUNNING OF
+       THE PROGRAM. 9DEPR IS REFERRED TO BY EVERY INDIVIDUAL TEST AND IT
+       CONTAINS ESSENTIALLY TWO CONDITIONS.
+           A. ON NO ERROR          THE SUBROUTINE 9DEPR WILL EXAMINE
+                                   SW1. IF SW1 IS DOWN, THE PROGRAM WILL
+                                   REPEAT THE TEST. IS SW1 IS UP, THE
+                                   SUBROUTINE WILL EXAMINE SW4, IF SW4 IS
+                                   DOWN, THE PROGRAM WILL REPEAT THE TEST
+                                   50 TIMES BEFORE CONTINUING TO THE NEXT
+                                   TEST, IF SW4 IS UP, THE PROGRAM GOES
+                                   DIRECTLY TO THE NEXT TEST.
+           B. ON AN ERROR          THE SUBROUTINE 9DEPR WILL EXAMINE SW2.
+                                   IF SW2 IS DOWN, THE PROGRAM WILL BYPASS ALL
+                                   ERROR INDICATIONS AND EXAMINE SW1. IF SW2
+                                   IS UP, THE PROGRAM WILL EXAMINE SW3. IF SW3
+                                   IS DOWN, THE MACHINE WILL HALT AND DISPLAY
+                                   ERROR INDICATIONS ON THE OERATORS CONSOLE.
+                                   IF SW3 IS UP THE MACHINE WILL PRINT OUT
+
+
+
+                                                          9M04A
+                                                          7-01-58
+                                                          PAGE 1.002
+
+                                   ERROR INDICATIONS. REGARDLESS OF THE SETTING
+                                   OF SW2 AND SW3, THE PROGRAM WILL EVENTUALLY
+                                   RETURN TO EXAMINE SW1 IN THE SAME MANNER
+                                   AS IN THE NO ERROR CASE EXCEPT IN THE CASE
+                                   WHEN SW4 IS DOWN. IN THIS CASE THE PROGRAM
+                                   WILL GO DIRECTLY TO THE NEXT TEST ROUTINE
+                                   WITHOUT LOOPING 50 TIMES.
+       FOR ANY FURTHER EXPLANATION OF 9DEPR CONSULT THE LISTING AND WRITE UP
+       SUBMITTED WITH THIS SUBROUTINE.
+       
+       THE PHILOSOPHY USED IN THIS TEST IS TO ASSUME THAT IF AN ERROR
+       OCCURS IN A GIVEN SECTION. IT IS LIMITED TO THE INSTRUCTION TESTED IN
+       THAT PARTICULAR SECTION SINCE ALL OTHER INSTRUCTIONS USED IN THE TEST
+       HAVE BEEN TESTED IN DIAGNOSTIC PROGRAMS 9M01,9M02, AND 9M03. THE
+       RELIABILITY PORTION OF THE TEST IS UNDER CONTROL OF THE SENSE SWITCHES
+       1,4, AND 6. IF ONE OF THESE SWITCHES IS DOWN,THE PROGRAM WILL REPEAT A
+       PART OF THE PROGRAM. IT IS HOPED THAT THIS REPETITION WILL FORCE
+       COMPONENTS ON THE BORDER LINE OF OPERATION OR COMPNENTS OPERATING
+       INTERMITTANTLY TO FAIL DURRING THE DIAGNOSTIC RUN RATHER THEN DURING 
+       CUSTOMER TIME.
+       
+B. AREA OF MACHINE REQUIRED
+
+    1.  UNITS   CARD READER, MF, OF, DSU, AND PRINTER
+       
+    2.  STORAGE LOCATIONS   00000 TO 04446
+                            06500 TO 07725
+
+C. PROGRAM CONTROL
+
+   1.  DECK           000        LOW BINARY LOADER
+                      001 - 135  9M04 DIAGNOSTIC PROGRAM
+                      136        TRANSFER CARD TO TRA 30
+                      137 - 138  BLANK CARDS
+
+  2.  SENSE SWITCH CONTROL
+
+    A.   SWITCH 1 UP - TEST SENSE SWITCH 4
+         SWITCH 1 DN - REPEAT TEST LOOP
+        
+    B.   SWITCH 2 UP - INDICATE ERROR - TEST SSW 3 TO PRINT OR HALT
+         SWITCH 2 DN - BYPASS ERROR INDICATION - TEST SSW 1
+        
+    C.   SWITCH 3 UP - PRINT ON ERROR IF SSW 2 IS UP THEN TEST SSW 1
+         SWITCH 3 DN - STOP ON ERROR IF SSW 2 IS UP, THEN TEST SSW 1.
+        
+    D.   SWITCH 4 UP - PROCEED TO NEXT TEST ROUTINE.
+         SWITCH 4 DN - REPEAT SECTION N TIMES OR IF ERROR OCCURS GO TO
+                       NEXT SECTION
+        
+    E.   SWITCH 5       NOT USED
+        
+    F.   SWITCH 6 UP - END TEST - CALL IN NEXT PROGRAM.
+         SWITCH 6 DN - REPEAT ENTIRE PROGRAM
+
+D. NORMAL STOPS    NONE
+
+
+
+                                                          9M04A
+                                                          7-01-58
+                                                          PAGE 1.003
+F. ERROR STOPS
+
+       1.  06517    ERROR RESULT INDICATED WITH SWITCH 3 DOWN.  INDEX REGISTER C
+           06545    CONTAINS THE 2S COMPLEMENT OF THE ADDRESS WHERE THE ERROR
+                    WAS DETECTED.  SEE ADDRESS IN LISTING FOR DESCRIPTION OF
+                    ERROR.  TO CONTINUE PROGRAM PUSH START.
+
+   ERROR PRINT OUT
+       SEE EXAMPLES OF ERROR PRINT OUTS IN 9DEPR. TEST LOC. GIVES THE ROUTINE
+       IN ERROR, OPN GIVES THE INSTRUCTION BEIGN TESTED, AND ERROR ADD GIVES
+       THE SECTION OF THE ROUTINE IN ERROR.
+     
+       THE PROGRAM CONTAINS ONE POST RESTART. A POST RESTART IS THE ACT OF
+       STORING A TRANSFER INSTRUCTION AT LOCATION ZERO SO THAT THE DEPRESSION
+       OF THE START KEY WILL CAUSE THE PROGRAM TO TRANSFER TO THE ADDRESS
+       SPECIFIED BY ZERO WHEN THE INSTRUCTION COUNTER IS RESET. THIS ADDRESS
+       IS TO THE FIRST SECTION OF THE 9M04 INDEXING TEST.               
+                                                                       
+                TABLE OF 709 INDIRECT ADDRESSABLE MAIN FRAME           
+              AND INDIRECT ADDRESSABLE, INDEXABLE INSTRUCTIONS         
+                      AND ORDER IN WHICH THEY ARE TESTED               
+                                                                       
+G. COMMENTS                                                            
+                                                                       
+       CURSORY TEST OF DIRECT ADDRESSING                               
+    1. CLA                                                BEGINS AT      00034
+    2. CLA WITH BIT IN 12 POSITION                        BEGINS AT      00054
+    3. CLA WITH BIT IN 13 POSITION                        BEGINS AT      00073
+                                                                       
+       INDIRECT ADDRESSING WITH REFERENCE TO STORAGE                   
+                                                                       
+    4. CLA                                                BEGINS AT      00112
+    5. SUB                                                BEGINS AT      00131
+    6. CLS                                                BEGINS AT      00152
+    7. ADD                                                BEGINS AT      00173
+    8. ADM                                                BEGINS AT      00214
+    9. SBM                                                BEGINS AT      00236
+   10. MPY                                                BEGINS AT      00260
+   11. DVP                                                BEGINS AT      00306
+                                                                       
+       INDIRECT ADDRESSING OF WORD TRANSMISSION INSTRUCTIONS           
+   12. LDQ                                                BEGINS AT      00367
+   13. STQ                                                BEGINS AT      00410
+   14. SLQ                                                BEGINS AT      00435
+   15. STO                                                BEGINS AT      00465
+   16. STP                                                BEGINS AT      00506
+   17. STD                                                BEGINS AT      00535
+   18. STA                                                BEGINS AT      00562
+   
+       INDIRECT ADDRESSING OF LOGIC INSTRUCTIONS
+   
+   19. CAL                                                BEGINS AT      00607
+   20. ACL                                                BEGINS AT      00631
+                                                                        
+
+                                                            9M04A
+                                                            7-01-58
+                                                            PAGE 1.004
+                                                                        
+   21. SLW                                                BEGINS AT      00657
+   22. ANA                                                BEGINS AT      00707
+   23. ANS                                                BEGINS AT      00752
+   24. ORA                                                BEGINS AT      01001
+   25. ORS                                                BEGINS AT      01025
+   
+       INDIRECT ADDRESSING OF INDEXABLE TRANSFER INSTRUCTIONS
+   
+   26. TRA                                                BEGINS AT      01054
+   27. TZE                                                BEGINS AT      01065
+   28. TPL                                                BEGINS AT      01077
+   29. TMI                                                BEGINS AT      01111
+   30. TOV                                                BEGINS AT      01123
+   31. TNO                                                BEGINS AT      01137
+   32. TQP                                                BEGINS AT      01151
+   33. TLQ                                                BEGINS AT      01176
+   34. TTR                                                BEGINS AT      01225
+   35. CAS                                                BEGINS AT      01236
+   36. LAS                                                BEGINS AT      01267
+   37. TNZ                                                BEGINS AT      01320
+   38. ZET                                                BEGINS AT      01333
+   39. NZT                                                BEGINS AT      01350
+   40. TCOA                                               BEGINS AT      01367
+   41. TCOB                                               BEGINS AT      01403
+   42. TCOC                                               BEGINS AT      01407
+   43. TCOD                                               BEGINS AT      01433
+   44. TCOE                                               BEGINS AT      01447
+   45. TCOF                                               BEGINS AT      01463
+   46. TCNA                                               BEGINS AT      01477
+   47. TCNB                                               BEGINS AT      01512
+   48. TCNC                                               BEGINS AT      01525
+   49. TCND                                               BEGINS AT      01540
+   50. TCNE                                               BEGINS AT      01553
+   51. TCNF                                               BEGINS AT      01566
+   52. TRCA                                               BEGINS AT      01601
+   53. TRCB                                               BEGINS AT      01615
+   54. TRCC                                               BEGINS AT      01631
+   55. TRCD                                               BEGINS AT      01645
+   56. TRCE                                               BEGINS AT      01661
+   57. TRCF                                               BEGINS AT      01675
+   58. TEFA                                               BEGINS AT      01711
+   59. TEFB                                               BEGINS AT      01725
+   60. TEFC                                               BEGINS AT      01741
+   61. TEFD                                               BEGINS AT      01755
+   62. TEFE                                               BEGINS AT      01771
+   63. TEFF                                               BEGINS AT      02005
+   
+       INDIRECT ADDRESSING OF INDEXABLE TRANFER INSTRUCTIONS IN TRAPPING MODE
+   
+   
+   64. TRA                                               BEGINS AT       02036
+   65. TZE                                               BEGINS AT       02054
+   66. TPL                                               BEGINS AT       02073
+   67. TMI                                               BEGINS AT       02112
+   68. TOV                                               BEGINS AT       02131
+   69. TNO                                               BEGINS AT       02152
+   70. TQP                                               BEGINS AT       02171
+
+                                                           9M04A
+                                                           7-01-58
+                                                           PAGE 1.005
+                                                                         
+   71. TLQ                                               BEGINS AT       02242
+   72. TTR                                               BEGINS AT       02316
+   73. TNZ                                               BEGINS AT       02343
+   74. TCOA                                              BEGINS AT       02367
+   75. TCOB                                              BEGINS AT       02415
+   76. TCOC                                              BEGINS AT       02442
+   77. TCOD                                              BEGINS AT       02467
+   78. TCOE                                              BEGINS AT       02514
+   79. TCOF                                              BEGINS AT       02541
+   80. TCNA                                              BEGINS AT       02566
+   81. TCNB                                              BEGINS AT       02611
+   82. TCNC                                              BEGINS AT       02634
+   83. TCND                                              BEGINS AT       02657
+   84. TCNE                                              BEGINS AT       02702
+   85. TCNF                                              BEGINS AT       02725
+   86. TRCA                                              BEGINS AT       02750
+   87. TRCB                                              BEGINS AT       02775
+   88. TRCC                                              BEGINS AT       03022
+   89. TRCD                                              BEGINS AT       03047
+   90. TRCE                                              BEGINS AT       03074
+   91. TRCF                                              BEGINS AT       03121
+   92. TEFA                                              BEGINS AT       03146
+   93. TEFB                                              BEGINS AT       03U73
+   94. TEFC                                              BEGINS AT       03218
+   95. TEFD                                              BEGINS AT       03245
+   96. TEFE                                              BEGINS AT       03272
+   97. TEFF                                              BEGINS AT       03317
+   
+       INDIRECT ADDRESSING OF SENSE INDICTOR INSTRUCTIONS WITH REFERENCE TO
+       STORAGE
+   
+   98. LDI                                              BEGINS AT        03350
+   99. OSI                                              BEGINS AT        03367
+  100. RIS                                              BEGINS AT        03412
+  101. IIS                                              BEGINS AT        03437
+  102. STI                                              BEGINS AT        03463
+
+    INDIRECT ADDRESSING OF SENSE INDICATOR TRANFER INSTRUCTIONS
+
+  103. TIO                                              BEGINS AT        03506
+  104. TIF                                              BEGINS AT        03521
+  105. ONT                                              BEGINS AT        03534
+  106. OFT                                              BEGINS AT        03552
+
+  107. COMPREHENSIVE INDIRECT ADDRESSING TEST           BEGINS AT        03571
+
+     INDIRECT ADDRESSING OF INDEXABLE TRANFER INSTRUCTIONS INDEXED
+
+  108. TRA                                              BEGINS AT        04031
+  109. TZE                                              BEGINS AT        04052
+  110. TPL                                              BEGINS AT        04075
+
+     INDIRECT ADDRESSING OF NON-INDEXABLE TRANFER INSTRUCTIONS
+
+  111. TNX                                              BEGINS AT        04156
+  112. TXH                                              BEGINS AT        04171
+                                                          
+               
+                                                          9M04A
+                                                          7-01-58
+                                                          PAGE 1.006
+                                                                         
+  113. TXI                                             BEGINS AT        04204
+  114. TSX                                             BEGINS AT        04241
+
+\l
+File Attachments:   Source \Asource\a    Cards \Acard\a      Deck \Adeck\a
+

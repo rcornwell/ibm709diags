@@ -1,0 +1,277 @@
+							9M01B
+							7/15/59
+							Page 1.001
+
+			9M01B
+
+         MAIN FRAME DIAGNOSTIC AND RELIABILITY TEST
+
+
+A. UNIT TESTED - 709 CPU
+
+   1. Purpose of Test
+
+      (a) Examine fixed-point and logical arithmetic, word transmission,
+          shifting, control, and logical operations.
+
+      (b) This program (9M01B) contains some routine modifications and
+          additions to 9M01A.
+
+   2. Method of Test
+
+      (a) The program is divided in two parts under Sense Switch 5 Control.
+
+      (b) This test employs a short version of 9DEPR which will interrogate
+          sense switches and print a detailed account of error indications.
+
+      (c) Refer to Sense Switch Control Section C-2 for an explanation of
+	  Program Operation and Control.
+
+B. MACHINE UNITS AND STORAGE AREA
+
+   1. Units required
+      MF, CF, DSU, CR, PR
+
+   2. Storage locations
+      00030-07767
+
+C. PROGRAM CONTROL
+
+   1. Deck
+
+
+		000         9LDO1 Low End Loader
+		001 - 184   Program Cards and Short Version 9DEPR
+		185         Transfer Card TRA 00030
+		186 - 187   2 Blank Cards
+
+							9M01B
+							7/15/59
+							Page 1.002
+
+   2. Sense Switch Control
+
+      Switch 1 UP		 Test Switch 4
+      Switch 1 DOWN		 Repeat Routine
+      Switch 2 UP		 Indicate Errors
+      Switch 2 DOWN		 Bypass Errors
+      Switch 3 UP		 Print errors if Switch 2 is UP
+      Switch 3 DOWN		 Halt on error if Switch 2 is UP
+      Switch 4 UP		 Proceed to next Routine
+      Switch 4 DOWN		 Loop in Routine 50 times octal and then
+				 proceed to next Routine
+      Switch 5 UP		 Bypass long adder test and testing all
+				 instructions requiring stops to determine
+				 proper execution
+      Switch 5 DOWN		 Perform long adder test and testing all
+				 instructions requiring stops to determine
+				 proper execution
+      Switch 6 UP		 Call in next diagnostic
+      Switch 6 DOWN		 Repeat test note program prints out
+				 "100 Program Passes Complete 9M01"
+				 every 100 passes if switch 3 is UP.
+
+D. NORMAL STOPS
+
+      06350 DVH Test
+      06360 DVH Test
+      06371 DVH Test
+      06403 VDH Test
+      06427 ENK Teat - Enter ones in keys
+      06441 ENK Test - Enter zeros in keys
+
+E. ERROR STOPS
+
+      00035 Error in TSX inetruction
+      00037 Error in TSX instruction
+      07065 Error in Program with Switch 3 DOWN
+        or
+      07103 Display XRC for location of error-XRC has 2-s complement of
+            error address
+
+							9M01B
+							7/15/59
+							Page 1.003
+
+F. PRINTOUTS
+
+    1. Program identification is printed out before starting the test if
+       Switch 3 is UP.
+
+    2. Program prints "100 Program Passes Complete 9M01" if Switch 3
+       is UP and Switch 6 is DOWN,
+
+    3. In an error printout, test LOC is Routine in Error, OPN is Instruction
+       Being Tested and error ADR is Section of Routine in Error.
+
+    4. Sample of the printout follows the write-ups.
+
+    5. Consult the write-up for 9DEPR for a detailed account of the diagnostic
+       print subroutine.
+
+G. COMMENTS
+
+    1. With Switch 5 depressed, the halt tests and the long adder tests are
+       performed on the initial pass, On succeeding passes, the halt tests
+       are bypassed.
+
+    2. Prior to checking the contents of index registers after performing
+       the STR instruction and Switch 3 is UP, any error encountered will alter
+       the value 077707 octal initially placed in XRC.
+
+    3. The decrement portion sf location 07701 contains the 2's complement of
+       the last test address performed correctly.
+
+    4. Although indexing has not been checked, it has been used sparingly
+       because of space limitation in a 4K storage.
+
+    5. The optional use of XRA is a feature of the convert instructions
+       and is checked in this test. Since indexing has not been tested
+       in 9M01, the C. E, should investigate the correct operation of
+       index registers with any error in the CVR, CAQ or CRQ Routines
+       where an instruction is tagged with XRA.
+
+    6. It is possible for the program to appear to be operating error free
+       although the machine is actually malfunctioning. To detect this case,
+       Sense Switch 3 must be UP and Sense Swltch 6 DOWN. Under these
+       conditions, the printer must print "100 Program Passes Complete 9M0l".
+       Failure of the printout may indicate that E and I Time are coming up
+       simultaneously in convert instructions.
+
+    7. The Release of 9M01B makes 9MOlA cbsdete.
+
+							9M01B
+							7/15/59
+							Page 1.004
+
+
+			LOCATIONS OF TE8T8
+1.  CURSORY TSX		BEGINS AT		00034
+2.  TOV			BEGINS AT		00041
+3.  TNO			BEGINS AT		00066
+4.  TZE			BEGINS AT		00112
+5.  TNZ			BEGINS AT		00135
+6.  ALS			BEGINS AT		00152
+7.  ARS			BEGINS AT		00213
+8.  LBT			BEGINS AT		00253
+9.  PBT			BEGINS AT		00270
+10. TPL			BEGINS AT		00307
+11. TMI			BEGINS AT		00324
+12. CLM			BEGINS AT		00341
+13. SSP			BEGINS AT		00375
+14. SSM			BEGINS AT		00413
+15. CHS			BEGINS AT		00431
+16. LLS			BEGINS AT		00447
+17. LRS			BEGINS AT		00543
+18. LGL			BEGINS AT		00632
+19. RQL			BEGINS AT		00722
+20. TBP			BEGINS AT		01002
+21. NOP			BEGINS AT		01017
+22. COM			BEGINS AT		01025
+23. ADD			BEGINS AT		01064
+24. ADM			BEGINS AT		01246
+25. SUB			BEGINS AT		01312
+26. SBM			BEGINS AT		01463
+27. CLA			BEGINS AT		01527
+28. CLS			BEGINS AT		01633
+29. CAL			BEGINS AT		01670
+30. ACL			BEGINS AT		01734
+31. STO			BEGINS AT		02010
+32. SLW			BEGINS AT		02020
+33. STP			BEGINS AT		02044
+34. STA			BEGINS AT		02156
+35. STD			BEGINS AT		02216
+36. CAS			BEGINS AT		02244
+37. LDQ			BEGINS AT		02351
+38. STQ			BEGINS AT		02376
+39. SLQ			BEGINS AT		02425
+40. TLQ			BEGINS AT		02464
+
+							9M01B
+							7/15/59
+							Page 1.005
+
+
+41. RND			BEGINS AT		02541
+42. MPY			BEGINS AT		02551
+43. MPR			BEGINS AT		02717
+44. DVP			BEGINS AT		02777
+45. DCT			BEGINS AT		03045
+46. DVH-NO HALTS	BEGINS AT		03114
+47. ANA			BEGINS AT		03173
+48. ANS			BEGINS AT		03262
+49. ORA			BEGINS AT		03331
+50. ORS			BEGINS AT		03413
+51. TTR			BEGINS AT		03477
+52. ETM AND LTM		BEGINS AT		03505
+53. PSE SENSE LIGHTS	BEGINS AT		03742
+54. MSE SENSE LIGHTS	BEGINS AT		03742
+55. PSE SENSE SWITCHES	BEGINS AT		04047
+56. STT			BEGINS AT		04114
+57. STZ			BEGINS AT		04154
+58. XCA			BEGINS AT		04204
+59. XCL			BEGINS AT		04275
+60. ERA			BEGINS AT		04372
+61. LGR			BEGINS AT		04445
+62. ZET			BEGINS AT		04533
+63. NZT			BEGINS AT		04626
+64. LAS			BEGINS AT		04713
+65. VLM			BEGINS AT		04773
+66. VDP			BEGINS AT		05214
+67. VDH-NO HALTS	BEGINS AT		05411
+68. CVR			BEGINS AT		05524
+69. CAQ			BEGINS AT		05637
+70. CRQ			BEGINS AT		06030
+71. STL			BEGINS AT		06141
+72. STR			BEGINS AT		06162
+
+			SENSE SWITCH 5 DOWN
+
+73. M06 ADDER TEST	BEGINS AT		06313
+74. M07 ADDER TEST	BEGINS AT		06326
+75. DVH-WITH HALTS	BEGINS AT		06346
+76. VDH-WITH HALTS	BEGINS AT		06376
+77. E NK		BEGINS AT		06427
+78. LONG ADDER TEST	BEGINS AT		06452
+79. MPY TEST		BEGINS AT		06521
+80. MPY/DVP TEST	BEGINS AT		02541
+
+
+
+\l
+File Attachments:   Source \Asource\a    Cards \Acard\a      Deck \Adeck\a
+
+
+							9M01B
+							7/15/59
+							Page 1.006
+
+
+
+
+			SAMPLE PRINTOUT
+
+
+
+
+
+
+
+
+  NOW PERFORMING DIAGNOSTIC 9M01
+
+TEST LOC 02464, OPN TLQ, ERROR LOC 02467, 0 LOC 000000003617, SW 009001 
+LITE 0000, MQ 400000000003, XRA 00000, XRB 00000, XRC 75311, TRAP TGR 0
+ACC +, Q 0, P, 0,000000000002, DIV CK 0, ACC OVFL 0,
+INDS 000000000000, KEYS 002000002467
+
+  100 PROGRAM PASSES COMPLETE 9M01 
+
+
+
+
+
+
+
+
+

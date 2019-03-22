@@ -1,0 +1,182 @@
+                             9DRS A
+
+                   DROP READY AND TEST READY STATUS
+                   SPECIAL FEATURE TEST - E. C. 298680
+
+A. PURPOSE OF TEST
+
+   The purpose of this program is to test two new instructions.
+   
+   1. Drop ready status -- DRS -- operation code 0775.
+
+   2. Test Ready Status -- TRS -- Operation Code -0775. This instruction
+      should skip one instruction if the unit is ready, and will take the next
+      instruction if drive is not ready.
+
+      Both these instruction have to do only with ready in tape drives.
+
+B. METHOD OF TEST
+
+   1. The program uses 9IOM to determine which drives are to be tested. Any
+      drives to be tested must be in ready status at start of program.
+
+   2. Program tests transfer ready - TRS - with drives in ready status.
+
+   3. Ready status is then dropped on all drives by the use of drop ready
+      instruction - DRS.
+
+   4. Test ready status - TRS - is tested with drives out of ready.
+
+   5. A normal stop will occur at 00130. At this time the operator must reset 
+      and press start button on all drives being tested, and then depress start
+      button on console.
+
+   6. All tapes selected will be written, to prove that the trigger in the 
+      drive was reset by pushing the tape drive start button.
+
+   7. Ready status is dropped during rewind. A normal stop will occur at 00236.
+      At this stop the operator must reset and press start on all drives 
+      selected, and then press start on console.
+
+C. AREA OF MACHINE REQUIRED
+
+   1. Any number of tape drives on any channels,
+   
+      MF, CF, CR, PR, DS.
+
+   2. Storage Locations 00030-00632-9DRS
+                        05500-06476-9IOM
+
+                                                                              1
+
+D. PROGRAM CONTROL
+
+   1. 9IOM-Selection of tape units on any channels will be with the keys.
+      See Enclosed Selection Diagram.
+
+   2. Sense Switch Control
+
+      SSW 1 UP - Do not repeat section
+      SSW 1 DN - Repeat section of test-on error
+      SSW 2 UP - Test switch 3
+      SSW 2 DN - Test Switch 1 - Bypass error
+      SSW 3 UP - Print error
+      SSW 3 DN - Halt on error
+      SSW 4 - Not used
+      SSW 5 - Up test switch 6
+      SSW 5 DN - Loop in initail units, without halt in 9IOM
+      SSW 6 UP - Call in next program
+      SSW 6 ON - Repeat test, going back to 9IOM
+
+E. NORMAL STOPS
+
+   1. 00130 - Push start on all tape drives being tested, then press start on
+	      console.
+   2. 00236 - Push start on all tape drives being tested, then press start on
+	      console.
+   3. 05517 - 9IOM, to enter selection for channels A + B.
+   4. 05533 - 9IOM, to enter selection for channels C + D.
+   5. 05540 - 9IOM, to enter selection fro channel E + F.
+
+F. ERROR STOPS
+
+   1. 00345 - Halt on error with swith =3 down. Press start on console to 
+              continue test.
+   2. 05525 - 9IOM, no tag keys thrown down on halt at 05517. Throw down
+              tag keys and press start.
+
+G. PRINT ROUTINE
+
+   1. The standatd diagnostic print routine - 9DEPR - is not used. The routine
+      which is used gives one line of print per error.
+
+   SAMPLE ERROR PRINT
+
+      ERROR ADDR 00053 - TRSA 1 - FAILED
+
+      The error address will indicate the error exit in the program, and TRSA 1
+      will indicate that the transfer ready status instruction failed on
+      channel A tape unit 1.
+   
+      The - DRS - instruction will print in the same manner, on error.
+
+                                                                              2
+
+H. COMMENTS
+
+   1. The DRS instruction is performed, and TRS is tested immediately
+      afterwards, therefore, it is impossible for the program to tell which
+      instruction failed, because TRS is used to see that DRS did drop ready
+      in the drive.
+   
+      A DRS printout will occur on error, but it will be necessary to note
+      whether the particular tape drive, involved, is in ready status, to 
+      determine which instruction failed - DRS or TRS. (Loc. 00117)
+
+   2. 9IOM has been altered, to take care of the two new instructions.
+
+   3. DRS will be given while the tape is writing to make sure DRS will not
+      operate until the drive has finished writing.
+
+   4. DRS will be given while the tape is rewinding to make sure DRS will not
+      allow the drive to come back to ready after rewind.
+
+   5. Tape drive 1 on channel A will be tested last.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                                              3
+
+    
+                    I/O SELECTION FORMAT FOR CONTROL OF
+                                I/O PROGRAMS
+                        (TO BE ENTERED INTO KEYS)
+    BIT
+    S	        WITH TAPE PROGRAMS - DOWN TO SHOW PROGRAM READ FROM CARDS
+    1-16        DRUM ADDRESS
+    17          CRT
+    18     	DSC-E+F
+    19     	DSC-C+D
+    20          DSC-A+B
+    21     	DOWN TO SET EXCLUSIVE UNIT SELECT
+    22-25       NO OF TAPES CHAN-B
+    26     	TAPE CHAN B
+    27          DOWN TO SET EXCLUSIVE UNIT SELECT
+    28-31       NO OF TAPES CHAN-A
+    32     	TAPE CHAN A
+    33     	PU
+    34     	PR
+    35          CR
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\l
+File Attachments:   Source \Asource\a    Cards \Acard\a      Deck \Adeck\a
+

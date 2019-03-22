@@ -1,0 +1,163 @@
+                                                                 9T02B
+                                                                 8-01-59
+                                                                 Page 1.001
+
+                       9T02B
+
+                 BUFFER - TAPE TEST
+
+
+A.  PURPOSE OF TEST
+
+    1.  To test data transmission from main frame to buffer and tape
+
+    2.  Method of Test
+
+        a.  The first section tests buffer and tape synchronizer instruction
+            and transmission of information for channels A, C or E. Tape
+            unit one is used in each case except when the diagnostic is on
+            Channel A, T. U. 1.  Tape unit two is used for reading and
+            writing when the diagnostic is read from tape.
+
+        b.  The second section tests buffer and tape synchronizer instructions
+            and transmission of information for channels B, D, or F. Tape
+            unit one is used in each case.
+
+        c.  The third section tests the ability of buffer to transmit infor-
+            mation on both channels A and B, C and D, or E and F.  Tape
+            unit one is used in each case, except for A when program is
+            read from tape.
+
+        d.  The standard diagnositc print routine will be used throughout
+            the program as a means of testing sense switches, and also a
+            means of typing out any machine errors. See listing of 9DEPR.
+            The linkage to the print routine will be through the use of a TSX
+            of index register C.
+
+B.  AREA OF MACHINE REQUIRED
+
+    1.  MF, CF, CR, PR, Tape Unit 1, DS
+
+    2.  Storage Locations
+
+        a.  9T02B     00000 to 05514
+            9IOMA     05500 to 06476
+            9DEPRA    06500 to 07663
+
+                                                                 9T02B
+                                                                 8-01-59
+                                                                 Page 1.002
+
+C.  PROGRAM CONTROL
+
+    1. Deck   000                9LD01 Loader
+              001 - 065          9T02B Diagnostic
+              066 - 089          9IOMA Modification Routine
+              090 - 118          9DEPRA Error Routine
+              119                Transfer Card - TRA 0030
+              120 - 121          Blank Cards
+
+    2. Sense Switch Control
+
+       Sense switches 1, 3, 3, and 4 are used by 9DEPR. See writeup for
+       9DEPR for detailed description of their use which is briefly as follows:
+
+       a.  Switch 1 UP    -     Test sense switch 4
+           Switch 1 DOWN  -     Repeat Test Loop
+
+       b.  Switch 2 UP    -     Indicate error - Test SSW3 to Print or halt
+           Switch 2 DOWN  -     Bypass error indication - test SSW1
+
+       c.  Switch 3 UP    -     Printout if SSW 2 up then test SSW1
+           Switch 3 DOWN  -     Stop on error. If SSW2 is up, then test SSW1
+
+       d.  Switch 4 UP    -     Proceed to next test routine
+           Switch 4 DOWN  -     Repeat section N times, or if error occurrs
+                                to next section.
+
+       e.  Switch 5 UP    -     Proceed to next test routine
+           Switch 5 DOWN  -     Repeat same sequence of units
+
+       f.  Switch 6 UP    -     End test - call in next program
+           Switch 6 DOWN  -     Repeat entire program
+
+D.  NORMAL STOPS
+    Stops at beginning of program to enter control words on the keys for
+    channels and units used in modification routine 9IOM.  One, two or
+    three stops will occur corresponding to the number of DS to be tested
+    as specified by the tag bits of the first control word.
+
+              A tag of 1 specifies CHN A and/or B
+              A tag of 2 specifies CHN C and/or D
+              A tag of 4 specifies CHN E and/or F
+
+   If more then one DS is to be tested, then the first control word should
+   contain a multiple tag.
+
+
+                                                                 9T02B
+                                                                 8-01-59
+                                                                 Page 1.003
+
+
+
+    05517   Enter control word for first DS on keys tag for all DS to be
+            tested Press Start
+
+    05533   Enter control word for CHN C and/or D Press Start
+
+    05540   Enter control word for CHN E and/or F Press Start
+
+    05525   Control word failed to contain a tag for any DS Re-enter
+            first control word with tag Press Start
+
+    See Control word format
+
+E.  ERROR STOPS
+
+    9DEPR   Error Indication Stops with SSW3 Down
+
+    06517   Index Register C contains the twos complement of the error
+            exit address.  Read lights that are out and add 1 and consult
+            that address in program listing for error analysis.
+
+    06545   Same as above
+            Push start to continue program
+
+F.  PRINT OUTS
+
+    1.  Normal Print Outs
+
+        "NOW PERFORMING DIAGNOSTIC TEST 9T02"
+        "PASS COMPLETE CHANNELS A AND B"
+        OR "PASS COMPLETE CHANNEL A" PRINTED IF CHANNEL B IS
+        NOT TESTED OR "PASSS COMPLETE CHANNEL B" PRINTED IF
+        CHANNEL A IS NOT TESTED
+
+        9T02 PASS COMPLETE - ALL UNITS CALLED"
+
+        Pass complete is similarly printed out for channels C, D, E, and
+        F after they have been tested.
+
+    2.  Error Print Outs
+
+        See Write up for 9DEPR for example and description of print out
+
+
+                                                                 9T02B
+                                                                 8-01-59
+                                                                 Page 1.003
+
+
+G.   COMMENTS
+
+     If both channels are to be tested individually, the program will auto-
+     matically test multichannel operation.
+
+     Tape unit one on each channel is tested. If the diagnostic is read from
+     tape unit one, channel A, then tape unit two will be tested on Channel A.
+
+
+\l
+File Attachments:   Source \Asource\a    Cards \Acard\a      Deck \Adeck\a
+

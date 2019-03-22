@@ -1,0 +1,347 @@
+                                                              9M21A
+                                                              12/1/58
+                                                              PAGE 1.001
+
+
+
+                                    9M21A
+            
+                 MAIN FRAME DIAGNOSTIC AND RELIABILITY PROGRAM
+                         FOR AN 8K STORAGE AND ABOVE
+
+
+
+A.  UNIT TESTED-709 CPU
+   
+    1.  PURPOSE OF TEST
+       
+        THIS PROGRAM COMBINES 9M01 AND 9M02 WITH PORTIONS OF 9M03
+            AND 9COM FOR A ONE 8K MEMORY LOAD MAIN FRAME TEST.
+       
+    2.  METHOD OF TEST
+       
+        A.  THE PROGRAM IS DIVIDED IN 3 PARTS.
+           
+        B.  THE FIRST PART PERFORMS A SECTION OF 9M03 WHICH TESTS THE INDEXING
+            INSTRUCTIONS USED IN 9M21 AND HALTS ON ERROR.
+           
+        C.  THE SECOND PART PERFORMS THE TESTS OF 9M01, 9M02 AND A PART
+            OF THE EXECUTE TESTS OF 9COM. THE SETTING OF SENSE SWITCH
+            3 DETERMINES A PRINTOUT OR A HALT ON ERROR.
+           
+        D.  THE THIRD PART IS EXECUTED ONLY WITH SENSE SWITCH 5 DOWN
+            AND PERFORMS TEST USING HALTS AND ADDER TESTS.
+   
+B.  MACHINE UNITS AND STORAGE
+   
+    1.  UNITS REQUIRED
+        
+        MF, CF, DSU, CR, PR
+        
+    2.  STORAGE LOCATIONS
+        
+        00000      RESET START
+        00001-00010 INDICATOR FALSE TRAP ROUTINE
+        00030-00031 SENSE SWITCH 3 TEST FOR PRINTING PROGRAM IDENTIFICATION
+        00032-00560 BASIC INDEXING TEST
+        00561-06415 MAIN FRAME INSTRUCTIONS TESTS 
+        06415-06477 50 DECIMAL BLANK LOCATIONS
+        06500-07712 9DEPR DIAGNOSTIC PRINT SUBROUTINE
+        07713-16600 MAIN FRAME INSTRUCTION TESTS
+
+
+                                                              9M21A
+                                                              12/1/58
+                                                              PAGE 1.002
+
+
+C.  PROGRAM CONTROL
+   
+    1.  DECK
+       
+                     000            9LD02 HIGH END LOADER
+                     001-312        9M21
+                     313-341        9DEPR DIAGNOSTIC PRINT SUBROUTINE
+                     342            TRANSFER CARD TRA 00030
+                     343            FAST MPY TEST CARD
+                     344-345        2 BLANK CARDS
+                                  
+    2.  SENSE SWITCH CONTROL      
+                                  
+        SWITCH 1 UP                 TEST SWITCH 4
+        SWITCH 1 DOWN               REPEAT SUBROUTINE
+        SWITCH 2 UP                 INDICATE ERRORS
+        SWITCH 2 DOWN               BYPASS ERRORS
+        SWITCH 3 UP                 PRINT ERROR IF SWITCH 2 IS UP
+        SWITCH 3 DOWN               HALT ON ERROR IF SWITCH 2 IS UP
+        SWITCH 4 UP                 PROCEED TO NEXT ROUTINE
+        SWITCH 4 DOWN               LOOP IN ROUTINE 50 OCTAL TIMES
+        SWITCH 5 UP                 BYPASS TEST LISTED UNDER SENSE
+                                    SWITCH 5 DOWN CONTROL
+                                   
+        SWITCH 5 DOWN               PERFORM THE BELOW LISTED TESTS
+                                    1. SENSE SWITCH WITH SENSE LIGHT
+                                    2. HALT WITH DVH AND VDH
+                                    3. ENK
+                                    4. CONSOLE DISPLAY BUTTONS WITH
+                                       HTR AND HPR
+                                    5. MPY WITH ZERO MULTIPLICAND
+                                    6. LONG ADDER TESTS
+                                   
+         SWITCH 6 UP                CALL IN THE NEXT DIAGNOSTIC
+         SWITCH 6 DOWN              REPEAT PROGRAM -NOTE- PROGRAM
+                                    PRINTS OUT *100 PROGRAM PASSES
+                                    COMPLETE 9M21* EVERY 100 PASSES
+                                    IF SWITCH 3 IS UP.
+   
+D.  NORMAL STOPS
+   
+    *NOTE*  WHEN ENCOUNTERING ANY OF THE BELOW LISTED NORMAL STOPS, PUSH
+            START TO CONTINUE EXCEPT WHEN TESTING HTR WITH THE DISPLAY BUTTONS
+            WHERE IT IS NECESSARY TO PUSH START TWICE TO CONTINUE.
+   
+    15620   DVH TEST
+    15630   DVH TEST
+    15641   DVH TEST
+    15653   VDH TEST
+    15677   ENK TEST-ENTER ONES IN KEYS
+    15711   ENK TEST-ENTER ZEROS IN KEYS
+
+
+                                                              9M21A
+                                                              12/1/58
+                                                              PAGE 1.003
+
+    15727   HTR TEST WITH DISPLAY INDICATOR BUTTON
+    15740   HTR TEST WITH DISPLAY STORAGE BUTTON
+    15752   HTR TEST WITH DISPLAY EFFECTIVE ADDRESS BUTTON
+    15763   HTR TEST WITH DISPLAY INDICATOR BUTTON
+    15774   HTR TEST WITH DISPLAY STORAGE BUTTON
+    16006   HTR TEST WITH DISPLAY EFFECTIVE ADDRESS BUTTON
+    16020   READY CARD READER WITH A TEST CARD FOR FAST MPY TEST
+
+E.  ERROR STOPS
+
+    *NOTE*  WHEN ENCOUNTERING ANY OF THE BELOW LISTED ERROR STOPS, PUSH
+            START TO CONTINUE THE PROGRAM.
+
+    THERE ARE 124 ERROR STOPS IN THE BASIC INDEXING TESTS FROM LOCATIONS
+    00032-00560. FOR ANY PROGRAM STOP WITHIN THE AREA OF 00032-00560,
+    CONSULT THE LISTING FOR A COMMENT OF THE ERROR STOP LOCATION
+    TO HELP INDICATE THE TROUBLE. PUSH START TO CONTINUE THE PROGRAM.
+   
+    06517   ERROR IN PROGRAM WITH SWITCH 3 DOWN. INDEX
+    OR      REGISTER C CONTAINS THE 2-S COMPLEMENT OF THE ADDRESS
+    06545   WHERE THE ERROR WAS DETECTED
+           
+    15576   SENSE SWITCH 1 TEST TURNED OFF SENSE LIGHT 1
+    15602   SENSE SWITCH 2 TEST TURNED OFF SENSE LIGHT 2
+    15606   SENSE SWITCH 3 TEST TURNED OFF SENSE LIGHT 3
+    15612   SENSE SWITCH 4 TEST TURNED OFF SENSE LIGHT 4
+    15730   ERROR WITH HTR AND DISPLAY INDICATOR BUTTON
+    15741   ERROR WITH HTR AND DISPLAY STORAGE BUTTON
+    15753   ERROR WITH HTR AND DISPLAY EFFECTIVE ADDRESS BUTTON
+    15764   ERROR WITH HTR AND DISPLAY INDICATOR BUTTON
+    15776   ERROR WITH HTR AND DISPLAY STORAGE BUTTON
+    16010   ERROR WITH HTR AND DISPLAY EFFECTIVE ADDRESS BUTTON 
+    16042   ERROR WITH FAST MPY AND SENSE SWITCH 3 IS DOWN
+
+F.  PRINTOUTS
+
+    1.  PROGRAM IDENTIFICATION *NOW PERFORMING DIAGNOSTIC 9M21* IS PRINTED
+        OUT BEFORE STARTING THE TEST OF SENSE SWITCH 3 IS UP.
+       
+    2.  PROGRAM PRINTS *100 PROGRAM PASSES COMPLETE 9M21* WITH EVERY
+        100 PROGRAM PASSES IF SENSE SWITCH 3 IS UP AND SENSE SWITCH 6
+        IS DOWN.
+       
+    3.  IF FAST MPY TAKES MOER THEN 2 CYCLES, THERE IS A PRINTOUT *MULTIPLY
+        WITH ZERO MULTIPLICAND EXECUTING IN MORE THEN 2 CYCLES* TO
+        INDICATE THE ERROR IF SENSE SWITCH 3 IS UP.
+       
+    4.  CONSULT THE WRITE-UP AND LISTING OF 9DEPR FOR DETAILED
+        ACCOUNT OF THE DIAGNOSTIC PRINT SUBROUTINE.
+
+                                                              9M21A
+                                                              12/1/58
+                                                              PAGE 1.004
+
+G.  COMMENTS
+  
+    1.  THERE IS A SHORT BASIC INDEXING TEST AT THE BEGINNING OF 9M21 TO
+        TEST THE INDEXING INSTRUCTIONS USED THROUGHOUT THE DIAGNOSTIC.
+        THESE INSTRUCTIONS ARE ONLY CHECKED ON THE FIRST PASS THROUGH 9M21.
+       
+    2.  WITH SENSE SWITCH 5 DEPRESSED, TESTS USING HALTS AND THE LONG
+        ADDER TESTS ARE PERFORMED ON THE INITIAL PASS. ON SUCCEEDING
+        PASSES, ONLY THE LONG ADDER TEST ARE PERFORMED.
+       
+    3.  INDICATOR INSTRUCTIONS WITH A PRIMARY OP OF 0,4 ARE TESTED
+        FOR FALSE TRAPPING. LOCATIONS 00001-00010 CONTAIN A SUBROUTINE
+        TO TRANSFER TO THE MAIN PROGRAM IN CASE OF A FALSE TRAP.
+       
+    4.  THE RESTORING OF THE ACCUMULATOR BY CERTAIN INDICATOR INSTRUCTIONS
+        ARE CHECKED. THIS SUBROUTINE IS IN LOCATIONS 16321-16347.
+        IF THERE IS AN ERROR, THE MQ WILL CONTAIN THE LOCATION OF THE
+        INSTRUCTION BEING TESTED AND THE ACCUMULATOR WILL CONTAIN THE ERROR
+        INFORMATION.
+       
+    5.  CARD 343 IS A FAST MPY TEST CARD. HOWEVER, ANY CARD WITH ANY
+        INFORMATION IN POSITIONS 1-35 OF THE 9 LEFT ROW CAN BE USED. THE
+        TEST CARD SHOULD ALWAYS BE PLACED AFTER THE TRANSFER CARD.
+       
+    6.  THERE ARE 50 BLANK DECIMAL LOCATIONS FROM 06416-06477
+        FOR ANY FUTURE ADDITIONS TO THE PROGRAM.
+       
+    7.  THE DIAGNOSTIC PRINT SUBROUTINE 9DEPR IS IN ITS NORMAL STANDARD
+        LOCATIONS 06500-07712.
+       
+    8.  THE DECREMENT PORTION OF LOCATION 07570 CONTAINS THE 2-S COMPLEMENT
+        OF THE LAST TEST ADDRESS PERFORMED CORRECTLY.
+
+                                                              9M21A
+                                                              12/1/58
+                                                              PAGE 1.005
+
+
+                                   LOCATIONS OF TESTS
+
+001.     INDEXING INSTRUCTIONS           BEGINS AT                     00032
+002.     TOV                             BEGINS AT                     00562
+003.     TNO                             BEGINS AT                     00607
+004.     TZE                             BEGINS AT                     00633
+005.     TNZ                             BEGINS AT                     00656
+006.     ALS                             BEGINS AT                     00673
+007.     ARS                             BEGINS AT                     00734
+008.     LBT                             BEGINS AT                     00774
+009.     PBT                             BEGINS AT                     01011
+010.     TPL                             BEGINS AT                     01030
+011.     TMI                             BEGINS AT                     01045
+012.     CLM                             BEGINS AT                     01062
+013.     SSP                             BEGINS AT                     01116
+014.     SSM                             BEGINS AT                     01134
+015.     CHS                             BEGINS AT                     01152
+016.     LLS                             BEGINS AT                     01170
+017.     LRS                             BEGINS AT                     01265
+018.     LGL                             BEGINS AT                     01354
+019.     RQL                             BEGINS AT                     01444
+020.     TQP                             BEGINS AT                     01524
+021.     NOP                             BEGINS AT                     01541
+022.     COM                             BEGINS AT                     01547
+023.     ADD                             BEGINS AT                     01606
+024.     ADM                             BEGINS AT                     01770
+025.     SUB                             BEGINS AT                     02034
+026.     SBM                             BEGINS AT                     02205
+027.     CLA                             BEGINS AT                     02251
+028.     CLS                             BEGINS AT                     02355
+029.     CAL                             BEGINS AT                     02412
+030.     ACL                             BEGINS AT                     02456
+031.     STO                             BEGINS AT                     02532
+032.     SLW                             BEGINS AT                     02542
+033.     STP                             BEGINS AT                     02614
+034.     STA                             BEGINS AT                     02726
+035.     STD                             BEGINS AT                     02766
+036.     CAS                             BEGINS AT                     03014
+037.     LDQ                             BEGINS AT                     03121
+038.     STQ                             BEGINS AT                     03144
+039.     SLQ                             BEGINS AT                     03175
+040.     TLQ                             BEGINS AT                     03234
+041.     RND                             BEGINS AT                     03302
+042.     MPY                             BEGINS AT                     03312
+043.     MPR                             BEGINS AT                     03460
+044.     DVP                             BEGINS AT                     03540
+045.     DCT                             BEGINS AT                     03606
+046.     DVH-NO HALTS                    BEGINS AT                     03655
+047.     ANA                             BEGINS AT                     03734
+048.     ANS                             BEGINS AT                     04023
+049.     ORA                             BEGINS AT                     04115
+
+
+                                                              9M21A
+                                                              12/1/58
+                                                              PAGE 1.006
+
+
+050.     ORS                             BEGINS AT                     04212
+051.     TTR                             BEGINS AT                     04276
+052.     ETM                             BEGINS AT                     04304
+053.     LTM                             BEGINS AT                     04377
+054.     SLT                             BEGINS AT                     04536
+055.     SWT                             BEGINS AT                     04643
+056.     STT                             BEGINS AT                     04710
+057.     STZ                             BEGINS AT                     04750
+058.     XCA                             BEGINS AT                     05000
+059.     XCL                             BEGINS AT                     05071
+060.     ERA                             BEGINS AT                     05166
+061.     LGR                             BEGINS AT                     05250
+062.     ZET                             BEGINS AT                     05326
+063.     NZT                             BEGINS AT                     05421
+064.     LAS                             BEGINS AT                     05506
+065.     VLM                             BEGINS AT                     05566
+066.     VDP                             BEGINS AT                     06007
+067.     VDH-NO HALTS                    BEGINS AT                     06203
+068.     CVR                             BEGINS AT               06315-06415
+                                         AND                     07714-07725
+069.     CAQ                             BEGINS AT                     07727
+070.     CRQ                             BEGINS AT                     10120
+071.     STL                             BEGINS AT                     10231
+072.     STR                             BEGINS AT                     10253
+073.     XEC                             BEGINS AT                     10402
+074.     M06 ADDER TEST                  BEGINS AT                     10651
+075.     M07 ADDER TEST                  BEGINS AT                     10664
+076.     PAI                             BEGINS AT                     10702
+                                         AND                           11542
+077.     PIA                             BEGINS AT                     10741
+                                         AND                           11667
+078.     IIA                             BEGINS AT                     10765
+                                         AND                           11732
+079.     IIS                             BEGINS AT                     11021
+                                         AND                           12043
+080.     RIS                             BEGINS AT                     11064
+081.     RIA                             BEGINS AT                     11113
+082.     STI                             BEGINS AT                     11157
+083.     OAI                             BEGINS AT                     11220
+084.     OSI                             BEGINS AT                     11416
+085.     LDI                             BEGINS AT                     11644
+086.     TIF                             BEGINS AT                     12123
+                                         AND                           12565
+087.     TIO                             BEGINS AT                     12360
+                                         AND                           12607
+088.     OFT                             BEGINS AT                     12636
+089.     ONT                             BEGINS AT                     13043
+090.     SIR                             BEGINS AT                     13314
+091.     SIL                             BEGINS AT                     13452
+092.     RIR                             BEGINS AT                     13626
+093.     RIL                             BEGINS AT                     13766
+
+
+
+                                                              9M21A
+                                                              12/1/58
+                                                              PAGE 1.007
+
+094.     IIR                             BEGINS AT                     14134
+095.     IIL                             BEGINS AT                     14307
+096.     RFT                             BEGINS AT                     14463
+097.     LFT                             BEGINS AT                     14716
+098.     RNT                             BEGINS AT                     15151
+099.     LNT                             BEGINS AT                     15352
+                                                              
+                                 SENSE SWITCH 5 DOWN          
+                                                              
+100.     SWT-SLT                         BEGINS AT                     15567
+101.     DVH WITH HALT                   BEGINS AT                     15616
+102.     VDH-WITH HALT                   BEGINS AT                     15646
+103.     ENK                             BEGINS AT                     15677
+104.     DISPLAY BUTTON WITH HTR         BEGINS AT                     15722
+105.     DISPLAY BUTTON WITH HPR         BEGINS AT                     15757
+106.     FAST MPY                        BEGINS AT                     16017
+107.     LONG ADDER TEST                 BEGINS AT                     16046
+108.     MPY TEST                        BEGINS AT                     16115
+109.     MPY/DVP TEST                    BEGINS AT                     16141
+
+
+
+\l
+File Attachments:   Source \Asource\a    Cards \Acard\a      Deck \Adeck\a
+

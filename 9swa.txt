@@ -1,0 +1,123 @@
+                                                             9swa
+                                                             7-10-58
+                                                             page 1.001
+
+                                special feature
+                     six additional sense switches test
+
+a.  purpose
+
+    1.  test six additional sense switches - 704 or 709 main frame
+
+b.  method of test
+
+    1.  all switches are tested in up - off - conditions.
+
+    2.  all switches are tested in down - on - condition.
+  
+    3.  all instructions with primary operation 760 are tested.
+
+c.  machine units and storage area
+
+    1.  units
+
+        mf, cf, dsu, cr
+
+    2.  storage locations
+
+                    0030 - 0344
+
+d.  program control
+
+    1.  deck        000                9ld01 low end loader
+                    001 - 010          9swa program cards
+                    011                transfer card - tra 30
+                    012 - 013          2 blank cards
+
+    2. sense switch control
+
+       none.
+
+       note - switches must in correct position after two manual halts
+
+e.  normal stops
+
+               0031         halt to throw all switches up
+               0115         halt to throw all switches down
+
+f.  error stops
+
+               0036         error switch #1 up - off
+               0042         error switch #2 up - off
+               0046         error switch #3 up - off
+               0052         error switch #4 up - off
+               0056         error switch #5 up - off
+               0062         error switch #6 up - off
+               0066         error switch #7 up - off
+               0072         error switch #8 up - off
+               0076         error switch #9 up - off
+
+                                                             9swa
+                                                             7-10-58
+                                                             page 1.001
+
+               0102         error switch #10 up - off
+               0106         error switch #11 up - off
+               0112         error switch #12 up - off
+                          
+               0123         error switch #1 down - on
+               0130         error switch #2 down - on
+               0135         error switch #3 down - on
+               0142         error switch #4 down - on
+               0147         error switch #5 down - on
+               0154         error switch #6 down - on
+               0161         error switch #7 down - on
+               0166         error switch #8 down - on
+               0173         error switch #9 down - on
+               0200         error switch #10 down - on
+               0205         error switch #11 down - on
+               0212         error switch #12 down - on
+                          
+               0237         error pbt - with p bit
+               0243         error pbt - no p bit
+               0246         error ssn - skipped
+               0251         error ssp - skipped
+               0254         error lbt - with low bit
+               0260         error lbt - no low bit
+               0264         error clm - skipped
+               0266         error clm - did not clear acc.
+               0272         error chs - skipped
+               0274         error chs - did not change
+               0300         error com - skipped
+               0304         error com - did not comp. acc.
+               0307         error etm - skipped
+               0312         error ltm - skipped
+               0315         error rnd - skipped
+               0317         error dct - off conditions
+               0324         error dct - on condition - skipped
+
+g.  printouts
+  
+    none
+
+h.  comments
+
+    1.  each section of the test will be repeated 64 times
+
+    2.  the next program cannot be called in the usaual way - switch 6 up.
+
+    3.  if an error is detected, one octal 7 will be ored to the acc.. for
+        each switch enableing the operator to see at a glance which switch
+        or switches failed.
+    examples  ----
+        acc  p.1-35              00000000000000000000000000000111
+ 
+        would indicate switch 1 failed.
+
+        acc  p.1-35             000000000000000000000000111000111
+
+        would indicate switches 1 and 4 failed.
+
+
+\l
+File Attachments:   Source \Asource\a    Cards \Acard\a      Deck \Adeck\a
